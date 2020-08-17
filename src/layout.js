@@ -1,95 +1,74 @@
 import React from 'react';
 import './App.css';
-import firebase from "firebase";
-import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
-import {connect} from "react-redux";
 import {withStyles} from "@material-ui/core/styles";
-// import {withTranslation} from "react-i18next";
 import PropTypes from "prop-types";
 import {compose} from "redux";
-import Button from "@material-ui/core/Button";
+import {connect} from "react-redux";
+import {BrowserRouter as Router} from "react-router-dom"
+import {I18nextProvider} from "react-i18next";
+import rootReducer from "./_reducers";
+// import i18n from './i18n';
+import { createStore, applyMiddleware } from "redux";
+import './css/app.scss';
+import { Route } from 'react-router-dom';
+import reduxThunk from "redux-thunk";
 
+import * as links from "./constants/links";
+import Welcome from "./component/Welcome/Welcome";
+import firebase from "firebase";
+import * as authActions from "./_actions/auth";
+import ManagementBackground from "./component/ManagementBackground/ManagementBackground";
 const styles = theme => ({
     legalResponsibleBlock: {
         backgroundColor: '#e0e7f2'
     }
 });
 
-const uiConfig = {
-    signInFlow: "popup",
-    signInOptions: [
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-        firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-        firebase.auth.GithubAuthProvider.PROVIDER_ID,
-        firebase.auth.EmailAuthProvider.PROVIDER_ID,
-        firebase.auth.PhoneAuthProvider.PROVIDER_ID
-    ],
-    callbacks: {
-        signInSuccess: () => false
-    }
-};
+const store = createStore(
+    rootReducer,
+    applyMiddleware(reduxThunk)
+);
+
 firebase.initializeApp({
     apiKey: 'AIzaSyBCUeyx_VUdt7CyTFAX5JoSJmpeNqRSItg',
     authDomain: 'game-caro-a57c5.firebaseapp.com'
 });
+
 class Layout extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            isSignedIn: true
-        };
 
-        this.signOut = this.signOut.bind(this);
+        };
     }
 
     componentDidMount() {
         firebase.auth().onAuthStateChanged(user => {
-            this.setState({
-                isSignedIn: !!user
-            })
+            this.props.setIsSignedIn(!!user);
         })
     }
 
-    signOut() {
-         firebase.auth().signOut();
-    }
-
     render() {
-        const {
-            isSignedIn
-        } = this.state;
-        const {
-
-        } = this.props;
-
         return (
-            <div
-                style={{
-                    backgroundImage: "url('https://scontent.fhan2-6.fna.fbcdn.net/v/t1.0-9/117291419_1145487799177968_2926890154246272122_o.jpg?_nc_cat=103&_nc_sid=8024bb&_nc_ohc=Gq6BwlitzeoAX9sp860&_nc_ht=scontent.fhan2-6.fna&oh=e0af7c6f01862873ba3916964ab7616d&oe=5F5BCBED')"
-                }}
-                className="gameCaroWrapper"
-            >
-                <span>Firebase Auth</span>
-                {
-                    isSignedIn
-                    ?
-                        <div>
-                            Signed In !
-                            <Button
-                                onClick={this.signOut}
-                            >
-                                signOut
-                            </Button>
-                        </div>
-                        :
-                        <StyledFirebaseAuth
-                            uiConfig={uiConfig}
-                            firebaseAuth={firebase.auth()}
-                        />
-                }
-            </div>
+            <Router>
+                <I18nextProvider
+                    // i18n={ i18n }
+                >
+                    <Route
+                        path={links.LINK_WELCOME}
+                        exact={true}
+                    >
+                        <Welcome />
+                    </Route>
+                    <Route
+                        path={links.LINK_MANAGEMENT_BACKGROUND}
+                        exact={true}
+                    >
+                        <ManagementBackground />
+                    </Route>
+                </I18nextProvider>
+            </Router>
         );
     }
 }
@@ -98,14 +77,13 @@ Layout.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-
 const mapStateToProps = state => ({
-
+    isSignedIn: state.authReducer.isSignedIn
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
-
+        setIsSignedIn: (isSignedIn) => dispatch(authActions.setIsSignedIn(isSignedIn))
     }
 };
 

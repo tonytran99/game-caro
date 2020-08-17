@@ -1,0 +1,12 @@
+{
+    "translations": {
+        "en": "English",
+        "vi": "Vietnamese",
+        "lang": "vi"
+    },
+    "management_background": {
+        "upload_background": {
+            "change_avatar": ""
+        }
+    }
+}

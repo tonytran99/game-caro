@@ -3,21 +3,37 @@ import {connect} from "react-redux";
 import {withStyles} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import {compose} from "redux";
-import * as authActions from "../_actions/auth";
-import {signOut} from "../_actions/auth";
-import Button from "@material-ui/core/Button";
+import * as authActions from "../../_actions/auth";
+import firebase from "firebase";
+import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 
 const styles = theme => ({
-    headerWrapper: {
+    authBlockWrapper: {
 
     }
 });
-class Header extends React.Component {
+
+const uiConfig = {
+    signInFlow: "popup",
+    signInOptions: [
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+        firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+        firebase.auth.GithubAuthProvider.PROVIDER_ID,
+        firebase.auth.EmailAuthProvider.PROVIDER_ID,
+        firebase.auth.PhoneAuthProvider.PROVIDER_ID
+    ],
+    callbacks: {
+        signInSuccess: () => false
+    }
+};
+
+class AuthBlock extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            // isSignedIn: true
+            isSignedIn: true
         };
 
         this.signOut = this.signOut.bind(this);
@@ -28,7 +44,6 @@ class Header extends React.Component {
     }
 
     signOut() {
-        console.log('BBBBBBBBBBBBBB')
         this.props.signOut();
     }
 
@@ -43,29 +58,17 @@ class Header extends React.Component {
         console.log(isSignedIn);
 
         return (
-            <div className={classes.headerWrapper}>
-                {
-                    isSignedIn
-                    ?
-                        <div>
-                            <span>Hellso</span>
-                            <Button
-                                onClick={() => this.signOut()}
-                            >
-                                Sign Osut
-                            </Button>
-                        </div>
-                        :
-                       <span>
-                           'dsd'ds
-                       </span>
-                }
+            <div className={classes.authBlockWrapper}>
+                <StyledFirebaseAuth
+                    uiConfig={uiConfig}
+                    firebaseAuth={firebase.auth()}
+                />
             </div>
         );
     }
 }
 
-Header.propTypes = {
+AuthBlock.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -84,4 +87,4 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
     // withTranslation()
-) (Header);
+) (AuthBlock);

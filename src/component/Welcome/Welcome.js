@@ -3,19 +3,24 @@ import {connect} from "react-redux";
 import {withStyles} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import {compose} from "redux";
+import Footer from "../Footer";
+import Header from "../Header";
+import AuthBlock from "../Auth/AuthBlock";
 
 const styles = theme => ({
-    footerWrapper: {
+    welcomeWrapper: {
 
     }
 });
-class Footer extends React.Component {
+class Welcome extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-
+            isSignedIn: true
         };
+
+        // this.signOut = this.signOut.bind(this);
     }
 
     componentDidMount() {
@@ -27,24 +32,28 @@ class Footer extends React.Component {
         //
         // } = this.state;
         const {
-            classes
+            classes,
+            isSignedIn
         } = this.props;
+        console.log(isSignedIn);
 
         return (
-            <div className={classes.footerWrapper}>
-                2020 @ Tony Tran Studio
+            <div className={classes.welcomeWrapper}>
+                <Header />
+                {!isSignedIn ? <AuthBlock /> : <span>sdds sd</span>}
+                <Footer />
             </div>
         );
     }
 }
 
-Footer.propTypes = {
+Welcome.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
 
 const mapStateToProps = state => ({
-
+    isSignedIn: state.authReducer.isSignedIn
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -57,4 +66,4 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
     // withTranslation()
-) (Footer);
+) (Welcome);

@@ -53,9 +53,9 @@ class AuthBlock extends React.Component {
         // } = this.state;
         const {
             classes,
-            isSignedIn
+            dataUser
         } = this.props;
-        console.log(isSignedIn);
+        console.log(dataUser);
 
         return (
             <div className={classes.authBlockWrapper}>
@@ -74,7 +74,7 @@ AuthBlock.propTypes = {
 
 
 const mapStateToProps = state => ({
-    isSignedIn: state.authReducer.isSignedIn
+    dataUser: state.authReducer.dataUser
 });
 
 const mapDispatchToProps = (dispatch) => {

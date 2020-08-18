@@ -6,7 +6,8 @@ import * as links from "./constants/links";
 const PrivateRoute = ({component: Component, ...rest}) => {
     return (
         <Route {...rest} match render={props => {
-            if (rest.userData){
+            console.log(rest.dataUser);
+            if (rest.dataUser){
                 return <Component {...props} />;
             }
             return <Redirect to={links.LINK_WELCOME} />;
@@ -15,7 +16,7 @@ const PrivateRoute = ({component: Component, ...rest}) => {
 };
 const mapStateToProps = (state, props) => {
     return {
-        userData: state.authReducer.user
+        dataUser: state.authReducer.dataUser
     }
 };
 export default connect(mapStateToProps)(PrivateRoute);

@@ -1,14 +1,21 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {withStyles} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import {compose} from "redux";
 import { ReactComponent as CameraIcon } from "../../images/camera_icon.svg";
 import {withTranslation} from "react-i18next";
+import Button from "@material-ui/core/Button";
+import { lighten, withStyles } from '@material-ui/core/styles';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import {storage} from "../../firebase";
 
 const styles = theme => ({
     uploadBackgroundWrapper: {
-
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
     },
     uploadAvatar: {
         display: 'flex',
@@ -57,8 +64,8 @@ const styles = theme => ({
         left: 0,
         zIndex: 99,
         '& img': {
-            width: 180,
-            height: 180,
+            width: '100%',
+            height: '100%',
             objectFit: 'cover'
         },
         '& .removeAvatar': {
@@ -82,8 +89,80 @@ const styles = theme => ({
             }
         }
     },
+    uploadAvatarContent: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        position: 'relative',
+        border: '2px solid #1976b7',
+        '&::before': {
+            content: `''`,
+            background: 'rgba(0,0,0,.5)',
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            top: 0,
+            left: 0,
+            zIndex: 10,
+            opacity: 0,
+            visibility: 'hidden',
+            transition: '0.3s'
+        },
+        '&:hover': {
+            '& $actionLabel': {
+                transform: 'translateX(0)'
+            },
+            '&::before': {
+                opacity: 1,
+                visibility: 'visible'
+            }
+        }
+    },
+    actionAvatar: {
+        position: 'absolute',
+        zIndex: 999,
+        width: '100%',
+        display: 'flex',
+        height: '100%',
+        justifyContent: 'center',
+        flexDirection: 'column'
+    },
+    actionLabel: {
+        fontSize: '0.8rem',
+        color: '#46435a',
+        background: '#fff',
+        width: 90,
+        borderRadius: '0 30px 30px 0',
+        textAlign: 'center',
+        transition: '0.3s',
+        transform: 'translateX(-100%)',
+        '&:nth-of-type(2)': {
+            transitionDelay: '0.1s',
+            marginTop: 5
+        },
+        '&:hover': {
+            color: '#fff',
+            background: '#645d7b'
+        }
+    },
+    actionText: {
+        padding: '0.25rem',
+        cursor: 'pointer'
+    },
 });
 
+
+const BorderLinearProgress = withStyles({
+    root: {
+        height: 10,
+        backgroundColor: lighten('#ff6c5c', 0.5),
+    },
+    bar: {
+        borderRadius: 20,
+        backgroundColor: '#ff6c5c',
+    },
+})(LinearProgress);
 class UploadBackground extends React.Component {
 
     constructor(props) {
@@ -92,10 +171,12 @@ class UploadBackground extends React.Component {
             avatar: null,
             avatarPreview: '',
             avatarName: '',
+            progressUploadBackground: 0
         };
 
         this.handleBackground = this.handleBackground.bind(this);
         this.removeBackground = this.removeBackground.bind(this);
+        this.uploadBackground = this.uploadBackground.bind(this);
         this.inputAvatarRef = React.createRef();
     }
 
@@ -119,40 +200,86 @@ class UploadBackground extends React.Component {
         });
     }
 
+    uploadBackground() {
+        const {avatar} = this.state;
+        const {
+            dataUser
+        } = this.props;
+        const nameImage = (dataUser && dataUser.uid ? dataUser.uid : '') + '_' + new Date().getTime();
+        const uploadTask = storage.ref(`images/${nameImage}`).put(avatar);
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                // progrss function ....
+                const progressUploadBackground = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                this.setState({progressUploadBackground});
+            },
+            (error) => {
+                // error function ....
+                console.log(error);
+            },
+            () => {
+                // complete function ....
+                storage.ref('images').child(nameImage).getDownloadURL().then(url => {
+                    console.log(url);
+                    // this.setState({url});
+                })
+            });
+    }
+
     render() {
         const {
             avatar,
             avatarPreview,
-            avatarName
+            avatarName,
+            progressUploadBackground,
         } = this.state;
         const {
             classes,
-            isSignedIn
+            dataUser
         } = this.props;
-        console.log(isSignedIn);
+        console.log(dataUser);
 
         return (
             <div className={classes.uploadBackgroundWrapper}>
-                <div className={classes.uploadAvatar}>
-                    <div>
-                        <input
-                            accept="image/*"
-                            style={{display: 'none'}}
-                            onChange={this.handleBackground}
-                            id="text-button-file"
-                            type="file"
-                            ref={this.inputAvatarRef}
-                        />
-                        <label htmlFor="text-button-file">
-                            <span>{avatarPreview ? this.props.t("profile.field.change_avatar") : this.props.t("profile.field.upload_avatar")}</span>
-                        </label>
-                        {avatarPreview && <div className={classes.avatarPreview}>
-                            {<p onClick={this.removeBackground} className={"removeAvatar"}>&times;</p>}
-                            <img src={avatarPreview} alt={avatarName}/>
-                        </div>}
-                        <CameraIcon />
+                <BorderLinearProgress
+                    className={classes.margin}
+                    variant="determinate"
+                    color="secondary"
+                    value={progressUploadBackground}
+                />
+                <div className={classes.uploadAvatarContent}>
+                    <input
+                        accept="image/*"
+                        style={{display: 'none'}}
+                        onChange={this.handleBackground}
+                        id="text-button-file"
+                        type="file"
+                        ref={this.inputAvatarRef}
+                    />
+                    <div className={classes.actionAvatar}>
+                        <div className={classes.actionLabel}>
+                            <label htmlFor="text-button-file">
+                                <div className={classes.actionText}>
+                                    {avatarPreview ? this.props.t('label.edit') : this.props.t("label.upload")}
+                                </div>
+                            </label>
+                        </div>
+                        {avatarPreview &&
+                        <div className={classes.actionLabel}>
+                            <div onClick={this.removeBackground} className={classes.actionText}>{this.props.t('label.remove')}</div>
+                        </div>
+                        }
                     </div>
+                    {avatarPreview && <div className={classes.avatarPreview}>
+                        <img src={avatarPreview} alt={avatarName}/>
+                    </div>}
+                    {!avatarPreview && <CameraIcon />}
                 </div>
+                <Button
+                    onClick={() => this.uploadBackground()}
+                >
+                        dsds
+                </Button>
             </div>
         );
     }
@@ -164,7 +291,7 @@ UploadBackground.propTypes = {
 
 
 const mapStateToProps = state => ({
-    isSignedIn: state.authReducer.isSignedIn
+    dataUser: state.authReducer.dataUser
 });
 
 const mapDispatchToProps = (dispatch) => {

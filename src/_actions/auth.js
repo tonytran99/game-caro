@@ -34,9 +34,9 @@ export const signOut = () => async (dispatch) => {
     }
 }
 
-export const setIsSignedIn = (isSignedIn) => {
+export const setDataUser = (dataUser) => {
     return {
-        type: types.AUTH_SET_IS_SIGNED_IN,
-        isSignedIn: isSignedIn
+        type: types.AUTH_SET_DATA_USER,
+        dataUser: dataUser
     }
 }

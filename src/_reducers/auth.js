@@ -1,25 +1,28 @@
-import firebase from "firebase";
 import * as types from './../_constants/auth';
-
-let isSignedIn = false;
-
+let dataUser = localStorage.getItem("dataUser") ? JSON.parse(localStorage.getItem("dataUser")) : null;
 
 const initState = {
-    isSignedIn: isSignedIn,
+    dataUser: dataUser,
 }
 const authReducer = (state = initState, action) => {
     switch (action.type) {
         case types.AUTH_SIGN_OUT_SUCCESS:
+            localStorage.removeItem("dataUser");
             return {
-                isSignedIn: action.isSignedIn
+                dataUser: null
             }
         case types.AUTH_SIGN_OUT_ERROR:
             return {
-                isSignedIn: true
+                // dataUser: true
             }
-        case types.AUTH_SET_IS_SIGNED_IN:
+        case types.AUTH_SET_DATA_USER:
+            if (action.dataUser) {
+                localStorage.setItem("dataUser", JSON.stringify(action.dataUser));
+            } else {
+                localStorage.removeItem("dataUser");
+            }
             return {
-                isSignedIn: action.isSignedIn
+                dataUser: action.dataUser
             }
         default:
             return state;

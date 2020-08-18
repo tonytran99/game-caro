@@ -40,7 +40,7 @@ class Welcome extends React.Component {
         return (
             <div className={classes.welcomeWrapper}>
                 <Header />
-                {!dataUser ? <AuthBlock /> : <span>sdds sd</span>}
+                {/*{!dataUser ? <AuthBlock /> : <span>sdds sd</span>}*/}
                 <Footer />
             </div>
         );

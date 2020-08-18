@@ -1,0 +1,2 @@
+export const GAME_SAVE_DATA_USER = "GAME_SAVE_DATA_USER";
+

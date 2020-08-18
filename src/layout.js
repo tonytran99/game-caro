@@ -42,7 +42,7 @@ class Layout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            checkLogin: false
         };
     }
 
@@ -52,7 +52,16 @@ class Layout extends React.Component {
         })
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!this.state.checkLogin && this.props.dataUser) {
+
+        }
+    }
+
     render() {
+        const {
+            dataUser
+        } = this.props;
         return (
             <Router>
                 <I18nextProvider
@@ -81,12 +90,13 @@ Layout.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    isSignedIn: state.authReducer.isSignedIn
+    dataUser: state.authReducer.dataUser
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setDataUser: (dataUser) => dispatch(authActions.setDataUser(dataUser))
+        setDataUser: (dataUser) => dispatch(authActions.setDataUser(dataUser)),
+        // saveDataUser: (dataUser) => dispatch(authActions.saveDataUser(dataUser))
     }
 };
 

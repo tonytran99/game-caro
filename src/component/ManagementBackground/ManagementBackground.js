@@ -4,6 +4,7 @@ import {withStyles} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import {compose} from "redux";
 import UploadBackground from "./UploadBackground";
+import Header from "../Header";
 
 const styles = theme => ({
     managementBackgroundWrapper: {
@@ -38,6 +39,7 @@ class ManagementBackground extends React.Component {
 
         return (
             <div className={classes.managementBackgroundWrapper}>
+                <Header />
                <UploadBackground />
             </div>
         );

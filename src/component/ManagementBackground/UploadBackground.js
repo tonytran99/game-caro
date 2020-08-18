@@ -8,6 +8,8 @@ import Button from "@material-ui/core/Button";
 import { lighten, withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import {storage} from "../../firebase";
+import LoadingAction from "../../theme/LoadingAction";
+import firebase from "./../../firebase";
 
 const styles = theme => ({
     uploadBackgroundWrapper: {
@@ -96,6 +98,7 @@ const styles = theme => ({
         height: '100%',
         position: 'relative',
         border: '2px solid #1976b7',
+        background: '#b3d8de',
         '&::before': {
             content: `''`,
             background: 'rgba(0,0,0,.5)',
@@ -150,6 +153,13 @@ const styles = theme => ({
         padding: '0.25rem',
         cursor: 'pointer'
     },
+    uploadBgBtn: {
+        borderRadius: 11,
+        marginTop: '1rem',
+        backgroundColor: '#fff',
+        padding: '0.5rem 1rem',
+        textTransform: 'initial',
+    }
 });
 
 
@@ -171,7 +181,9 @@ class UploadBackground extends React.Component {
             avatar: null,
             avatarPreview: '',
             avatarName: '',
-            progressUploadBackground: 0
+            progressUploadBackground: 0,
+            isLoading: false,
+
         };
 
         this.handleBackground = this.handleBackground.bind(this);
@@ -207,6 +219,9 @@ class UploadBackground extends React.Component {
         } = this.props;
         const nameImage = (dataUser && dataUser.uid ? dataUser.uid : '') + '_' + new Date().getTime();
         const uploadTask = storage.ref(`images/${nameImage}`).put(avatar);
+        this.setState({
+            isLoading: true
+        })
         uploadTask.on('state_changed',
             (snapshot) => {
                 // progrss function ....
@@ -215,15 +230,41 @@ class UploadBackground extends React.Component {
             },
             (error) => {
                 // error function ....
-                console.log(error);
+                this.setState({
+                    progressUploadBackground: 0,
+                    isLoading: false,
+                });
             },
             () => {
                 // complete function ....
                 storage.ref('images').child(nameImage).getDownloadURL().then(url => {
                     console.log(url);
-                    // this.setState({url});
-                })
+
+                    firebase.database().ref('backgrounds/' + dataUser.uid + '/' + nameImage).set({
+                        userId: dataUser.uid,
+                        backgroundUrl: url
+                    }, (error) => {
+                        if (error) {
+                            this.setState({
+                                avatar: null,
+                                avatarPreview: '',
+                                avatarName: '',
+                                progressUploadBackground: 0,
+                                isLoading: false,
+                            });
+                        } else {
+                            this.setState({
+                                avatar: null,
+                                avatarPreview: '',
+                                avatarName: '',
+                                progressUploadBackground: 0,
+                                isLoading: false,
+                            });
+                        }
+                    });
+                });
             });
+
     }
 
     render() {
@@ -232,15 +273,17 @@ class UploadBackground extends React.Component {
             avatarPreview,
             avatarName,
             progressUploadBackground,
+            isLoading
         } = this.state;
         const {
             classes,
             dataUser
         } = this.props;
-        console.log(dataUser);
+        console.log(dataUser.uid);
 
         return (
             <div className={classes.uploadBackgroundWrapper}>
+                {isLoading && <LoadingAction />}
                 <BorderLinearProgress
                     className={classes.margin}
                     variant="determinate"
@@ -277,6 +320,7 @@ class UploadBackground extends React.Component {
                 </div>
                 <Button
                     onClick={() => this.uploadBackground()}
+                    className={classes.uploadBgBtn}
                 >
                         dsds
                 </Button>

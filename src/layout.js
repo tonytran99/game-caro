@@ -15,12 +15,14 @@ import reduxThunk from "redux-thunk";
 import * as links from "./constants/links";
 import Welcome from "./component/Welcome/Welcome";
 import * as authActions from "./_actions/auth";
-import ManagementBackground from "./component/ManagementBackground/ManagementBackground";
+import ManagementBackground from "./component/ManagementBackground/Background";
 import PrivateRoute from "./PrivateRoute";
 import LoadingAction from "./theme/LoadingAction";
 import {Redirect, Route, Switch, withRouter} from "react-router-dom";
 import RoutesMap from "./routesMap";
 import firebase from "./firebase";
+import PublicRoute from "./PublicRoute";
+import Auth from "./component/Auth/Auth";
 const styles = theme => ({
     legalResponsibleBlock: {
         backgroundColor: '#e0e7f2'
@@ -63,6 +65,9 @@ class Layout extends React.Component {
             dataUser
         } = this.props;
         return (
+            <div style={{
+                backgroundColor: '#0a676b'
+            }}>
             <Router>
                 <I18nextProvider
                     // i18n={ i18n }
@@ -75,12 +80,17 @@ class Layout extends React.Component {
                             >
                                 <Welcome />
                             </Route>
-                            {/* eslint-disable-next-line react/jsx-no-undef */}
+                            <PublicRoute
+                                path={links.LINK_AUTH}
+                                component={() => <Auth />}
+                                exact={true}
+                            />
                             <RoutesMap />
                         </Switch>
                     </Suspense>
                 </I18nextProvider>
             </Router>
+            </div>
         );
     }
 }

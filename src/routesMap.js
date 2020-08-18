@@ -12,7 +12,7 @@ import LoadingAction from "./theme/LoadingAction";
 
 const styles = {
     mainContent: {
-        padding: "30px 20px",
+        // padding: "30px 20px",
         flex: 1,
         "&>div:first-child:last-child":{
             minHeight: "100%"

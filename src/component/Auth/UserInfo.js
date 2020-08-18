@@ -9,11 +9,11 @@ import AuthBlock from "../Auth/Auth";
 import Content from "../Content";
 
 const styles = theme => ({
-    welcomeWrapper: {
+    userInfoWrapper: {
 
     }
 });
-class Welcome extends React.Component {
+class UserInfo extends React.Component {
 
     constructor(props) {
         super(props);
@@ -39,11 +39,11 @@ class Welcome extends React.Component {
         console.log(dataUser);
 
         return (
-            <div className={classes.welcomeWrapper}>
+            <div className={classes.userInfoWrapper}>
                 <Header />
                 <Content>
                     <div>
-                        dsd
+                        user info
                     </div>
                 </Content>
                 {/*{!dataUser ? <AuthBlock /> : <span>sdds sd</span>}*/}
@@ -53,7 +53,7 @@ class Welcome extends React.Component {
     }
 }
 
-Welcome.propTypes = {
+UserInfo.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -72,4 +72,4 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
     // withTranslation()
-) (Welcome);
+) (UserInfo);

@@ -1,22 +1,17 @@
 import React from 'react';
+import {compose} from "redux";
 import {connect} from "react-redux";
 import {withStyles} from "@material-ui/core/styles";
+import {withTranslation} from "react-i18next";
 import PropTypes from "prop-types";
-import {compose} from "redux";
 
 const styles = theme => ({
-    footerWrapper: {
-        padding: '1rem 0rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#fff',
-        fontWeight: 700,
-        fontSize: '1.2rem',
-    }
+    contentWrapper: {
+        height: 'calc(100vh - 146px)',
+    },
 });
-class Footer extends React.Component {
 
+class Content extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
@@ -24,30 +19,23 @@ class Footer extends React.Component {
         };
     }
 
-    componentDidMount() {
-
-    }
-
     render() {
-        // const {
-        //
-        // } = this.state;
         const {
-            classes
+            classes,
+
         } = this.props;
 
-        return (
-            <div className={classes.footerWrapper}>
-                2020 @ Tony Tran Studio
+        return(
+            <div className={classes.contentWrapper}>
+                {this.props.children}
             </div>
         );
     }
 }
 
-Footer.propTypes = {
+Content.propTypes = {
     classes: PropTypes.object.isRequired,
 };
-
 
 const mapStateToProps = state => ({
 
@@ -62,5 +50,6 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation()
-) (Footer);
+    withTranslation()
+) (Content);
+

@@ -12,7 +12,14 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogContent from "@material-ui/core/DialogContent";
-import AuthBlock from "./Auth/AuthBlock";
+import AuthBlock from "./Auth/Auth";
+import {NavLink} from "react-router-dom";
+import * as links from "./../constants/links";
+import { ReactComponent as LogoutIcon } from "./../images/logout_icon.svg";
+import { ReactComponent as LoginIcon } from "./../images/login_icon.svg";
+import { ReactComponent as MenuIcon } from "./../images/menu_icon.svg";
+import { ReactComponent as BackgroundIcon } from "./../images/background_icon.svg";
+import Popover from "@material-ui/core/Popover";
 const styles = theme => ({
     headerWrapper: {
         display: 'flex',
@@ -20,8 +27,49 @@ const styles = theme => ({
         justifyContent: 'flex-end',
         padding: '0.5rem 2rem',
         '& .logo': {
-            height: 80,
-            width: 80,
+            height: 72,
+            width: 72,
+        },
+        '& .leftHeader': {
+            flexGrow: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+        },
+        '& .avatarUser': {
+            width: 48,
+            height: 48,
+            borderRadius: '50%',
+        },
+        '& .btnLogout': {
+            '& path': {
+                fill: '#fff!important',
+                stroke: '#fff!important',
+            }
+        },
+        '& .btnLogin': {
+            '& path': {
+                fill: '#fff!important',
+                stroke: '#fff!important',
+            }
+        }
+    },
+    popoverMenu: {
+        '& .menuItemBackground': {
+            '& button': {
+                '& svg': {
+                    '& path': {
+                        // fill: 'black!important',
+                        // stroke: 'black!important',
+                    }
+                },
+                '& .text': {
+                    fontWeight: 600,
+                    padding: '0rem 1rem',
+                    textTransform: 'initial'
+                }
+            },
+
         }
     }
 });
@@ -30,11 +78,15 @@ class Header extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            openDialogAuth: false
+            openDialogAuth: false,
+            openPopoverMenu: null,
         };
 
         this.handleDialogAuthOpen = this.handleDialogAuthOpen.bind(this);
         this.handleDialogAuthClose = this.handleDialogAuthClose.bind(this);
+        this.handlePopoverMenuOpen = this.handlePopoverMenuOpen.bind(this);
+        this.handlePopoverMenuClose = this.handlePopoverMenuClose.bind(this);
+
         this.signOut = this.signOut.bind(this);
     }
 
@@ -59,9 +111,23 @@ class Header extends React.Component {
         this.props.signOut();
     }
 
+    handlePopoverMenuOpen(event) {
+        this.setState({
+            openPopoverMenu: event.currentTarget
+        })
+    }
+
+    handlePopoverMenuClose() {
+        this.setState({
+            openPopoverMenu: null
+        });
+    }
+
     render() {
         const {
-            openDialogAuth
+            openDialogAuth,
+            openPopoverMenu,
+
         } = this.state;
         const {
             classes,
@@ -71,25 +137,62 @@ class Header extends React.Component {
 
         return (
             <div className={classes.headerWrapper}>
+                <NavLink to={links.LINK_WELCOME}>
                 <img className="logo" src={LogoIcon} alt=""/>
+                </NavLink>
                 {
                     dataUser
                     ?
-                        <React.Fragment>
+                        <div className="leftHeader">
+                            <Button
+                                onClick={(event) => this.handlePopoverMenuOpen(event)}
+                            >
+                                <MenuIcon />
+                            </Button>
                             <Button
                                 onClick={() => this.signOut()}
+                                className="btnLogout"
                             >
-                                Sign Osut
+                                <LogoutIcon width={36} height={36} />
                             </Button>
-                            <img src={dataUser && dataUser.photoURL ? dataUser.photoURL : UserIcon} alt=""/>
-                        </React.Fragment>
+                            <NavLink to={links.LINK_USER_INFO}>
+                                <img className="avatarUser" src={dataUser && dataUser.photoURL ? dataUser.photoURL : UserIcon} alt=""/>
+                            </NavLink>
+                            {openPopoverMenu && <Popover
+                                open={true}
+                                anchorEl={openPopoverMenu}
+                                onClose={this.handlePopoverMenuClose}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                            >
+                                <div className={classes.popoverMenu}>
+                                    <NavLink
+                                        to={links.LINK_MANAGEMENT_BACKGROUND}
+                                        className={"menuItemBackground"}
+                                    >
+                                        <Button>
+                                            <BackgroundIcon width={36} height={36} />
+                                            <span className="text">background management</span>
+                                        </Button>
+                                    </NavLink>
+                                </div>
+                            </Popover>}
+                        </div>
                         :
-                        <React.Fragment>
-                            <Button
-                                onClick={() => this.handleDialogAuthOpen()}
-                            >
-                                Login | Registration
-                            </Button>
+                        <div className="leftHeader">
+                            <NavLink to={links.LINK_AUTH}>
+                                <Button
+                                    className="btnLogin"
+                                >
+                                    <LoginIcon width={36} height={36} />
+                                </Button>
+                            </NavLink>
                             <Dialog onClose={this.handleDialogAuthClose} aria-labelledby="simple-dialog-title" open={openDialogAuth}>
                                 <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
                                 <DialogContent>
@@ -102,8 +205,7 @@ class Header extends React.Component {
                                     </DialogContentText>
                                 </DialogContent>
                             </Dialog>
-                        </React.Fragment>
-
+                        </div>
                 }
             </div>
         );

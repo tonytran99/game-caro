@@ -157,7 +157,7 @@ class Header extends React.Component {
                                 <LogoutIcon width={36} height={36} />
                             </Button>
                             <NavLink to={links.LINK_USER_INFO}>
-                                <img className="avatarUser" src={dataUser && dataUser.photoURL ? dataUser.photoURL : UserIcon} alt=""/>
+                                <img className="avatarUser" src={dataUser && dataUser.avatarUrl ? dataUser.avatarUrl : UserIcon} alt=""/>
                             </NavLink>
                             {openPopoverMenu && <Popover
                                 open={true}

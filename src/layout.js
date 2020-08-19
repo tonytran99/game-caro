@@ -63,7 +63,7 @@ class Layout extends React.Component {
                     this.props.saveDataUser(dataUserAuth.uid, {
                         userId: dataUserAuth.uid,
                         email: dataUserAuth.email,
-                        photoURL: dataUserAuth.photoURL,
+                        avatarUrl: dataUserAuth.photoURL,
                         phoneNumber: dataUserAuth.phoneNumber,
                         displayName: dataUserAuth.displayName
                     });

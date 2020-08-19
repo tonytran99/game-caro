@@ -51,8 +51,9 @@ const styles = theme => ({
             alignItems: 'center',
             justifyContent: 'flex-start',
             width: '100%',
-            border: '1px solid black',
+            // border: '1px solid black',
             padding: '0.25rem 0.5rem',
+            backgroundColor: '#ce7a7a',
             '& img': {
                 objectFit: 'cover',
                 height: '100%',
@@ -74,7 +75,7 @@ const styles = theme => ({
     }
 });
 
-class ManagementBackground extends React.Component {
+class ListBackgrounds extends React.Component {
 
     constructor(props) {
         super(props);
@@ -195,7 +196,7 @@ class ManagementBackground extends React.Component {
     }
 }
 
-ManagementBackground.propTypes = {
+ListBackgrounds.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -218,4 +219,4 @@ export default compose(
     withStyles(styles),
     // withTranslation(),
     withRouter,
-) (ManagementBackground);
+) (ListBackgrounds);

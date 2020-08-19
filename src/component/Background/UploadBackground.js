@@ -217,7 +217,7 @@ class UploadBackground extends React.Component {
         const {
             dataUserAuth
         } = this.props;
-        const nameImage = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime();
+        const nameImage = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime() + '_background';
         const uploadTask = storage.ref(`images/${nameImage}`).put(avatar);
         this.setState({
             isLoading: true

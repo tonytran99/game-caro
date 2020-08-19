@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button";
 import {withRouter} from "react-router";
 import * as links from "./../../constants/links";
 import {paramsToObject} from "../../functions/functions";
-import ManagementBackground from "./ManagementBackground";
+import ManagementBackground from "./ListBackgrounds";
 
 const styles = theme => ({
     backgroundWrapper: {

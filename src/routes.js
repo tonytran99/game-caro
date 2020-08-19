@@ -1,6 +1,6 @@
 import React,{lazy} from 'react';
 import * as links from "./constants/links";
-const ManagementBackground = lazy(() => import("./component/ManagementBackground/Background"));
+const ManagementBackground = lazy(() => import("./component/Background/Background"));
 const UserInfo = lazy(() => import("./component/Auth/UserInfo"));
 
 const routes = [

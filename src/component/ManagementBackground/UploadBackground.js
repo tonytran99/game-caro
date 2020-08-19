@@ -215,9 +215,9 @@ class UploadBackground extends React.Component {
     uploadBackground() {
         const {avatar} = this.state;
         const {
-            dataUser
+            dataUserAuth
         } = this.props;
-        const nameImage = (dataUser && dataUser.uid ? dataUser.uid : '') + '_' + new Date().getTime();
+        const nameImage = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime();
         const uploadTask = storage.ref(`images/${nameImage}`).put(avatar);
         this.setState({
             isLoading: true
@@ -240,9 +240,10 @@ class UploadBackground extends React.Component {
                 storage.ref('images').child(nameImage).getDownloadURL().then(url => {
                     console.log(url);
 
-                    firebase.database().ref('backgrounds/' + dataUser.uid + '/' + nameImage).set({
-                        userId: dataUser.uid,
-                        backgroundUrl: url
+                    firebase.database().ref('backgrounds/' + dataUserAuth.uid + '/' + nameImage).set({
+                        userId: dataUserAuth.uid,
+                        backgroundUrl: url,
+                        backgroundId: nameImage
                     }, (error) => {
                         if (error) {
                             this.setState({
@@ -277,9 +278,9 @@ class UploadBackground extends React.Component {
         } = this.state;
         const {
             classes,
-            dataUser
+            dataUserAuth
         } = this.props;
-        console.log(dataUser.uid);
+        console.log(dataUserAuth.uid);
 
         return (
             <div className={classes.uploadBackgroundWrapper}>
@@ -335,7 +336,7 @@ UploadBackground.propTypes = {
 
 
 const mapStateToProps = state => ({
-    dataUser: state.authReducer.dataUser
+    dataUserAuth: state.authReducer.dataUserAuth
 });
 
 const mapDispatchToProps = (dispatch) => {

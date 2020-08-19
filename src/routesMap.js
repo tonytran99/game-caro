@@ -58,7 +58,7 @@ RoutesMap.propTypes = {
 
 const mapStateToProps = (state) => {
     return {
-        dataUser: state.authReducer.dataUser,
+        dataUserAuth: state.authReducer.dataUserAuth,
     }
 };
 

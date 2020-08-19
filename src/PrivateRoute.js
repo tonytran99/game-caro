@@ -7,7 +7,7 @@ const PrivateRoute = ({component: Component, ...rest}) => {
     return (
         <Route {...rest} match render={props => {
             console.log(rest.dataUser);
-            if (rest.dataUser){
+            if (rest.dataUserAuth){
                 return <Component {...props} />;
             }
             return <Redirect to={links.LINK_WELCOME} />;
@@ -16,7 +16,7 @@ const PrivateRoute = ({component: Component, ...rest}) => {
 };
 const mapStateToProps = (state, props) => {
     return {
-        dataUser: state.authReducer.dataUser
+        dataUserAuth: state.authReducer.dataUserAuth
     }
 };
 export default connect(mapStateToProps)(PrivateRoute);

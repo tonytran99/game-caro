@@ -1,28 +1,28 @@
 import * as types from './../_constants/auth';
-let dataUser = localStorage.getItem("dataUser") ? JSON.parse(localStorage.getItem("dataUser")) : null;
+let dataUserAuth = localStorage.getItem("dataUserAuth") ? JSON.parse(localStorage.getItem("dataUserAuth")) : null;
 
 const initState = {
-    dataUser: dataUser,
+    dataUserAuth: dataUserAuth,
 }
 const authReducer = (state = initState, action) => {
     switch (action.type) {
         case types.AUTH_SIGN_OUT_SUCCESS:
-            localStorage.removeItem("dataUser");
+            localStorage.removeItem("dataUserAuth");
             return {
-                dataUser: null
+                dataUserAuth: null
             }
         case types.AUTH_SIGN_OUT_ERROR:
             return {
                 // dataUser: true
             }
         case types.AUTH_SET_DATA_USER:
-            if (action.dataUser) {
-                localStorage.setItem("dataUser", JSON.stringify(action.dataUser));
+            if (action.dataUserAuth) {
+                localStorage.setItem("dataUserAuth", JSON.stringify(action.dataUserAuth));
             } else {
-                localStorage.removeItem("dataUser");
+                localStorage.removeItem("dataUserAuth");
             }
             return {
-                dataUser: action.dataUser
+                dataUserAuth: action.dataUserAuth
             }
         default:
             return state;

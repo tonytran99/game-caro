@@ -34,9 +34,9 @@ export const signOut = () => async (dispatch) => {
     }
 }
 
-export const setDataUser = (dataUser) => {
+export const setDataUser = (dataUserAuth) => {
     return {
         type: types.AUTH_SET_DATA_USER,
-        dataUser: dataUser
+        dataUserAuth: dataUserAuth
     }
 }

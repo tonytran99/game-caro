@@ -131,9 +131,10 @@ class Header extends React.Component {
         } = this.state;
         const {
             classes,
+            dataUserAuth,
             dataUser
         } = this.props;
-        console.log(dataUser);
+        console.log(dataUserAuth);
 
         return (
             <div className={classes.headerWrapper}>
@@ -141,7 +142,7 @@ class Header extends React.Component {
                 <img className="logo" src={LogoIcon} alt=""/>
                 </NavLink>
                 {
-                    dataUser
+                    dataUserAuth
                     ?
                         <div className="leftHeader">
                             <Button
@@ -218,7 +219,8 @@ Header.propTypes = {
 
 
 const mapStateToProps = state => ({
-    dataUser: state.authReducer.dataUser
+    dataUserAuth: state.authReducer.dataUserAuth,
+    dataUser: state.gameReducer.dataUser
 });
 
 const mapDispatchToProps = (dispatch) => {

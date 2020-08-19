@@ -15,10 +15,9 @@ import reduxThunk from "redux-thunk";
 import * as links from "./constants/links";
 import Welcome from "./component/Welcome/Welcome";
 import * as authActions from "./_actions/auth";
-import ManagementBackground from "./component/ManagementBackground/Background";
-import PrivateRoute from "./PrivateRoute";
+import * as gameActions from "./_actions/game";
 import LoadingAction from "./theme/LoadingAction";
-import {Redirect, Route, Switch, withRouter} from "react-router-dom";
+import { Route, Switch} from "react-router-dom";
 import RoutesMap from "./routesMap";
 import firebase from "./firebase";
 import PublicRoute from "./PublicRoute";
@@ -55,19 +54,40 @@ class Layout extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (!this.state.checkLogin && this.props.dataUser) {
+        const {
+            dataUserAuth
+        } = this.props;
+        if (!this.state.checkLogin && dataUserAuth) {
+            firebase.database().ref(`users/${dataUserAuth.uid}`).once("value", snapshot => {
+                if (!snapshot.exists()){
+                    this.props.saveDataUser(dataUserAuth.uid, {
+                        userId: dataUserAuth.uid,
+                        email: dataUserAuth.email,
+                        photoURL: dataUserAuth.photoURL,
+                        phoneNumber: dataUserAuth.phoneNumber,
+                        displayName: dataUserAuth.displayName
+                    });
+                }
+            });
 
         }
     }
 
     render() {
         const {
+            dataUserAuth,
             dataUser
         } = this.props;
+        console.log(dataUser);
         return (
-            <div style={{
-                backgroundColor: '#0a676b'
-            }}>
+            <div style={
+                dataUser && dataUser.background && dataUser.background.backgroundUrl ? {
+                    backgroundImage: `url('${dataUser.background.backgroundUrl}')`,
+
+            } : {
+                    backgroundColor: '#0a676b'
+                }
+            }>
             <Router>
                 <I18nextProvider
                     // i18n={ i18n }
@@ -100,13 +120,14 @@ Layout.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    dataUser: state.authReducer.dataUser
+    dataUserAuth: state.authReducer.dataUserAuth,
+    dataUser: state.gameReducer.dataUser,
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setDataUser: (dataUser) => dispatch(authActions.setDataUser(dataUser)),
-        // saveDataUser: (dataUser) => dispatch(authActions.saveDataUser(dataUser))
+        setDataUser: (dataUserAuth) => dispatch(authActions.setDataUser(dataUserAuth)),
+        saveDataUser: (userId, dataUser) => dispatch(gameActions.saveDataUser(userId, dataUser)),
     }
 };
 

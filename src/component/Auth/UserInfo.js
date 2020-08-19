@@ -34,9 +34,9 @@ class UserInfo extends React.Component {
         // } = this.state;
         const {
             classes,
-            dataUser
+            dataUserAuth
         } = this.props;
-        console.log(dataUser);
+        console.log(dataUserAuth);
 
         return (
             <div className={classes.userInfoWrapper}>
@@ -59,7 +59,7 @@ UserInfo.propTypes = {
 
 
 const mapStateToProps = state => ({
-    dataUser: state.authReducer.dataUser
+    dataUserAuth: state.authReducer.dataUserAuth
 });
 
 const mapDispatchToProps = (dispatch) => {

@@ -95,7 +95,7 @@ class Background extends React.Component {
         } = this.state;
         const {
             classes,
-            dataUser
+            dataUserAuth
         } = this.props;
         console.log(valueOptionBackground);
 
@@ -142,7 +142,7 @@ Background.propTypes = {
 
 
 const mapStateToProps = state => ({
-    dataUser: state.authReducer.dataUser
+    dataUserAuth: state.authReducer.dataUserAuth
 });
 
 const mapDispatchToProps = (dispatch) => {

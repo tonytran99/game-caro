@@ -6,7 +6,7 @@ import * as links from "./constants/links"
 const PublicRoute = ({component: Component,path, ...rest}) => {
     return (
         <Route {...rest} render={props => {
-            if (!rest.dataUser){
+            if (!rest.dataUserAuth){
                 return <Component {...props} />;
             }
             return <Redirect to={links.LINK_WELCOME}/>;
@@ -15,7 +15,7 @@ const PublicRoute = ({component: Component,path, ...rest}) => {
 };
 const mapStateToProps = (state, props) => {
     return {
-        dataUser: state.authReducer.dataUser
+        dataUserAuth: state.authReducer.dataUserAuth
     }
 };
 export default connect(mapStateToProps)(PublicRoute);

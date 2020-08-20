@@ -70,13 +70,13 @@ class Background extends React.Component {
                 this.setState({
                     valueOptionBackground: MANAGEMENT_BACKGROUND_TYPE,
                 });
-                this.props.history.push(links.LINK_MANAGEMENT_BACKGROUND + '?'+'backgroundType='+MANAGEMENT_BACKGROUND_TYPE);
+                this.props.history.push(links.LINK_BACKGROUND + '?'+'backgroundType='+MANAGEMENT_BACKGROUND_TYPE);
             }
         } else {
             this.setState({
                 valueOptionCompany: MANAGEMENT_BACKGROUND_TYPE,
             });
-            this.props.history.push(links.LINK_MANAGEMENT_BACKGROUND + '?'+'backgroundType='+MANAGEMENT_BACKGROUND_TYPE);
+            this.props.history.push(links.LINK_BACKGROUND + '?'+'backgroundType='+MANAGEMENT_BACKGROUND_TYPE);
         }
     }
 
@@ -85,7 +85,7 @@ class Background extends React.Component {
         this.setState({
             valueOptionBackground: valueOptionBackground,
         });
-        this.props.history.push(links.LINK_MANAGEMENT_BACKGROUND + '?'+'backgroundType='+valueOptionBackground);
+        this.props.history.push(links.LINK_BACKGROUND + '?'+'backgroundType='+valueOptionBackground);
     }
 
 

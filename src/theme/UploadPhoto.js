@@ -2,63 +2,19 @@ import React from 'react';
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
 import {compose} from "redux";
-import { ReactComponent as CameraIcon } from "../../images/camera_icon.svg";
+import { ReactComponent as CameraIcon } from "../images/camera_icon.svg";
 import {withTranslation} from "react-i18next";
-import Button from "@material-ui/core/Button";
 import { lighten, withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import {storage} from "../../firebase";
-import LoadingAction from "../../theme/LoadingAction";
-import firebase from "./../../firebase";
+import {ReactComponent as EditIcon } from "../images/edit_icon.svg";
+import {ReactComponent as UploadIcon } from "../images/upload_icon.svg";
+import {ReactComponent as RemoveIcon } from "../images/remove_icon.svg";
 
 const styles = theme => ({
-    uploadBackgroundWrapper: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
+    uploadPhotoWrapper: {
+
     },
-    uploadAvatar: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        '& > div': {
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: 180,
-            height: 180,
-            borderRadius: '50%',
-            background: '#cad4e5',
-            position: 'relative',
-            overflow: 'hidden',
-            '& span': {
-                position: 'absolute',
-                display: 'block',
-                background: 'rgba(0,0,0,0.5)',
-                color: '#fff',
-                fontSize: 13,
-                textAlign: 'center',
-                bottom: -41,
-                left: 0,
-                zIndex: 999,
-                width: '100%',
-                padding: '8px 0 15px',
-                cursor: 'pointer',
-                transition: '0.3s',
-                '&:hover': {
-                    background: 'rgba(0,0,0,0.7)'
-                }
-            },
-            '&:hover': {
-                '& span': {
-                    bottom: 0
-                }
-            }
-        }
-    },
-    avatarPreview: {
+    photoPreview: {
         position: 'absolute',
         width: '100%',
         height: '100%',
@@ -91,7 +47,7 @@ const styles = theme => ({
             }
         }
     },
-    uploadAvatarContent: {
+    uploadPhotoContent: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -122,7 +78,7 @@ const styles = theme => ({
             }
         }
     },
-    actionAvatar: {
+    actionPhoto: {
         position: 'absolute',
         zIndex: 999,
         width: '100%',
@@ -153,13 +109,6 @@ const styles = theme => ({
         padding: '0.25rem',
         cursor: 'pointer'
     },
-    uploadBgBtn: {
-        borderRadius: 11,
-        marginTop: '1rem',
-        backgroundColor: '#fff',
-        padding: '0.5rem 1rem',
-        textTransform: 'initial',
-    }
 });
 
 
@@ -173,11 +122,12 @@ const BorderLinearProgress = withStyles({
         backgroundColor: '#ff6c5c',
     },
 })(LinearProgress);
-class UploadBackground extends React.Component {
+class UploadPhoto extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            name: '',
             avatar: null,
             avatarPreview: '',
             avatarName: '',
@@ -186,9 +136,6 @@ class UploadBackground extends React.Component {
 
         };
 
-        this.handleBackground = this.handleBackground.bind(this);
-        this.removeBackground = this.removeBackground.bind(this);
-        this.uploadBackground = this.uploadBackground.bind(this);
         this.inputAvatarRef = React.createRef();
     }
 
@@ -217,8 +164,8 @@ class UploadBackground extends React.Component {
         const {
             dataUserAuth
         } = this.props;
-        const nameImage = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime();
-        const uploadTask = storage.ref(`images/backgrounds/${nameImage}`).put(avatar);
+        const nameImage = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime() + '_background';
+        const uploadTask = storage.ref(`images/${nameImage}`).put(avatar);
         this.setState({
             isLoading: true
         })
@@ -237,7 +184,7 @@ class UploadBackground extends React.Component {
             },
             () => {
                 // complete function ....
-                storage.ref('images/backgrounds').child(nameImage).getDownloadURL().then(url => {
+                storage.ref('images').child(nameImage).getDownloadURL().then(url => {
                     console.log(url);
 
                     firebase.database().ref('backgrounds/' + dataUserAuth.uid + '/' + nameImage).set({
@@ -268,43 +215,51 @@ class UploadBackground extends React.Component {
 
     }
 
+    handleChange(name, value) {
+        this.setState({
+            [name]: value
+        });
+    }
+
     render() {
         const {
+            name,
             avatar,
             avatarPreview,
             avatarName,
             progressUploadBackground,
-            isLoading
+            isLoading,
         } = this.state;
         const {
             classes,
-            dataUserAuth
+            dataUserAuth,
+            onChange,
+            photoPreview
         } = this.props;
         console.log(dataUserAuth.uid);
 
         return (
-            <div className={classes.uploadBackgroundWrapper}>
-                {isLoading && <LoadingAction />}
+            <div className={classes.uploadPhotoWrapper}>
                 <BorderLinearProgress
                     className={classes.margin}
                     variant="determinate"
                     color="secondary"
                     value={progressUploadBackground}
                 />
-                <div className={classes.uploadAvatarContent}>
+                <div className={classes.uploadPhotoContent}>
                     <input
                         accept="image/*"
                         style={{display: 'none'}}
-                        onChange={this.handleBackground}
+                        onChange={onChange}
                         id="text-button-file"
                         type="file"
                         ref={this.inputAvatarRef}
                     />
-                    <div className={classes.actionAvatar}>
+                    <div className={classes.actionPhoto}>
                         <div className={classes.actionLabel}>
                             <label htmlFor="text-button-file">
                                 <div className={classes.actionText}>
-                                    {avatarPreview ? this.props.t('label.edit') : this.props.t("label.upload")}
+                                    {avatarPreview ? <EditIcon /> : <UploadIcon />}
                                 </div>
                             </label>
                         </div>
@@ -314,23 +269,17 @@ class UploadBackground extends React.Component {
                         </div>
                         }
                     </div>
-                    {avatarPreview && <div className={classes.avatarPreview}>
-                        <img src={avatarPreview} alt={avatarName}/>
+                    {photoPreview && <div className={classes.photoPreview}>
+                        <img src={photoPreview} alt={avatarName}/>
                     </div>}
-                    {!avatarPreview && <CameraIcon />}
+                    {!photoPreview && <CameraIcon />}
                 </div>
-                <Button
-                    onClick={() => this.uploadBackground()}
-                    className={classes.uploadBgBtn}
-                >
-                        dsds
-                </Button>
             </div>
         );
     }
 }
 
-UploadBackground.propTypes = {
+UploadPhoto.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -349,4 +298,4 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
     withTranslation()
-) (UploadBackground);
+) (UploadPhoto);

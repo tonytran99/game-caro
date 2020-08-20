@@ -22,6 +22,7 @@ import RoutesMap from "./routesMap";
 import firebase from "./firebase";
 import PublicRoute from "./PublicRoute";
 import Auth from "./component/Auth/Auth";
+import {PERMISSION_USER} from "./constants/constants";
 const styles = theme => ({
     legalResponsibleBlock: {
         backgroundColor: '#e0e7f2'
@@ -65,7 +66,8 @@ class Layout extends React.Component {
                         email: dataUserAuth.email,
                         avatarUrl: dataUserAuth.photoURL,
                         phoneNumber: dataUserAuth.phoneNumber,
-                        displayName: dataUserAuth.displayName
+                        displayName: dataUserAuth.displayName,
+                        permission: PERMISSION_USER
                     });
                 }
             });

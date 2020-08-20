@@ -198,7 +198,7 @@ class UserInfo extends React.Component {
         console.log(avatar);
         if (avatar) {
             const nameImage = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime() + '_avatar';
-            const uploadTask = storage.ref(`images/${nameImage}`).put(avatar);
+            const uploadTask = storage.ref(`images/users/${nameImage}`).put(avatar);
             uploadTask.on('state_changed',
                 (snapshot) => {
                     // progrss function ....
@@ -214,7 +214,7 @@ class UserInfo extends React.Component {
                 },
                 () => {
                     // complete function ....
-                    storage.ref('images').child(nameImage).getDownloadURL().then(url => {
+                    storage.ref('images/users').child(nameImage).getDownloadURL().then(url => {
                         console.log(url);
 
                         firebase.database().ref(`users/${dataUserAuth.uid}`).set({

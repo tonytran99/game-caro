@@ -27,8 +27,14 @@ class RoutesMap extends React.Component {
 
 
     render() {
-        const {classes,history} = this.props;
-        const routesMap = routes.map((route, index)=> {
+        const {
+            classes,
+            history,
+            dataUser
+        } = this.props;
+        const routesMap = routes.filter((route) => {
+            return dataUser && (!route.permission || route.permission.includes(dataUser.permission));
+        }).map((route, index)=> {
             const component = route.component;
             return <PrivateRoute
                 key={index}
@@ -59,6 +65,7 @@ RoutesMap.propTypes = {
 const mapStateToProps = (state) => {
     return {
         dataUserAuth: state.authReducer.dataUserAuth,
+        dataUser: state.gameReducer.dataUser,
     }
 };
 

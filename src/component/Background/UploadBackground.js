@@ -10,6 +10,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import {storage} from "../../firebase";
 import LoadingAction from "../../theme/LoadingAction";
 import firebase from "./../../firebase";
+import UploadPhoto from "../../theme/UploadPhoto";
 
 const styles = theme => ({
     uploadBackgroundWrapper: {
@@ -238,8 +239,6 @@ class UploadBackground extends React.Component {
             () => {
                 // complete function ....
                 storage.ref('images/backgrounds').child(nameImage).getDownloadURL().then(url => {
-                    console.log(url);
-
                     firebase.database().ref('backgrounds/' + dataUserAuth.uid + '/' + nameImage).set({
                         userId: dataUserAuth.uid,
                         backgroundUrl: url,
@@ -280,45 +279,17 @@ class UploadBackground extends React.Component {
             classes,
             dataUserAuth
         } = this.props;
-        console.log(dataUserAuth.uid);
-
         return (
             <div className={classes.uploadBackgroundWrapper}>
                 {isLoading && <LoadingAction />}
-                <BorderLinearProgress
-                    className={classes.margin}
-                    variant="determinate"
-                    color="secondary"
-                    value={progressUploadBackground}
-                />
-                <div className={classes.uploadAvatarContent}>
-                    <input
-                        accept="image/*"
-                        style={{display: 'none'}}
-                        onChange={this.handleBackground}
-                        id="text-button-file"
-                        type="file"
-                        ref={this.inputAvatarRef}
-                    />
-                    <div className={classes.actionAvatar}>
-                        <div className={classes.actionLabel}>
-                            <label htmlFor="text-button-file">
-                                <div className={classes.actionText}>
-                                    {avatarPreview ? this.props.t('label.edit') : this.props.t("label.upload")}
-                                </div>
-                            </label>
-                        </div>
-                        {avatarPreview &&
-                        <div className={classes.actionLabel}>
-                            <div onClick={this.removeBackground} className={classes.actionText}>{this.props.t('label.remove')}</div>
-                        </div>
-                        }
-                    </div>
-                    {avatarPreview && <div className={classes.avatarPreview}>
-                        <img src={avatarPreview} alt={avatarName}/>
-                    </div>}
-                    {!avatarPreview && <CameraIcon />}
-                </div>
+               <UploadPhoto
+                   onChange={this.handleBackground}
+                   removePhoto={this.removeBackground}
+                   photo={avatar}
+                   photoPreview={avatarPreview}
+                   photoName={avatarName}
+                   progressUploadBackground={progressUploadBackground}
+               />
                 <Button
                     onClick={() => this.uploadBackground()}
                     className={classes.uploadBgBtn}

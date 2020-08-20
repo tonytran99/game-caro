@@ -12,7 +12,6 @@ import {withRouter} from "react-router";
 import * as links from "./../../constants/links";
 import {paramsToObject} from "../../functions/functions";
 import ListChessmans from "./ListChessmans";
-import ListBackgrounds from "../Background/ListBackgrounds";
 
 const styles = theme => ({
     backgroundWrapper: {
@@ -82,7 +81,6 @@ class Chessman extends React.Component {
     }
 
     changeChessmanType(valueOptionChessman) {
-        console.log(valueOptionChessman);
         this.setState({
             valueOptionChessman: valueOptionChessman,
         });
@@ -98,7 +96,6 @@ class Chessman extends React.Component {
             classes,
             dataUserAuth
         } = this.props;
-        console.log(valueOptionChessman);
 
         return (
             <React.Fragment>
@@ -123,7 +120,7 @@ class Chessman extends React.Component {
                             {
                                 valueOptionChessman === LIST_CHESSMANS_TYPE
                                     ?
-                                    <ListBackgrounds goToUploadBackground={() => this.changeChessmanType(UPLOAD_CHESSMAN_TYPE)}/>
+                                    <ListChessmans goToUploadChessman={() => this.changeChessmanType(UPLOAD_CHESSMAN_TYPE)}/>
                                     :
                                     <UploadChessman />
                             }

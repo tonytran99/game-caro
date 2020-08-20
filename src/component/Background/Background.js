@@ -81,7 +81,6 @@ class Background extends React.Component {
     }
 
     changeManagementBGType(valueOptionBackground) {
-        console.log(valueOptionBackground);
         this.setState({
             valueOptionBackground: valueOptionBackground,
         });

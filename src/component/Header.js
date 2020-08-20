@@ -19,7 +19,10 @@ import { ReactComponent as LogoutIcon } from "./../images/logout_icon.svg";
 import { ReactComponent as LoginIcon } from "./../images/login_icon.svg";
 import { ReactComponent as MenuIcon } from "./../images/menu_icon.svg";
 import { ReactComponent as BackgroundIcon } from "./../images/background_icon.svg";
+import { ReactComponent as ChessmanIcon } from "./../images/chessman_icon.svg";
+
 import Popover from "@material-ui/core/Popover";
+import {PERMISSION_ADMIN} from "../constants/constants";
 const styles = theme => ({
     headerWrapper: {
         display: 'flex',
@@ -107,7 +110,6 @@ class Header extends React.Component {
     }
 
     signOut() {
-        console.log('BBBBBBBBBBBBBB')
         this.props.signOut();
     }
 
@@ -134,7 +136,6 @@ class Header extends React.Component {
             dataUserAuth,
             dataUser
         } = this.props;
-        console.log(dataUserAuth);
 
         return (
             <div className={classes.headerWrapper}>
@@ -174,14 +175,26 @@ class Header extends React.Component {
                             >
                                 <div className={classes.popoverMenu}>
                                     <NavLink
-                                        to={links.LINK_MANAGEMENT_BACKGROUND}
+                                        to={links.LINK_BACKGROUND}
                                         className={"menuItemBackground"}
                                     >
                                         <Button>
                                             <BackgroundIcon width={36} height={36} />
-                                            <span className="text">background management</span>
+                                            <span className="text">background</span>
                                         </Button>
                                     </NavLink>
+                                    {
+                                        dataUser && dataUser.permission === PERMISSION_ADMIN &&
+                                        <NavLink
+                                            to={links.LINK_CHESSMAN}
+                                            className={"menuItemBackground"}
+                                        >
+                                            <Button>
+                                                <ChessmanIcon width={36} height={36} />
+                                                <span className="text">chessman</span>
+                                            </Button>
+                                        </NavLink>
+                                    }
                                 </div>
                             </Popover>}
                         </div>

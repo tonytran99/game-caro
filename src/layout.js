@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react';
+import React, {lazy, Suspense} from 'react';
 import './App.css';
 import {withStyles} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
@@ -13,7 +13,6 @@ import './css/app.scss';
 import reduxThunk from "redux-thunk";
 
 import * as links from "./constants/links";
-import Welcome from "./component/Welcome/Welcome";
 import * as authActions from "./_actions/auth";
 import * as gameActions from "./_actions/game";
 import LoadingAction from "./theme/LoadingAction";
@@ -28,6 +27,9 @@ const styles = theme => ({
         backgroundColor: '#e0e7f2'
     }
 });
+const Welcome = lazy(() => import("./component/Welcome/Welcome"));
+const TrainingWithAI = lazy(() => import("./component/Game/TrainingWithAI"));
+const TrainingWithYourself = lazy(() => import("./component/Game/TrainingWithYourself"));
 
 const store = createStore(
     rootReducer,
@@ -51,6 +53,7 @@ class Layout extends React.Component {
     componentDidMount() {
         firebase.auth().onAuthStateChanged(user => {
             this.props.setDataUser(user);
+            this.props.showDataUser(user.uid);
         })
     }
 
@@ -80,7 +83,6 @@ class Layout extends React.Component {
             dataUserAuth,
             dataUser
         } = this.props;
-        console.log(dataUser);
         return (
             <div style={
                 dataUser && dataUser.background && dataUser.background.backgroundUrl ? {
@@ -101,6 +103,18 @@ class Layout extends React.Component {
                                 exact={true}
                             >
                                 <Welcome />
+                            </Route>
+                            <Route
+                                path={links.LINK_TRAINING_WITH_AI}
+                                exact={true}
+                            >
+                                <TrainingWithAI />
+                            </Route>
+                            <Route
+                                path={links.LINK_TRAINING_WITH_YOURSELF}
+                                exact={true}
+                            >
+                                <TrainingWithYourself />
                             </Route>
                             <PublicRoute
                                 path={links.LINK_AUTH}
@@ -130,6 +144,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         setDataUser: (dataUserAuth) => dispatch(authActions.setDataUser(dataUserAuth)),
         saveDataUser: (userId, dataUser) => dispatch(gameActions.saveDataUser(userId, dataUser)),
+        showDataUser: (userId) => dispatch(gameActions.showDataUser(userId)),
     }
 };
 

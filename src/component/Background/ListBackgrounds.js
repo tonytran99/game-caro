@@ -92,7 +92,6 @@ class ListBackgrounds extends React.Component {
             dataUser
         } = this.props;
         firebase.database().ref('backgrounds/' + dataUserAuth.uid).on('value', (snap) => {
-            console.log(snap.val());
             if (snap.val()) {
                 let dataBackgroundsTemp = [];
                 Object.keys(snap.val()).map((key, index)=>{

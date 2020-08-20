@@ -23,110 +23,12 @@ const styles = theme => ({
         margin: 'auto',
         alignItems: 'center',
     },
-    uploadAvatarContent: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 181,
-        width: 181,
-        position: 'relative',
-        border: '2px solid #1976b7',
-        background: '#b3d8de',
-        '&::before': {
-            content: `''`,
-            background: 'rgba(0,0,0,.5)',
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            top: 0,
-            left: 0,
-            zIndex: 10,
-            opacity: 0,
-            visibility: 'hidden',
-            transition: '0.3s'
-        },
-        '&:hover': {
-            '& $actionLabel': {
-                transform: 'translateX(0)'
-            },
-            '&::before': {
-                opacity: 1,
-                visibility: 'visible'
-            }
-        }
-    },
-    actionAvatar: {
-        position: 'absolute',
-        zIndex: 999,
-        width: '100%',
-        display: 'flex',
-        height: '100%',
-        justifyContent: 'center',
-        flexDirection: 'column'
-    },
-    actionLabel: {
-        fontSize: '0.8rem',
-        color: '#46435a',
-        background: '#fff',
-        width: 90,
-        borderRadius: '0 30px 30px 0',
-        textAlign: 'center',
-        transition: '0.3s',
-        transform: 'translateX(-100%)',
-        '&:nth-of-type(2)': {
-            transitionDelay: '0.1s',
-            marginTop: 5
-        },
-        '&:hover': {
-            color: '#fff',
-            background: '#645d7b'
-        }
-    },
-    actionText: {
-        padding: '0.25rem',
-        cursor: 'pointer'
-    },
     btnSaveProfile: {
         borderRadius: 11,
         marginTop: '1rem',
         backgroundColor: '#fff',
         padding: '0.5rem 1rem',
         textTransform: 'initial',
-    },
-    avatarPreview: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        top: 0,
-        left: 0,
-        zIndex: 99,
-        display: 'flex',
-        justifyContent: 'center',
-        '& img': {
-            // width: '100%',
-            height: '100%',
-            // objectFit: 'cover'
-        },
-        '& .removeAvatar': {
-            position: 'absolute',
-            zIndex: 3,
-            top: 20,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 22,
-            height: 22,
-            display: 'flex',
-            background: '#fff',
-            borderRadius: '50%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            transition: '0.3s',
-            '&:hover': {
-                // background: red[500],
-                color: '#fff'
-            }
-        }
     },
 });
 class UserInfo extends React.Component {
@@ -195,9 +97,8 @@ class UserInfo extends React.Component {
         this.setState({
             isLoading: true
         });
-        console.log(avatar);
         if (avatar) {
-            const nameImage = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime() + '_avatar';
+            const nameImage = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime();
             const uploadTask = storage.ref(`images/users/${nameImage}`).put(avatar);
             uploadTask.on('state_changed',
                 (snapshot) => {
@@ -215,8 +116,6 @@ class UserInfo extends React.Component {
                 () => {
                     // complete function ....
                     storage.ref('images/users').child(nameImage).getDownloadURL().then(url => {
-                        console.log(url);
-
                         firebase.database().ref(`users/${dataUserAuth.uid}`).set({
                             ...dataUser,
                             avatarUrl: avatar ? url : avatarPreview ? dataUser.photoURL : '',

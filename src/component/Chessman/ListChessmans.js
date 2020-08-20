@@ -76,10 +76,10 @@ class listChessmans extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            dataBackgrounds: [],
+            dataChessmans: [],
         };
-        this.handleBackgroundChange = this.handleBackgroundChange.bind(this);
-
+        this.getDataChessmans = this.getDataChessmans.bind(this);
+        this.setChessmanDefault = this.setChessmanDefault.bind(this);
     }
 
     componentDidMount() {
@@ -87,65 +87,96 @@ class listChessmans extends React.Component {
             dataUserAuth,
             dataUser
         } = this.props;
-        firebase.database().ref('backgrounds/' + dataUserAuth.uid).on('value', (snap) => {
-            console.log(snap.val());
-            if (snap.val()) {
-                let dataBackgroundsTemp = [];
-                Object.keys(snap.val()).map((key, index)=>{
-                    dataBackgroundsTemp.push(snap.val()[key]);
-                });
-                this.setState({
-                    dataBackgrounds: dataBackgroundsTemp
-                })
-            }
-        });
+        this.getDataChessmans();
 
     }
 
+    getDataChessmans() {
+        firebase.database().ref('chessmans/').orderByChild('default').on('value', (snap) => {
+            if (snap.val()) {
+                let dataChessmansTemp = [];
+                Object.keys(snap.val()).map((key, index)=>{
+                    dataChessmansTemp.push(snap.val()[key]);
+                });
+                // sort
+                dataChessmansTemp.sort((chessmanA, chessmanB) => {
+                    return (
+                        chessmanB.default - chessmanA.default
+                    );
+                });
+                // filter default = 1
+                const dataChessmansDefault = dataChessmansTemp.filter((data) => {
+                    return data.default;
+                }).sort((chessmanA, chessmanB) => {
+                    return (
+                        chessmanB.updateAt - chessmanA.updateAt
+                    );
+                });
+                // filter default = 0
+                const dataChessmansNotDefault = dataChessmansTemp.filter((data) => {
+                    return !data.default;
+                }).sort((chessmanA, chessmanB) => {
+                    return (
+                        chessmanB.updateAt - chessmanA.updateAt
+                    );
+                });
+                dataChessmansTemp = dataChessmansDefault.concat(dataChessmansNotDefault);
 
+                this.setState({
+                    dataChessmans: dataChessmansTemp
+                })
+            }
+        });
+    }
 
-    handleBackgroundChange(dataBackground) {
-        const {
-            dataUser
-        } = this.props;
-        let dataUserTemp = dataUser;
-        dataUserTemp.background = dataBackground;
-        this.props.saveDataUser(dataUserTemp.userId, dataUserTemp);
-        this.props.showDataUser(dataUser && dataUser.userId);
+    setChessmanDefault(dataChessmanItem, checkDefault) {
+        firebase.database().ref('chessmans/' + dataChessmanItem.chessmanId).set({
+            ...dataChessmanItem,
+            updateAt: new Date().getTime(),
+            default: checkDefault,
+        }, (error) => {
+            if (error) {
+
+            } else {
+                this.getDataChessmans();
+            }
+        });
     }
 
 
     render() {
         const {
-            dataBackgrounds,
+            dataChessmans,
         } = this.state;
         const {
             classes,
             dataUserAuth,
             dataUser
         } = this.props;
-        console.log(dataUser);
 
         return (
             <div className={classes.managementBGWrapper}>
                 {
-                    Array.isArray(dataBackgrounds) && dataBackgrounds.length
+                    Array.isArray(dataChessmans) && dataChessmans.length
                         ?
                         <div className={classes.backgroundList}>
                             {
-                                dataBackgrounds.map((item, index) => {
+                                dataChessmans.map((item, index) => {
                                     return (
                                         <div className={classes.backgroundItem}>
                                             <div className="imgWrapper">
-                                                <img src={item.backgroundUrl} alt=""/>
+                                                <img src={item.chessmanUrl} alt=""/>
+                                            </div>
+                                            <div className="nameChess">
+                                                {item.name ? item.name : ''}
                                             </div>
                                             <div className="checkWrapper">
                                                 {
-                                                    dataUser && dataUser.background && dataUser.background.backgroundId === item.backgroundId
+                                                    (index === 0 || index === 1)
                                                         ?
                                                         <Button
                                                             className="checkBackground"
-                                                            onClick={() => this.handleBackgroundChange(null)}
+                                                            onClick={() => this.setChessmanDefault(item, 0)}
                                                         >
                                                             <CheckIcon
                                                                 width={36}
@@ -155,19 +186,11 @@ class listChessmans extends React.Component {
                                                         :
                                                         <Button
                                                             className="checkBackground"
-                                                            onClick={() => this.handleBackgroundChange(item)}
+                                                            onClick={() => this.setChessmanDefault(item, 1)}
                                                         >
 
                                                         </Button>
                                                 }
-                                                {/*<Checkbox*/}
-                                                {/*    checkedIcon={<CheckedIcon widthImage="20px" width="30px" height="30px"*/}
-                                                {/*                              borderRadius="4px"/>}*/}
-                                                {/*    icon={<CheckedBg background="#ffffff" width="30px" height="30px"*/}
-                                                {/*                     borderRadius="4px"/>}*/}
-                                                {/*    checked={dataUser && dataUser.background.backgroundId === item.backgroundId}*/}
-                                                {/*    onChange={(event) => this.handleBackgroundChange(event, item)}*/}
-                                                {/*/>*/}
                                             </div>
                                         </div>
                                     );
@@ -180,7 +203,7 @@ class listChessmans extends React.Component {
                             <span>Not Background</span>
                             <Button
                                 onClick={() => {
-                                    this.props.goToUploadBackground()
+                                    this.props.goToUploadChessman()
                                 }}
                             >
                                 Upload Background

@@ -6,7 +6,6 @@ import * as links from "./constants/links";
 const PrivateRoute = ({component: Component, ...rest}) => {
     return (
         <Route {...rest} match render={props => {
-            console.log(rest.dataUser);
             if (rest.dataUserAuth){
                 return <Component {...props} />;
             }

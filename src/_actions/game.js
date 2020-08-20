@@ -10,11 +10,9 @@ export const saveDataUser = (userId, dataUser) => {
 }
 
 export const showDataUser = (userId) => {
-    console.log(userId);
     return (dispatch) => {
         firebase.database().ref('users/' + userId).once('value', (snap) => {
             if (snap.val()) {
-                console.log(snap.val())
                 dispatch({
                     type: types.GAME_SHOW_DATA_USER,
                     dataUser: snap.val()

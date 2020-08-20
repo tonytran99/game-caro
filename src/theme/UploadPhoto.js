@@ -127,116 +127,25 @@ class UploadPhoto extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: '',
-            avatar: null,
-            avatarPreview: '',
-            avatarName: '',
-            progressUploadBackground: 0,
-            isLoading: false,
 
         };
 
         this.inputAvatarRef = React.createRef();
     }
 
-    componentDidMount() {
-
-    }
-
-    handleBackground(event) {
-        this.setState({
-            avatar: event.target.files[0],
-            avatarPreview: URL.createObjectURL(event.target.files[0]),
-            avatarName: event.target.files[0].name,
-        });
-    }
-
-    removeBackground() {
-        this.setState({
-            avatar: null,
-            avatarPreview: '',
-            avatarName: '',
-        });
-    }
-
-    uploadBackground() {
-        const {avatar} = this.state;
-        const {
-            dataUserAuth
-        } = this.props;
-        const nameImage = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime() + '_background';
-        const uploadTask = storage.ref(`images/${nameImage}`).put(avatar);
-        this.setState({
-            isLoading: true
-        })
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                // progrss function ....
-                const progressUploadBackground = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                this.setState({progressUploadBackground});
-            },
-            (error) => {
-                // error function ....
-                this.setState({
-                    progressUploadBackground: 0,
-                    isLoading: false,
-                });
-            },
-            () => {
-                // complete function ....
-                storage.ref('images').child(nameImage).getDownloadURL().then(url => {
-                    console.log(url);
-
-                    firebase.database().ref('backgrounds/' + dataUserAuth.uid + '/' + nameImage).set({
-                        userId: dataUserAuth.uid,
-                        backgroundUrl: url,
-                        backgroundId: nameImage
-                    }, (error) => {
-                        if (error) {
-                            this.setState({
-                                avatar: null,
-                                avatarPreview: '',
-                                avatarName: '',
-                                progressUploadBackground: 0,
-                                isLoading: false,
-                            });
-                        } else {
-                            this.setState({
-                                avatar: null,
-                                avatarPreview: '',
-                                avatarName: '',
-                                progressUploadBackground: 0,
-                                isLoading: false,
-                            });
-                        }
-                    });
-                });
-            });
-
-    }
-
-    handleChange(name, value) {
-        this.setState({
-            [name]: value
-        });
-    }
-
     render() {
         const {
-            name,
-            avatar,
-            avatarPreview,
-            avatarName,
-            progressUploadBackground,
-            isLoading,
+
         } = this.state;
         const {
             classes,
-            dataUserAuth,
             onChange,
-            photoPreview
+            removePhoto,
+            photo,
+            photoPreview,
+            photoName,
+            progressUploadBackground
         } = this.props;
-        console.log(dataUserAuth.uid);
 
         return (
             <div className={classes.uploadPhotoWrapper}>
@@ -259,18 +168,18 @@ class UploadPhoto extends React.Component {
                         <div className={classes.actionLabel}>
                             <label htmlFor="text-button-file">
                                 <div className={classes.actionText}>
-                                    {avatarPreview ? <EditIcon /> : <UploadIcon />}
+                                    {photoPreview ? <EditIcon /> : <UploadIcon />}
                                 </div>
                             </label>
                         </div>
-                        {avatarPreview &&
+                        {photoPreview &&
                         <div className={classes.actionLabel}>
-                            <div onClick={this.removeBackground} className={classes.actionText}>{this.props.t('label.remove')}</div>
+                            <div onClick={removePhoto} className={classes.actionText}><RemoveIcon /></div>
                         </div>
                         }
                     </div>
                     {photoPreview && <div className={classes.photoPreview}>
-                        <img src={photoPreview} alt={avatarName}/>
+                        <img src={photoPreview} alt={photoName}/>
                     </div>}
                     {!photoPreview && <CameraIcon />}
                 </div>
@@ -285,7 +194,7 @@ UploadPhoto.propTypes = {
 
 
 const mapStateToProps = state => ({
-    dataUserAuth: state.authReducer.dataUserAuth
+
 });
 
 const mapDispatchToProps = (dispatch) => {

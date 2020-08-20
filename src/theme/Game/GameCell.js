@@ -13,12 +13,12 @@ const styles = theme => ({
 
     }
 });
-class Welcome extends React.Component {
+class GameCell extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            isSignedIn: true
+
         };
 
         // this.signOut = this.signOut.bind(this);
@@ -57,7 +57,7 @@ class Welcome extends React.Component {
     }
 }
 
-Welcome.propTypes = {
+GameCell.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -76,4 +76,4 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
     // withTranslation()
-) (Welcome);
+) (GameCell);

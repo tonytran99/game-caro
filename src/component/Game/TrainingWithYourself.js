@@ -13,7 +13,7 @@ const styles = theme => ({
 
     }
 });
-class Welcome extends React.Component {
+class TrainingWithYourself extends React.Component {
 
     constructor(props) {
         super(props);
@@ -57,7 +57,7 @@ class Welcome extends React.Component {
     }
 }
 
-Welcome.propTypes = {
+TrainingWithYourself.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -76,4 +76,4 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
     // withTranslation()
-) (Welcome);
+) (TrainingWithYourself);

@@ -4,6 +4,7 @@ import {PERMISSION_ADMIN, PERMISSION_USER} from "./constants/constants";
 const Background = lazy(() => import("./component/Background/Background"));
 const UserInfo = lazy(() => import("./component/Auth/UserInfo"));
 const Chessman = lazy(() => import("./component/Chessman/Chessman"));
+const ChessBoard = lazy(() => import("./component/Game/ChessBoard"));
 
 const routes = [
     /* Home */
@@ -24,7 +25,12 @@ const routes = [
         component: () => <UserInfo />,
         exact: true,
         permission: [PERMISSION_ADMIN, PERMISSION_USER]
+    },
+    {
+        path: links.LINK_CHESS_BOARD,
+        component: (match) => <ChessBoard match={match}/>,
+        exact: true,
+        permission: [PERMISSION_ADMIN, PERMISSION_USER]
     }
 ];
-
 export default routes;

@@ -22,6 +22,7 @@ import firebase from "./firebase";
 import PublicRoute from "./PublicRoute";
 import Auth from "./component/Auth/Auth";
 import {PERMISSION_USER} from "./constants/constants";
+import ChatBoard from "./theme/ChatBoard";
 const styles = theme => ({
     legalResponsibleBlock: {
         backgroundColor: '#e0e7f2'
@@ -102,7 +103,8 @@ class Layout extends React.Component {
                                 path={links.LINK_WELCOME}
                                 exact={true}
                             >
-                                <Welcome />
+                                {/*<Welcome />*/}
+                                <ChatBoard />
                             </Route>
                             <Route
                                 path={links.LINK_TRAINING_WITH_AI}

@@ -12,5 +12,8 @@ export const CHESSMAN_NONE = null;
 
 
 
-export const BOARD_TW0 = 'BOARD_TW0';
-export const BOARD_GROUP = 'BOARD_GROUP';
+export const GROUP_BOARD = 'GROUP_BOARD';
+export const PRIVATE_BOARD = 'PRIVATE_BOARD';
+
+export const GROUP_CHAT = 'GROUP_CHAT';
+export const PRIVATE_CHAT = 'PRIVATE_CHAT';

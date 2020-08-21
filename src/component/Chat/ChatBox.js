@@ -16,7 +16,7 @@ const styles = theme => ({
         justifyContent: 'center',
     }
 });
-class ChessBoard extends React.Component {
+class ChatBox extends React.Component {
 
     constructor(props) {
         super(props);
@@ -86,7 +86,7 @@ class ChessBoard extends React.Component {
     }
 }
 
-ChessBoard.propTypes = {
+ChatBox.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -105,4 +105,4 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
     // withTranslation()
-) (ChessBoard);
+) (ChatBox);

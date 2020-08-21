@@ -7,7 +7,7 @@ import Footer from "../Footer";
 import Header from "../Header";
 import Content from "../Content";
 import Board from "../../theme/Game/Board";
-import {BOARD_GROUP, BOARD_TW0, GROUP_BOARD} from "../../constants/constants";
+import {BOARD_GROUP, BOARD_TW0, GROUP_BOARD, GROUP_CHAT, PRIVATE_CHAT} from "../../constants/constants";
 
 const styles = theme => ({
     trainingWithAIWrapper: {
@@ -16,7 +16,7 @@ const styles = theme => ({
         justifyContent: 'center',
     }
 });
-class ChessBoard extends React.Component {
+class PrivateChat extends React.Component {
 
     constructor(props) {
         super(props);
@@ -28,32 +28,19 @@ class ChessBoard extends React.Component {
     }
 
     componentDidMount() {
-        const dataChessBoard = {
-            idChessBoard: '',
-            dataBoard: {
+        const dataChatBox = {
+            idChatBox: '',
+            photoChatBox: '',
+            dataChats: [
 
-            },
-            userIdChessmanA: '',
-            userIdChessmanB: '',
-            userCanViewBoard: [
-                {
-                    userId: '',
-                    displayName: '',
-                },
-                {
-                    userId: '',
-                    displayName: '',
-                },
-                {
-                    userId: '',
-                    displayName: '',
-                }
             ],
-            secret: false,
-            chessBoardType: GROUP_BOARD,
-            chatChessBoard: [
+            dataMembers: [
 
-            ], // => Sap xep
+            ],
+            administratorUser: '',
+
+            chatBoxType: PRIVATE_CHAT,
+            updateAt: '',
         }
     }
 
@@ -86,7 +73,7 @@ class ChessBoard extends React.Component {
     }
 }
 
-ChessBoard.propTypes = {
+PrivateChat.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -105,4 +92,4 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
     // withTranslation()
-) (ChessBoard);
+) (PrivateChat);

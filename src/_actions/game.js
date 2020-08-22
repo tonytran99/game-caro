@@ -20,5 +20,18 @@ export const showDataUser = (userId) => {
             }
         });
     }
+}
 
+export const saveDataBoardTrainingWithYourself = (dataTraining) => {
+    return {
+        type: types.GAME_SAVE_DATA_BOARD_TRAINING_WITH_YOURSELF,
+        dataTraining: dataTraining
+    }
+};
+
+export const saveDataBoardTrainingWithAI = (dataTraining) => {
+    return {
+        type: types.GAME_SAVE_DATA_BOARD_TRAINING_WITH_AI,
+        dataTraining: dataTraining
+    }
 }

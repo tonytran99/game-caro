@@ -6,6 +6,7 @@ import {compose} from "redux";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import {initBoard} from "../../functions/functions";
+import {checkGameFinished} from "./GameChecker";
 
 const styles = theme => ({
     welcomeWrapper: {
@@ -17,27 +18,93 @@ class Board extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            countTurn: 0,
+            turnCurrent: props.firstTurn,
             board: initBoard(props.size),
+            updateState: false,
+            chessmanUserId: props.chessmanUserId,
+            gameFinished: false
         };
 
-        // this.signOut = this.signOut.bind(this);
+        this.playChessman = this.playChessman.bind(this);
     }
 
     componentDidMount() {
+        if (this.props.dataBoardTrainingDefault) {
+            this.setState(this.props.dataBoardTrainingDefault);
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.state.updateState && !this.state.gameFinished) {
+            console.log('updateState updateState updateState')
+            this.props.getDataBoardCurrent(this.state);
+            this.setState({
+                updateState: false
+            })
+        }
+    }
+
+    playChessman(x, y) {
+        const {
+            turnCurrent,
+            board,
+            countTurn,
+            gameFinished
+        } = this.state;
+        const {
+            chessmanA,
+            chessmanB,
+            size
+        } = this.props;
+        if (!gameFinished) {
+            let updateState = {};
+            let boardTemp = board;
+            // board
+            boardTemp[x][y] = turnCurrent;
+            updateState = {
+                ...updateState,
+                countTurn: countTurn + 1,
+                updateState: true
+            }
+            updateState.board = boardTemp;
+            if (turnCurrent === chessmanA) {
+                updateState.turnCurrent = chessmanB;
+            } else {
+                updateState.turnCurrent = chessmanA;
+            }
+            if (checkGameFinished(boardTemp, size, chessmanA)) {
+                this.props.checkWinChessman(chessmanA);
+                updateState.gameFinished = true;
+            } else if (checkGameFinished(boardTemp, size, chessmanB)) {
+                this.props.checkWinChessman(chessmanB);
+                updateState.gameFinished = true;
+            }
+            console.log("AAAAAAAAAAAa asdas asd")
+            this.setState(updateState);
+        }
 
     }
 
     render() {
         const {
-            board
+            board,
+            turnCurrent,
+            countTurn,
         } = this.state;
         const {
             classes,
             dataUserAuth,
             size,
-            // board
+            // board,
+            chessmanA,
+            chessmanB,
+            iconChessmanA,
+            iconChessmanB,
         } = this.props;
         console.log(board);
+        console.log(turnCurrent);
+        console.log(countTurn);
         return (
             <GridList
                 // className={useStyles(size)({}).gridList}
@@ -66,11 +133,22 @@ class Board extends React.Component {
                                             height: '100%',
                                         }}
                                         onClick={() => {
-                                            if (y === null) {
-                                                // this.props.setPlayer()
+                                            if (cell === null) {
+                                                this.playChessman(x, y);
                                             }
                                         }}
                                     >
+                                        {
+                                            (cell === chessmanA)
+                                                ?
+                                                iconChessmanA
+                                                :
+                                                (cell === chessmanB)
+                                                    ?
+                                                    iconChessmanB
+                                                    :
+                                                    ''
+                                        }
                                     </div>
                                 </GridListTile>
                             );

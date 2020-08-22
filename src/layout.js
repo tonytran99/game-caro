@@ -53,7 +53,9 @@ class Layout extends React.Component {
     componentDidMount() {
         firebase.auth().onAuthStateChanged(user => {
             this.props.setDataUser(user);
-            this.props.showDataUser(user.uid);
+            if (user && user.uid) {
+                this.props.showDataUser(user.uid);
+            }
         })
     }
 

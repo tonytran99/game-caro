@@ -7,17 +7,18 @@ import Footer from "../Footer";
 import Header from "../Header";
 import AuthBlock from "../Auth/Auth";
 import Content from "../Content";
-import {initBoard} from "../../functions/functions";
 import Board from "../../theme/Game/Board";
+import {CHESSMAN_YOURSELF_A, CHESSMAN_YOURSELF_B} from "../../constants/constants";
+import * as gameActions from "../../_actions/game";
 
 const styles = theme => ({
-    trainingWithAIWrapper: {
+    trainingWithYourselfAI: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     }
 });
-class TrainingWithAI extends React.Component {
+class TrainingWithYourself extends React.Component {
 
     constructor(props) {
         super(props);
@@ -25,52 +26,63 @@ class TrainingWithAI extends React.Component {
 
         };
 
-        // this.signOut = this.signOut.bind(this);
+        this.getDataBoardCurrent = this.getDataBoardCurrent.bind(this);
     }
 
     componentDidMount() {
 
     }
 
+    getDataBoardCurrent(dataBoard) {
+        this.props.getDataBoardCurrent(dataBoard);
+    }
+
     render() {
         const {
-            board
+
         } = this.state;
         const {
             classes,
-            dataUserAuth
+            dataUserAuth,
+            dataBoardTrainingWithYourself
         } = this.props;
-        console.log(board);
 
         return (
             <React.Fragment>
                 <Header />
                 <Content>
-                    <div className={classes.trainingWithAIWrapper}>
+                    <div className={classes.trainingWithYourselfAI}>
                         <Board
                             size={10}
+                            // chessmanA={CHESSMAN_YOUR}
+                            chessmanB={CHESSMAN_YOURSELF_B}
+                            firstTurn={CHESSMAN_YOURSELF_A}
+                            iconChessmanA={<span>A</span>}
+                            iconChessmanB={<span>B</span>}
+                            getDataBoardCurrent={this.getDataBoardCurrent}
+                            dataBoardTrainingDefault={dataBoardTrainingWithYourself}
                         />
                     </div>
                 </Content>
-                {/*{!dataUser ? <AuthBlock /> : <span>sdds sd</span>}*/}
                 <Footer />
             </React.Fragment>
         );
     }
 }
 
-TrainingWithAI.propTypes = {
+TrainingWithYourself.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
 
 const mapStateToProps = state => ({
-    dataUserAuth: state.authReducer.dataUserAuth
+    dataUserAuth: state.authReducer.dataUserAuth,
+    dataBoardTrainingWithAI: state.gameReducer.dataBoardTrainingWithAI
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
-
+        saveDataBoardTrainingWithAI: (dataTraining) => dispatch(gameActions.saveDataBoardTrainingWithAI(dataTraining))
     }
 };
 
@@ -78,4 +90,4 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
     // withTranslation()
-) (TrainingWithAI);
+) (TrainingWithYourself);

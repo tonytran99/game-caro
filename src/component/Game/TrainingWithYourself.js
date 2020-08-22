@@ -7,10 +7,16 @@ import Footer from "../Footer";
 import Header from "../Header";
 import AuthBlock from "../Auth/Auth";
 import Content from "../Content";
+import Board from "../../theme/Game/Board";
+import {CHESSMAN_YOURSELF_A, CHESSMAN_YOURSELF_B} from "../../constants/constants";
+import * as gameActions from "../../_actions/game";
+import DialogForm from "../../theme/DialogForm";
 
 const styles = theme => ({
-    welcomeWrapper: {
-
+    trainingWithYourselfWrapper: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 });
 class TrainingWithYourself extends React.Component {
@@ -18,40 +24,120 @@ class TrainingWithYourself extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isSignedIn: true
+            openDialog: false,
+            showBoard: false,
+            dataBoardTrainingWithYourself: null,
+            chessmanWin: null,
         };
 
-        // this.signOut = this.signOut.bind(this);
+        this.getDataBoardCurrent = this.getDataBoardCurrent.bind(this);
+        this.handleDisagree = this.handleDisagree.bind(this);
+        this.handleAgree = this.handleAgree.bind(this);
+        this.checkWinChessman = this.checkWinChessman.bind(this);
     }
 
     componentDidMount() {
-
-    }
-
-    render() {
-        // const {
-        //
-        // } = this.state;
         const {
-            classes,
+            dataBoardTrainingWithYourself,
             dataUserAuth
         } = this.props;
+        if (dataBoardTrainingWithYourself && (dataBoardTrainingWithYourself.chessmanUserId === (dataUserAuth ? dataUserAuth.uid : null))) {
+            this.setState({
+                openDialog: true
+            });
+        } else {
+            this.setState({
+                showBoard: true
+            })
+        }
+    }
 
+    getDataBoardCurrent(dataBoard) {
+        console.log('sssssssssssssss getItem')
+        this.props.saveDataBoardTrainingWithYourself(dataBoard);
+    }
+
+    checkWinChessman(chessmanWin) {
+        this.props.saveDataBoardTrainingWithYourself(null);
+        console.log(chessmanWin);
+        this.setState({
+            chessmanWin: chessmanWin
+        })
+    }
+
+    handleDisagree() {
+        this.props.saveDataBoardTrainingWithYourself(null);
+        this.setState({
+            openDialog: false,
+            showBoard: true,
+            dataBoardTrainingWithYourself: null
+        });
+    }
+
+    handleAgree() {
+        this.setState({
+            openDialog: false,
+            showBoard: true,
+            dataBoardTrainingWithYourself: this.props.dataBoardTrainingWithYourself
+        });
+    }
+
+
+    render() {
+        const {
+            openDialog,
+            showBoard,
+            dataBoardTrainingWithYourself,
+            chessmanWin,
+        } = this.state;
+        const {
+            classes,
+            dataUserAuth,
+        } = this.props;
+        // if (chessmanWin === CHESSMAN_YOURSELF_A) {
+        //
+        // }
+        console.log(chessmanWin);
         return (
             <React.Fragment>
                 <Header />
                 <Content>
-
-                    <div className={classes.welcomeWrapper}>
-                        <div>
-                            dsd
-
-                        </div>
-
+                    <div>{chessmanWin === CHESSMAN_YOURSELF_A ? <span>A Win</span> : chessmanWin === CHESSMAN_YOURSELF_B ? <span>B Win</span> : ''}</div>
+                    <div className={classes.trainingWithYourselfWrapper}>
+                        {showBoard && <Board
+                            size={10}
+                            chessmanA={CHESSMAN_YOURSELF_A}
+                            chessmanB={CHESSMAN_YOURSELF_B}
+                            firstTurn={CHESSMAN_YOURSELF_A}
+                            chessmanUserId={dataUserAuth ? dataUserAuth.uid : null}
+                            iconChessmanA={<span>A</span>}
+                            iconChessmanB={<span>B</span>}
+                            getDataBoardCurrent={this.getDataBoardCurrent}
+                            dataBoardTrainingDefault={dataBoardTrainingWithYourself}
+                            checkWinChessman={this.checkWinChessman}
+                        />}
                     </div>
                 </Content>
-                {/*{!dataUser ? <AuthBlock /> : <span>sdds sd</span>}*/}
                 <Footer />
+                <DialogForm
+                    dialogProps={{
+                        open: openDialog
+                    }}
+                    messageProps={{
+                        content: 'sds sd',
+                        color: ''
+                    }}
+                    disagreeButtonProps={{
+                        handleDisagree: this.handleDisagree,
+                        background: '',
+                        content: 'no'
+                    }}
+                    agreeButtonProps={{
+                        handleAgree: this.handleAgree,
+                        background: '',
+                        content: 'yes'
+                    }}
+                />
             </React.Fragment>
         );
     }
@@ -63,12 +149,13 @@ TrainingWithYourself.propTypes = {
 
 
 const mapStateToProps = state => ({
-    dataUserAuth: state.authReducer.dataUserAuth
+    dataUserAuth: state.authReducer.dataUserAuth,
+    dataBoardTrainingWithYourself: state.gameReducer.dataBoardTrainingWithYourself
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
-
+        saveDataBoardTrainingWithYourself: (dataTraining) => dispatch(gameActions.saveDataBoardTrainingWithYourself(dataTraining))
     }
 };
 

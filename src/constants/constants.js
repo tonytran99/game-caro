@@ -8,3 +8,6 @@ export const GAME_TURN_FINISH = 'GAME_TURN_FINISH';
 export const CHESSMAN_AI_ID = 1;
 export const CHESSMAN_ANONYMOUS_ID = 0;
 export const CHESSMAN_NONE = null;
+
+export const CHESSMAN_YOURSELF_A = 2;
+export const CHESSMAN_YOURSELF_B = 3;

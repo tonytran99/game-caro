@@ -44,13 +44,10 @@ class GameCell extends React.Component {
 
                     <div className={classes.welcomeWrapper}>
                         <div>
-                            dsd
 
                         </div>
-
                     </div>
                 </Content>
-                {/*{!dataUser ? <AuthBlock /> : <span>sdds sd</span>}*/}
                 <Footer />
             </React.Fragment>
         );

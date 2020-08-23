@@ -35,3 +35,10 @@ export const saveDataBoardTrainingWithAI = (dataTraining) => {
         dataTraining: dataTraining
     }
 }
+
+// export const showDataAllUsers = (dataAllUsers) => {
+//     return {
+//         type: types.GAME_SHOW_DATA_ALL_USERS,
+//         dataAllUsers: dataAllUsers
+//     }
+// }

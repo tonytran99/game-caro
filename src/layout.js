@@ -105,8 +105,8 @@ class Layout extends React.Component {
                                 path={links.LINK_WELCOME}
                                 exact={true}
                             >
-                                {/*<Welcome />*/}
-                                <ChatBoard />
+                                <Welcome />
+                                {/*<ChatBoard />*/}
                             </Route>
                             <Route
                                 path={links.LINK_TRAINING_WITH_AI}

@@ -8,13 +8,26 @@ import Header from "../Header";
 import Content from "../Content";
 import Board from "../../theme/Game/Board";
 import {BOARD_GROUP, BOARD_TW0, GROUP_BOARD} from "../../constants/constants";
+import Button from "@material-ui/core/Button";
+import ListChatBoard from "./ListChatBoard";
 
 const styles = theme => ({
-    trainingWithAIWrapper: {
+    chatPageWrapper: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-    }
+        height: '100%',
+        backgroundColor: '#fff',
+    },
+    viewListChatBoard: {
+        width: '30%',
+        borderRight: '2px solid black',
+        height: '100%'
+    },
+    viewChatBoard: {
+        width: '70%',
+        height: '100%'
+    },
 });
 class ChatPage extends React.Component {
 
@@ -23,39 +36,13 @@ class ChatPage extends React.Component {
         this.state = {
 
         };
-
-        // this.signOut = this.signOut.bind(this);
     }
 
     componentDidMount() {
-        const dataChessBoard = {
-            idChessBoard: '',
-            dataBoard: {
 
-            },
-            userIdChessmanA: '',
-            userIdChessmanB: '',
-            userCanViewBoard: [
-                {
-                    userId: '',
-                    displayName: '',
-                },
-                {
-                    userId: '',
-                    displayName: '',
-                },
-                {
-                    userId: '',
-                    displayName: '',
-                }
-            ],
-            secret: false,
-            chessBoardType: GROUP_BOARD,
-            chatChessBoard: [
-
-            ], // => Sap xep
-        }
     }
+
+
 
     render() {
         const {
@@ -67,19 +54,21 @@ class ChatPage extends React.Component {
             match,
 
         } = this.props;
-        console.log(match);
+        // console.log(match);
 
         return (
             <React.Fragment>
                 <Header />
                 <Content>
-                    <div className={classes.trainingWithAIWrapper}>
-                        <Board
-                            size={10}
-                        />
+                    <div className={classes.chatPageWrapper}>
+                        <div className={classes.viewListChatBoard}>
+                            <ListChatBoard />
+                        </div>
+                        <div className={classes.viewChatBoard}>
+
+                        </div>
                     </div>
                 </Content>
-                {/*{!dataUser ? <AuthBlock /> : <span>sdds sd</span>}*/}
                 <Footer />
             </React.Fragment>
         );

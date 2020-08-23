@@ -10,6 +10,7 @@ import Content from "../Content";
 import Button from "@material-ui/core/Button";
 import {NavLink} from "react-router-dom";
 import * as links from "./../../constants/links";
+import {PRIVATE_CHAT} from "../../constants/constants";
 
 const styles = theme => ({
     welcomeWrapper: {
@@ -20,7 +21,13 @@ const styles = theme => ({
     },
     goToTrainingWithYourself: {
 
-    }
+    },
+    goToChatPage: {
+
+    },
+    btnCreateChessBoard: {
+
+    },
 });
 class Welcome extends React.Component {
 
@@ -35,6 +42,34 @@ class Welcome extends React.Component {
 
     componentDidMount() {
 
+    }
+
+    createChessBoard() {
+        const {
+            dataUserAuth
+        } = this.props;
+        const {
+
+        } = this.state;
+        const idChatBox = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime();
+
+        const dataInitChatBox = {
+            idChatBox: dataUserAuth.id,
+            userIdMemberA: null,
+            userIdMemberB: null,
+            photoChatBox: null,
+            dataMemberA: {
+
+            },
+            dataMemberB: {
+
+            },
+            dataMembersUpdate: [
+
+            ],
+            chatBoxType: PRIVATE_CHAT,
+            updatedAt: new Date(),
+        };
     }
 
     render() {
@@ -70,6 +105,21 @@ class Welcome extends React.Component {
                                 go to training with yourself
                             </Button>
                         </NavLink>
+                        {dataUserAuth && <Button
+                            className={classes.btnCreateChessBoard}
+                            onClick={() => this.createChessBoard()}
+                        >
+                            Create Private Chat
+                        </Button>}
+                        {dataUserAuth && <NavLink
+                            to={links.LINK_CHAT_PAGE}
+                        >
+                            <Button
+                                className={classes.goToChatPage}
+                            >
+                                Go To Chat Page
+                            </Button>
+                        </NavLink>}
                     </div>
                 </Content>
                 {/*{!dataUser ? <AuthBlock /> : <span>sdds sd</span>}*/}

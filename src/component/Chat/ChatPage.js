@@ -28,6 +28,9 @@ const styles = theme => ({
         width: '70%',
         height: '100%'
     },
+    listChat: {
+
+    }
 });
 class ChatPage extends React.Component {
 

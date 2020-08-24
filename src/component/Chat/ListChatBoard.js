@@ -13,6 +13,9 @@ import Checkbox from "@material-ui/core/Checkbox";
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import {GROUP_CHAT, PRIVATE_CHAT} from "../../constants/constants";
+import * as types from "../../_constants/game";
+import {NavLink} from "react-router-dom";
+import * as links from "./../../constants/links";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -56,6 +59,7 @@ class ListChatBoard extends React.Component {
             photoChatBoxName: '',
             progressUploadBackground: 0,
             nameGroupChat: null,
+            dataAllChatBox: [],
         };
 
         this.openPopoverCreatePrivateChat = this.openPopoverCreatePrivateChat.bind(this);
@@ -116,19 +120,19 @@ class ListChatBoard extends React.Component {
             const idChatBox = dataUserAuth.uid + '_' + dataUserPrivateChat.userId;
             const dataInitChatBox = {
                 idChatBox: idChatBox,
-                userIdMemberA: dataUserAuth.uid,
-                userIdMemberB: dataUserPrivateChat.userId,
+                statusChatBox: 2,
                 photoChatBox: null,
-                dataMemberA: dataUser,
-                dataMemberB: dataUserPrivateChat,
-                dataMembersUpdate: [
-                    dataUserAuth.uid
-                ],
                 chatBoxType: PRIVATE_CHAT,
                 updatedAt: new Date().getTime(),
             };
-            dataInitChatBox[dataUserAuth.uid] = true;
-            dataInitChatBox[dataUserPrivateChat.userId] = true;
+            const dataMembers = {
+                [dataUser.userId]: dataUser,
+                [dataUserPrivateChat.userId]: dataUserPrivateChat,
+            };
+
+            dataInitChatBox[dataUser.userId] = 2;
+            dataInitChatBox[dataUserPrivateChat.userId] = 1;
+            dataInitChatBox.dataMembers = dataMembers;
 
             console.log(dataInitChatBox);
 
@@ -163,7 +167,7 @@ class ListChatBoard extends React.Component {
                 })
             }
         });
-
+        this.viewDataUserById(this.props.dataUser.userId);
     }
 
     openPopoverCreatePrivateChat(event) {
@@ -244,42 +248,46 @@ class ListChatBoard extends React.Component {
             console.log(dataUserGroupChat);
             // create chatBox
             const idChatBox = dataUserAuth.uid + '_' + new Date().getTime();
-            let dataMembers = [];
+            // let dataMembers = [];
             const dataUserId = {
-                [dataUserAuth.uid]: true
+                [dataUser.userId]: 2
             };
-            dataMembers.push(dataUser);
+            const dataMembers = {
+                [dataUser.userId]: dataUser
+            };
+            // dataMembers.push(dataUser);
             dataUserGroupChat.map((item, index) => {
-                dataMembers.push(item);
-                dataUserId[item.userId] = true;
+                // dataMembers.push(item);
+                dataUserId[item.userId] = 1;
+                dataMembers[item.userId] = dataUser;
             });
+            console.log(dataMembers);
             const dataInitChatBox = {
                 idChatBox: idChatBox,
+                statusChatBox: 2,
                 photoChatBox: null,
                 nameGroupChat: '',
-                dataMembersUpdate: [
-                    dataUserAuth.uid
-                ],
-                dataMembers: dataMembers,
                 createdBy: dataUserAuth.uid,
                 chatBoxType: GROUP_CHAT,
                 updatedAt: new Date().getTime(),
+                dataMembers: dataMembers,
                 ...dataUserId
             };
+
             console.log(dataInitChatBox);
 
-            // firebase.database().ref('chats/' + idChatBox).set(dataInitChatBox, (error) => {
-            //     if (error) {
-            //         this.setState({
-            //             popoverCreatePrivateChat: null,
-            //         })
-            //     } else {
-            //         console.log('SUCCESS !')
-            //         this.setState({
-            //             popoverCreatePrivateChat: null,
-            //         })
-            //     }
-            // });
+            firebase.database().ref('chats/' + idChatBox).set(dataInitChatBox, (error) => {
+                if (error) {
+                    this.setState({
+                        popoverCreateGroupChat: null,
+                    })
+                } else {
+                    console.log('SUCCESS !')
+                    this.setState({
+                        popoverCreateGroupChat: null,
+                    })
+                }
+            });
         }
     }
 
@@ -301,22 +309,57 @@ class ListChatBoard extends React.Component {
         const {
             dataUserAuth
         } = this.props;
-        firebase.database().ref('chats').orderByChild(dataUserAuth.uid).equalTo(true).on('value', (snap) => {
+
+        firebase.database().ref('chats').orderByChild(dataUserAuth.uid).on('value', (snap) => {
             if (snap.val()) {
-                console.log(snap.val());
-                // let dataAllUsersTemp = [];
-                // Object.keys(snap.val()).map((key, index)=>{
-                //     if (key !== dataUserAuth.uid) {
-                //         dataAllUsersTemp.push(snap.val()[key]);
-                //     }
-                // });
-                // this.setState({
-                //     dataAllUsers: dataAllUsersTemp
-                // })
+                let dataAllChatBoxTemp = [];
+                Object.keys(snap.val()).map((key, index)=>{
+                    dataAllChatBoxTemp.push(snap.val()[key]);
+                });
+                dataAllChatBoxTemp.sort((chatBoxA, chatBoxB) => {
+                    return (
+                        chatBoxB.updatedAt - chatBoxA.updatedAt
+                    );
+                });
+                console.log(dataAllChatBoxTemp);
+                this.setState({
+                    dataAllChatBox: dataAllChatBoxTemp
+                })
             }
         });
     }
 
+    async viewDataUserById(userId) {
+        return firebase.database().ref('users/' + userId).on('value', (snap) => {
+            if (snap.val()) {
+                return snap.val();
+            } else {
+                return null;
+            }
+        });
+    }
+
+    // viewDataUserById(userId) {
+    //     let data = null;
+    //     this.viewDataUserByIdCallback(userId, (dataUser) => {
+    //         data = dataUser;
+    //     });
+    //     console.log(data);
+    // }
+
+    viewFriendInfoPrivateChat(dataMembers) {
+        const {
+            dataUser
+        } = this.props;
+        let dataFriend = null;
+        for (let [key, value] of Object.entries(dataMembers)) {
+            if (dataUser.userId !== key) {
+                dataFriend = value;
+            }
+        }
+        console.log(dataFriend);
+        return dataFriend;
+    }
 
     render() {
         const {
@@ -324,16 +367,16 @@ class ListChatBoard extends React.Component {
             popoverCreateGroupChat,
             dataAllUsers,
             dataUserPrivateChat,
-            dataUserGroupChat
+            dataUserGroupChat,
+            dataAllChatBox
         } = this.state;
         const {
             classes,
             dataUserAuth,
-
+            dataUser
         } = this.props;
 
-        console.log(dataUserPrivateChat);
-        console.log(dataAllUsers);
+        console.log(dataAllChatBox);
 
         return (
             <div className={classes.viewListChatBoard}>
@@ -427,6 +470,29 @@ class ListChatBoard extends React.Component {
                             </Button>
                         </div>
                     </Popover>}
+                </div>
+                <div className={classes.listChat}>
+                    {
+                        dataAllChatBox.map((item, index) => {
+                            return (
+                                <NavLink
+                                    to={links.LINK_CHAT_PAGE + '?idChatBox=' + item.idChatBox}
+                                >
+                                    <div className="itemChatBox">
+                                        {
+                                            (item.chatBoxType === PRIVATE_CHAT)
+                                            ?
+                                                <span>{this.viewFriendInfoPrivateChat(item.dataMembers) && this.viewFriendInfoPrivateChat(item.dataMembers).displayName ? this.viewFriendInfoPrivateChat(item.dataMembers).displayName : ''}</span>
+                                                :
+                                                <span>{
+                                                    item.nameGroupChat
+                                                }</span>
+                                        }
+                                    </div>
+                                </NavLink>
+                            );
+                        })
+                    }
                 </div>
             </div>
         );

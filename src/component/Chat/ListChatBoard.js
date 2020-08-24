@@ -5,17 +5,21 @@ import PropTypes from "prop-types";
 import {compose} from "redux";
 import Button from "@material-ui/core/Button";
 import Popover from "@material-ui/core/Popover";
-import firebase from "../../firebase";
+import firebase, {storage} from "../../firebase";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from "@material-ui/core/TextField";
 import Checkbox from "@material-ui/core/Checkbox";
 
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import {GROUP_CHAT, PRIVATE_CHAT} from "../../constants/constants";
+import {GROUP_CHAT, MESSAGE_TYPE_CREATE_CHAT_BOX, PRIVATE_CHAT} from "../../constants/constants";
 import * as types from "../../_constants/game";
 import {NavLink} from "react-router-dom";
 import * as links from "./../../constants/links";
+import UploadPhoto from "../../theme/UploadPhoto";
+import Input from "@material-ui/core/Input";
+import {paramsToObject} from "../../functions/functions";
+import * as gameActions from "../../_actions/game";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -58,8 +62,12 @@ class ListChatBoard extends React.Component {
             photoChatBoxPreview: '',
             photoChatBoxName: '',
             progressUploadBackground: 0,
-            nameGroupChat: null,
+            nameGroupChat: '',
             dataAllChatBox: [],
+
+            //
+            idChatBoxCurrent: null,
+            idChatBoxChange: true,
         };
 
         this.openPopoverCreatePrivateChat = this.openPopoverCreatePrivateChat.bind(this);
@@ -105,7 +113,7 @@ class ListChatBoard extends React.Component {
             checkCreatePrivateChat1,
             checkCreatePrivateChat2,
             dataUserPrivateChat,
-
+            idChatBoxChange,
         } = this.state;
         const {
             dataUserAuth,
@@ -134,28 +142,66 @@ class ListChatBoard extends React.Component {
             dataInitChatBox[dataUserPrivateChat.userId] = 1;
             dataInitChatBox.dataMembers = dataMembers;
 
-            console.log(dataInitChatBox);
-
             firebase.database().ref('chats/' + idChatBox).set(dataInitChatBox, (error) => {
                 if (error) {
+
+
                     this.setState({
                         popoverCreatePrivateChat: null,
                     })
                 } else {
-                    console.log('SUCCESS !')
-                    this.setState({
-                        popoverCreatePrivateChat: null,
+                    const createdAt = new Date().getTime();
+                    const dataMessage = {
+                        createdAt: createdAt,
+                        typeMessage: MESSAGE_TYPE_CREATE_CHAT_BOX,
+                        content: null,
+                    };
+                    firebase.database().ref('messages/' + idChatBox + '/' + createdAt).set(dataMessage, error => {
+                        if (error) {
+                            this.setState({
+                                popoverCreatePrivateChat: null,
+                                photoChatBox: null,
+                                photoChatBoxPreview: '',
+                                photoChatBoxName: '',
+                            })
+                        } else {
+                            this.setState({
+                                popoverCreatePrivateChat: null,
+                                photoChatBox: null,
+                                photoChatBoxPreview: '',
+                                photoChatBoxName: '',
+                            })
+                        }
                     })
                 }
             });
         }
+
+        //
+        const urlParams = new URLSearchParams(window.location.search.substr(1));
+        const entries = urlParams.entries();
+        const params = paramsToObject(entries);
+        const {
+            idChatBoxCurrent
+        } = this.state;
+        if (params.hasOwnProperty('idChatBox') && idChatBoxChange) {
+            const idChatBox = params.idChatBox;
+            if (idChatBox !== idChatBoxCurrent) {
+                this.setState({
+                    idChatBoxCurrent: idChatBox,
+                    idChatBoxChange: false
+                });
+                this.props.setDataChatBoard(idChatBox);
+            }
+        }
     }
+
+
 
     componentDidMount() {
         this.showChats();
         firebase.database().ref('users').on('value', (snap) => {
             if (snap.val()) {
-                console.log(snap.val());
                 let dataAllUsersTemp = [];
                 Object.keys(snap.val()).map((key, index)=>{
                     if (key !== this.props.dataUserAuth.uid) {
@@ -239,58 +285,129 @@ class ListChatBoard extends React.Component {
     createGroupChat() {
         const {
             dataUserAuth,
-            dataUser
+            dataUser,
         } = this.props;
         const {
-            dataUserGroupChat
+            dataUserGroupChat,
+            nameGroupChat,
+            photoChatBox,
+            photoChatBoxPreview,
+            photoChatBoxName,
         } = this.state;
         if (Array.isArray(dataUserGroupChat) && dataUserGroupChat.length) {
-            console.log(dataUserGroupChat);
+
             // create chatBox
             const idChatBox = dataUserAuth.uid + '_' + new Date().getTime();
-            // let dataMembers = [];
-            const dataUserId = {
-                [dataUser.userId]: 2
-            };
-            const dataMembers = {
-                [dataUser.userId]: dataUser
-            };
-            // dataMembers.push(dataUser);
-            dataUserGroupChat.map((item, index) => {
-                // dataMembers.push(item);
-                dataUserId[item.userId] = 1;
-                dataMembers[item.userId] = dataUser;
-            });
-            console.log(dataMembers);
-            const dataInitChatBox = {
-                idChatBox: idChatBox,
-                statusChatBox: 2,
-                photoChatBox: null,
-                nameGroupChat: '',
-                createdBy: dataUserAuth.uid,
-                chatBoxType: GROUP_CHAT,
-                updatedAt: new Date().getTime(),
-                dataMembers: dataMembers,
-                ...dataUserId
-            };
+            if (photoChatBox) {
+                const nameImage = idChatBox + '_' + new Date().getTime();
+                const uploadTask = storage.ref(`images/photoChatBox/${nameImage}`).put(photoChatBox);
+                this.setState({
+                    isLoading: true
+                })
 
-            console.log(dataInitChatBox);
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        // progrss function ....
+                        const progressUploadBackground = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                        this.setState({progressUploadBackground});
+                    },
+                    (error) => {
+                        // error function ....
+                        this.setState({
+                            progressUploadBackground: 0,
+                            isLoading: false,
+                            photoChatBox: null,
+                            photoChatBoxPreview: '',
+                            photoChatBoxName: '',
+                        });
+                    },
+                    () => {
+                        // complete function ....
+                        storage.ref('images/photoChatBox').child(nameImage).getDownloadURL().then(url => {
+                            this.submitGroupChat(idChatBox, url);
+                        });
+                    });
 
-            firebase.database().ref('chats/' + idChatBox).set(dataInitChatBox, (error) => {
-                if (error) {
-                    this.setState({
-                        popoverCreateGroupChat: null,
-                    })
-                } else {
-                    console.log('SUCCESS !')
-                    this.setState({
-                        popoverCreateGroupChat: null,
-                    })
-                }
-            });
+            } else {
+                this.submitGroupChat(idChatBox);
+            }
         }
     }
 
+    submitGroupChat(idChatBox, photoChatBox) {
+        const {
+            dataUserAuth,
+            dataUser,
+        } = this.props;
+        const {
+            dataUserGroupChat,
+            nameGroupChat,
+        } = this.state;
+        // let dataMembers = [];
+        const dataUserId = {
+            [dataUser.userId]: 2
+        };
+        const dataMembers = {
+            [dataUser.userId]: dataUser
+        };
+        // dataMembers.push(dataUser);
+        dataUserGroupChat.map((item, index) => {
+            // dataMembers.push(item);
+            dataUserId[item.userId] = 1;
+            dataMembers[item.userId] = dataUser;
+        });
+        const dataInitChatBox = {
+            idChatBox: idChatBox,
+            statusChatBox: 2,
+            photoChatBox: photoChatBox ? photoChatBox : null,
+            nameGroupChat: nameGroupChat,
+            createdBy: dataUserAuth.uid,
+            chatBoxType: GROUP_CHAT,
+            updatedAt: new Date().getTime(),
+            dataMembers: dataMembers,
+            ...dataUserId
+        };
+
+        console.log(dataInitChatBox);
+
+        firebase.database().ref('chats/' + idChatBox).set(dataInitChatBox, (error) => {
+            if (error) {
+                this.setState({
+                    popoverCreateGroupChat: null,
+                    photoChatBox: null,
+                    photoChatBoxPreview: '',
+                    photoChatBoxName: '',
+                })
+            } else {
+                console.log('SUCCESS !');
+                const createdAt = new Date().getTime();
+                const dataMessage = {
+                    createdAt: createdAt,
+                    typeMessage: MESSAGE_TYPE_CREATE_CHAT_BOX,
+                    contentMessage: null,
+                    createdBy: null,
+                };
+                firebase.database().ref('messages/' + idChatBox + '/' + createdAt).set(dataMessage, error => {
+                    if (error) {
+                        this.setState({
+                            popoverCreateGroupChat: null,
+                            photoChatBox: null,
+                            photoChatBoxPreview: '',
+                            photoChatBoxName: '',
+                        })
+                    } else {
+                        this.setState({
+                            popoverCreateGroupChat: null,
+                            photoChatBox: null,
+                            photoChatBoxPreview: '',
+                            photoChatBoxName: '',
+                        })
+                    }
+                })
+
+            }
+        });
+    }
 
     handlePrivateChatChange(event, value) {
         this.setState({
@@ -299,7 +416,6 @@ class ListChatBoard extends React.Component {
     }
 
     handleGroupChatChange(event, value) {
-        console.log(value);
         this.setState({
             dataUserGroupChat: value,
         })
@@ -321,7 +437,6 @@ class ListChatBoard extends React.Component {
                         chatBoxB.updatedAt - chatBoxA.updatedAt
                     );
                 });
-                console.log(dataAllChatBoxTemp);
                 this.setState({
                     dataAllChatBox: dataAllChatBoxTemp
                 })
@@ -357,7 +472,6 @@ class ListChatBoard extends React.Component {
                 dataFriend = value;
             }
         }
-        console.log(dataFriend);
         return dataFriend;
     }
 
@@ -368,15 +482,18 @@ class ListChatBoard extends React.Component {
             dataAllUsers,
             dataUserPrivateChat,
             dataUserGroupChat,
-            dataAllChatBox
+            dataAllChatBox,
+            nameGroupChat,
+            photoChatBox,
+            photoChatBoxPreview,
+            photoChatBoxName,
+            progressUploadBackground
         } = this.state;
         const {
             classes,
             dataUserAuth,
             dataUser
         } = this.props;
-
-        console.log(dataAllChatBox);
 
         return (
             <div className={classes.viewListChatBoard}>
@@ -462,6 +579,20 @@ class ListChatBoard extends React.Component {
                                     <TextField {...params} variant="outlined" label="Checkboxes" placeholder="Favorites" />
                                 )}
                             />
+                            <UploadPhoto
+                                onChange={this.handlePhotoChatBox}
+                                removePhoto={this.removePhotoChatBox}
+                                photo={photoChatBox}
+                                photoPreview={photoChatBoxPreview}
+                                photoName={photoChatBoxName}
+                                progressUploadBackground={progressUploadBackground}
+                            />
+                            <Input
+                                name="nameGroupChat"
+                                value={nameGroupChat}
+                                type="text"
+                                onChange={(event) => this.handleChange('nameGroupChat', event.target.value)}
+                            />
                             <Button
                                 className="btn"
                                 onClick={this.createGroupChat}
@@ -477,6 +608,11 @@ class ListChatBoard extends React.Component {
                             return (
                                 <NavLink
                                     to={links.LINK_CHAT_PAGE + '?idChatBox=' + item.idChatBox}
+                                    onClick={() => {
+                                        this.setState({
+                                            idChatBoxChange: true
+                                        })
+                                    }}
                                 >
                                     <div className="itemChatBox">
                                         {
@@ -512,7 +648,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch) => {
     return {
-
+        setDataChatBoard: (idChatBox) => dispatch(gameActions.setDataChatBoard(idChatBox))
     }
 };
 

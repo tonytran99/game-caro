@@ -10,6 +10,9 @@ import Board from "../../theme/Game/Board";
 import {BOARD_GROUP, BOARD_TW0, GROUP_BOARD} from "../../constants/constants";
 import Button from "@material-ui/core/Button";
 import ListChatBoard from "./ListChatBoard";
+import {paramsToObject} from "../../functions/functions";
+import firebase from "../../firebase";
+import ChatBoard from "../../theme/ChatBoard";
 
 const styles = theme => ({
     chatPageWrapper: {
@@ -37,7 +40,7 @@ class ChatPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            idChatBoxCurrent: null
         };
     }
 
@@ -45,6 +48,31 @@ class ChatPage extends React.Component {
 
     }
 
+    // componentDidUpdate(prevProps, prevState, snapshot) {
+    //     const urlParams = new URLSearchParams(window.location.search.substr(1));
+    //     const entries = urlParams.entries();
+    //     const params = paramsToObject(entries);
+    //     const {
+    //         idChatBoxCurrent
+    //     } = this.state;
+    //     if (params.hasOwnProperty('idChatBox')) {
+    //         const idChatBox = params.idChatBox;
+    //         if (idChatBox !== idChatBoxCurrent) {
+    //             this.setState({
+    //                 idChatBoxCurrent: idChatBox
+    //             });
+    //             this.showDataChatBoard(idChatBox);
+    //         }
+    //     }
+    // }
+
+    showDataChatBoard(idChatBox) {
+        firebase.database().ref('messages/' + idChatBox).on('value', (snap) => {
+            if (snap.val()) {
+               console.log(snap.val());
+            }
+        });
+    }
 
 
     render() {
@@ -68,7 +96,7 @@ class ChatPage extends React.Component {
                             <ListChatBoard />
                         </div>
                         <div className={classes.viewChatBoard}>
-
+                            <ChatBoard />
                         </div>
                     </div>
                 </Content>

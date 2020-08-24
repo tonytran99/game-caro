@@ -42,3 +42,17 @@ export const saveDataBoardTrainingWithAI = (dataTraining) => {
 //         dataAllUsers: dataAllUsers
 //     }
 // }
+
+export const setDataChatBoard = (idChatBox) => {
+    return (dispatch) => {
+        firebase.database().ref('messages/' + idChatBox).on('value', (snap) => {
+            if (snap.val()) {
+                console.log(snap.val());
+                dispatch({
+                    type: types.GAME_SET_DATA_CHAT_BOARD,
+                    dataChatBoard: snap.val()
+                })
+            }
+        });
+    }
+}

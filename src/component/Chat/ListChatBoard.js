@@ -12,7 +12,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import {PRIVATE_CHAT} from "../../constants/constants";
+import {GROUP_CHAT, PRIVATE_CHAT} from "../../constants/constants";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -50,7 +50,12 @@ class ListChatBoard extends React.Component {
             dataUserPrivateChat: null,
             dataUserGroupChat: [],
             checkCreatePrivateChat1: false,
-            checkCreatePrivateChat2: false
+            checkCreatePrivateChat2: false,
+            photoChatBox: null,
+            photoChatBoxPreview: '',
+            photoChatBoxName: '',
+            progressUploadBackground: 0,
+            nameGroupChat: null,
         };
 
         this.openPopoverCreatePrivateChat = this.openPopoverCreatePrivateChat.bind(this);
@@ -62,6 +67,33 @@ class ListChatBoard extends React.Component {
         this.handlePrivateChatChange = this.handlePrivateChatChange.bind(this);
         this.handleGroupChatChange = this.handleGroupChatChange.bind(this);
         this.showChats = this.showChats.bind(this);
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handlePhotoChatBox = this.handlePhotoChatBox.bind(this);
+        this.removePhotoChatBox = this.removePhotoChatBox.bind(this);
+        this.inputAvatarRef = React.createRef();
+    }
+
+    handleChange(name, value) {
+        this.setState({
+            [name]: value
+        })
+    }
+
+    handlePhotoChatBox(event) {
+        this.setState({
+            photoChatBox: event.target.files[0],
+            photoChatBoxPreview: URL.createObjectURL(event.target.files[0]),
+            photoChatBoxName: event.target.files[0].name,
+        });
+    }
+
+    removePhotoChatBox() {
+        this.setState({
+            photoChatBox: null,
+            photoChatBoxPreview: '',
+            photoChatBoxName: '',
+        });
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -93,7 +125,7 @@ class ListChatBoard extends React.Component {
                     dataUserAuth.uid
                 ],
                 chatBoxType: PRIVATE_CHAT,
-                updatedAt: new Date(),
+                updatedAt: new Date().getTime(),
             };
             dataInitChatBox[dataUserAuth.uid] = true;
             dataInitChatBox[dataUserPrivateChat.userId] = true;
@@ -169,7 +201,6 @@ class ListChatBoard extends React.Component {
         } = this.state;
 
         if (dataUserPrivateChat) {
-
             const idChatBox = dataUserAuth.uid + '_' + dataUserPrivateChat.userId;
             // check Exist Private Chat 1
             firebase.database().ref('chats').orderByChild('idChatBox').equalTo(idChatBox).valueOf().on('value', (snap) => {
@@ -211,6 +242,44 @@ class ListChatBoard extends React.Component {
         } = this.state;
         if (Array.isArray(dataUserGroupChat) && dataUserGroupChat.length) {
             console.log(dataUserGroupChat);
+            // create chatBox
+            const idChatBox = dataUserAuth.uid + '_' + new Date().getTime();
+            let dataMembers = [];
+            const dataUserId = {
+                [dataUserAuth.uid]: true
+            };
+            dataMembers.push(dataUser);
+            dataUserGroupChat.map((item, index) => {
+                dataMembers.push(item);
+                dataUserId[item.userId] = true;
+            });
+            const dataInitChatBox = {
+                idChatBox: idChatBox,
+                photoChatBox: null,
+                nameGroupChat: '',
+                dataMembersUpdate: [
+                    dataUserAuth.uid
+                ],
+                dataMembers: dataMembers,
+                createdBy: dataUserAuth.uid,
+                chatBoxType: GROUP_CHAT,
+                updatedAt: new Date().getTime(),
+                ...dataUserId
+            };
+            console.log(dataInitChatBox);
+
+            // firebase.database().ref('chats/' + idChatBox).set(dataInitChatBox, (error) => {
+            //     if (error) {
+            //         this.setState({
+            //             popoverCreatePrivateChat: null,
+            //         })
+            //     } else {
+            //         console.log('SUCCESS !')
+            //         this.setState({
+            //             popoverCreatePrivateChat: null,
+            //         })
+            //     }
+            // });
         }
     }
 

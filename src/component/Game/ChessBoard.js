@@ -23,36 +23,47 @@ const styles = theme => ({
 
     }
 });
+
+const CHESS_A = 'CHESS_A';
+const CHESS_B = 'CHESS_B';
+
 class ChessBoard extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            menuSelectChessmanIcon: null,
             dataSetupChessBoard: {
-                // chessmanA
+                iconChessman: null
             },
+            checkChess: null,
+            checkShowChessmans: false,
+            checkShowChessBoard: false
         };
 
         this.joinChessBoard = this.joinChessBoard.bind(this);
+        this.openMenuSelectChessmanIcon = this.openMenuSelectChessmanIcon.bind(this);
+        this.closeMenuSelectChessmanIcon = this.closeMenuSelectChessmanIcon.bind(this);
+        this.handleChessmanChange = this.handleChessmanChange.bind(this);
+        this.submitSetupChessBoard = this.submitSetupChessBoard.bind(this);
     }
 
     componentDidMount() {
         const {
-            dataChessBoard
+            dataChessBoard,
+            dataUser,
+            dataChessmans
         } = this.props;
+        const {
+            dataSetupChessBoard
+        } = this.state;
         this.props.showDataChessBoard(this.props.match.params.idChessBoard);
-        if (!(dataChessBoard && dataChessBoard.dataBoard && dataChessBoard.dataBoard.iconChessmanA)) {
-            this.props.showDataChessmans();
-        }
+        // if (!(dataChessBoard && dataChessBoard.dataBoard && dataChessBoard.dataBoard.iconChessmanA)) {
+        //     this.props.showDataChessmans();
+        // }
+        // console.log(dataChessBoard);
         //
-        const dataChessman = {
-            iconChessmanA: {
 
-            },
-            iconChessmanB: {
-
-            }
-        }
     }
 
     joinChessBoard(userIdChessman, userId) {
@@ -63,10 +74,115 @@ class ChessBoard extends React.Component {
         this.props.saveDataChessBoard(this.props.match.params.idChessBoard, dataChessBoard);
     }
 
+    openMenuSelectChessmanIcon(event) {
+        this.setState({
+            menuSelectChessmanIcon: event.currentTarget
+        })
+    }
+
+    closeMenuSelectChessmanIcon() {
+        this.setState({
+            menuSelectChessmanIcon: null
+        })
+    }
+
+    handleChessmanChange(chessman) {
+        const {
+            dataSetupChessBoard,
+            checkChess
+        } = this.state;
+        dataSetupChessBoard.iconChessman = chessman;
+        this.closeMenuSelectChessmanIcon();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const {
+            dataChessBoard,
+            dataUser,
+            dataChessmans
+        } = this.props;
+        const {
+            checkShowChessmans,
+            checkChess,
+            dataSetupChessBoard,
+            checkShowChessBoard
+        } = this.state;
+        console.log(dataChessmans);
+        console.log(checkChess);
+
+        if (dataChessBoard && dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB && !checkShowChessBoard) {
+            this.setState({
+                checkShowChessBoard: true
+            })
+            if (dataChessBoard.userIdChessmanA === dataUser.userId) {
+                console.log('aaaaaaaaaaaaa')
+                this.setState({
+                    checkChess: CHESS_A
+                });
+                if (!dataChessBoard.iconChessmanA) {
+                    this.props.showDataChessmans();
+                }
+            } else if (dataChessBoard.userIdChessmanB === dataUser.userId) {
+                console.log('aaaaaaaaaaaaa')
+                this.setState({
+                    checkChess: CHESS_B
+                });
+                if (!dataChessBoard.iconChessmanB) {
+                    this.props.showDataChessmans();
+                }
+            }
+        }
+
+        if (Array.isArray(dataChessmans) && dataChessmans.length && !checkShowChessmans && checkChess) {
+            console.log('checkShowChessmans')
+            if (checkChess === CHESS_A) {
+                dataSetupChessBoard.iconChessman = dataChessmans[0];
+            } else {
+                dataSetupChessBoard.iconChessman = dataChessmans[1];
+            }
+            this.setState({
+                checkShowChessmans: true,
+                dataSetupChessBoard: dataSetupChessBoard
+            })
+        }
+    }
+
+    submitSetupChessBoard() {
+        const {
+            dataSetupChessBoard,
+            checkChess,
+        } = this.state;
+        const {
+            dataChessBoard,
+            dataUser,
+            dataChessmans
+        } = this.props;
+        let checkSubmit = false;
+        if (checkChess === CHESS_A) {
+            if (!dataChessBoard.iconChessmanB || (dataSetupChessBoard.iconChessman && dataChessBoard.iconChessmanB.chessmanId !== dataSetupChessBoard.iconChessman.chessmanId)) {
+                checkSubmit = true;
+            }
+        } else {
+            if (!dataChessBoard.iconChessmanA || (dataSetupChessBoard.iconChessman && dataChessBoard.iconChessmanA.chessmanId !== dataSetupChessBoard.iconChessman.chessmanId)) {
+                checkSubmit = true;
+            }
+        }
+        if (checkSubmit) {
+            if (checkChess === CHESS_A) {
+                dataChessBoard.iconChessmanA = dataSetupChessBoard.iconChessman;
+            } else {
+                dataChessBoard.iconChessmanB = dataSetupChessBoard.iconChessman;
+            }
+            this.props.saveDataChessBoard(this.props.match.params.idChessBoard, dataChessBoard);
+        }
+    }
 
     render() {
         const {
-            board
+            board,
+            menuSelectChessmanIcon,
+            dataSetupChessBoard,
+            checkChess
         } = this.state;
         const {
             classes,
@@ -76,15 +192,21 @@ class ChessBoard extends React.Component {
             dataChessmans,
             dataUser,
         } = this.props;
-        console.log(dataChessmans);
-
+        console.log(dataSetupChessBoard);
+        console.log(checkChess);
+        let checkHasChessmanIcon = false;
+        if (dataChessBoard && dataChessBoard.userIdChessmanA === dataUser.userId && dataChessBoard.iconChessmanA) {
+            checkHasChessmanIcon = true;
+        } else if (dataChessBoard && dataChessBoard.userIdChessmanB === dataUser.userId && dataChessBoard.iconChessmanB) {
+            checkHasChessmanIcon = true;
+        }
         return (
             <React.Fragment>
                 <Header />
                 <Content>
                     <div className={classes.trainingWithAIWrapper}>
                         {
-                            dataChessBoard && dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB && dataChessBoard.dataBoard && dataChessBoard.dataBoard.iconChessmanA
+                            dataChessBoard && dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB && dataChessBoard.iconChessmanA && dataChessBoard.iconChessmanB
                             ?
                                 <Board
                                     size={10}
@@ -100,8 +222,7 @@ class ChessBoard extends React.Component {
                                             onClick={() => {
                                                 if (!dataChessBoard.userIdChessmanA) {
                                                     this.joinChessBoard('userIdChessmanA', dataUser.userId);
-                                                }
-                                                if (!dataChessBoard.userIdChessmanB) {
+                                                } else if (!dataChessBoard.userIdChessmanB) {
                                                     this.joinChessBoard('userIdChessmanB', dataUser.userId);
                                                 }
                                             }}
@@ -110,25 +231,42 @@ class ChessBoard extends React.Component {
                                         </Button>
                                     </div>
                                 :
+                                    !checkHasChessmanIcon
+                                    ?
                                 <div className={classes.setupDataBoard}>
-                                    {
-                                        dataChessBoard && dataChessBoard.userIdChessmanA
-                                    }
-                                    {/*<Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>*/}
-                                    {/*    Open Menu*/}
-                                    {/*</Button>*/}
-                                    {/*<Menu*/}
-                                    {/*    id="simple-menu"*/}
-                                    {/*    anchorEl={anchorEl}*/}
-                                    {/*    keepMounted*/}
-                                    {/*    open={Boolean(anchorEl)}*/}
-                                    {/*    onClose={handleClose}*/}
-                                    {/*>*/}
-                                    {/*    <MenuItem onClick={handleClose}>Profile</MenuItem>*/}
-                                    {/*    <MenuItem onClick={handleClose}>My account</MenuItem>*/}
-                                    {/*    <MenuItem onClick={handleClose}>Logout</MenuItem>*/}
-                                    {/*</Menu>*/}
+                                    <Button aria-controls="simple-menu" aria-haspopup="true" onClick={this.openMenuSelectChessmanIcon}>
+                                        {dataSetupChessBoard && dataSetupChessBoard.iconChessman &&
+                                            <div>
+                                                <img src={dataSetupChessBoard.iconChessman.chessmanUrl} alt="" style={{width: 50, height: 50}}/>
+                                                <span>{dataSetupChessBoard.iconChessman.name}</span>
+                                            </div>
+                                        }
+                                    </Button>
+                                    {menuSelectChessmanIcon && <Menu
+                                        id="simple-menu"
+                                        anchorEl={menuSelectChessmanIcon}
+                                        keepMounted
+                                        open={true}
+                                        onClose={this.closeMenuSelectChessmanIcon}
+                                    >
+                                        {
+                                            dataChessmans.map((item, index) => {
+                                                return (<MenuItem onClick={() => this.handleChessmanChange(item)}>
+                                                    <img src={item.chessmanUrl} alt="" style={{width: 50, height: 50}}/>
+                                                    <span>{item.name}</span>
+                                                </MenuItem>);
+                                            })
+                                        }
+                                    </Menu>}
+                                    <Button
+                                        className="submitSetup"
+                                        onClick={this.submitSetupChessBoard}
+                                    >
+                                        Submit Setup
+                                    </Button>
                                 </div>
+                                        :
+                                        <div>Doi ty thang kia chua xac nhan</div>
                         }
 
                     </div>

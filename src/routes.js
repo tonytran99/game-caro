@@ -7,6 +7,7 @@ const Chessman = lazy(() => import("./component/Chessman/Chessman"));
 const ChessBoard = lazy(() => import("./component/Game/ChessBoard"));
 const ChatPage = lazy(() => import("./component/Chat/ChatPage"));
 const ChatBox = lazy(() => import("./component/Chat/ChatBox"));
+const ListChessBoard = lazy(() => import("./component/Game/ListChessBoard"));
 
 const routes = [
     /* Home */
@@ -36,13 +37,19 @@ const routes = [
     },
     {
         path: links.LINK_CHAT_BOX,
-        component: (match) => <ChatBox match={match}/>,
+        component: ({match}) => <ChatBox match={match}/>,
         exact: true,
         permission: [PERMISSION_ADMIN, PERMISSION_USER]
     },
     {
         path: links.LINK_CHESS_BOARD,
-        component: (match) => <ChessBoard match={match}/>,
+        component: ({match}) => <ChessBoard match={match}/>,
+        exact: true,
+        permission: [PERMISSION_ADMIN, PERMISSION_USER]
+    },
+    {
+        path: links.LINK_LIST_CHESS_BOARD,
+        component: () => <ListChessBoard />,
         exact: true,
         permission: [PERMISSION_ADMIN, PERMISSION_USER]
     }

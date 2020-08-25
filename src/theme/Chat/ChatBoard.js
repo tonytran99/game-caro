@@ -6,8 +6,14 @@ import {compose} from "redux";
 import {
     GROUP_BOARD,
     GROUP_CHAT,
-    MESSAGE_TYPE_CREATE_CHAT_BOX, MESSAGE_TYPE_CREATE_PRIVATE_BOARD, MESSAGE_TYPE_IMAGE, MESSAGE_TYPE_STICKER,
-    MESSAGE_TYPE_TEXT, PRIVATE_BOARD, PRIVATE_CHAT
+    MESSAGE_TYPE_CREATE_CHAT_BOX,
+    MESSAGE_TYPE_CREATE_GROUP_BOARD,
+    MESSAGE_TYPE_CREATE_PRIVATE_BOARD,
+    MESSAGE_TYPE_IMAGE,
+    MESSAGE_TYPE_STICKER,
+    MESSAGE_TYPE_TEXT,
+    PRIVATE_BOARD,
+    PRIVATE_CHAT
 } from "../../constants/constants";
 import UserIcon from "../../images/user_icon.svg";
 import PhotoIcon from "../../images/ic_photo.png";
@@ -24,6 +30,11 @@ import Checkbox from "@material-ui/core/Checkbox";
 import TextField from "@material-ui/core/TextField";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import {NavLink} from "react-router-dom";
+import * as links from "./../../constants/links";
+import * as gameActions from "../../_actions/game";
+import Button from "@material-ui/core/Button";
+import Input from "@material-ui/core/Input";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -107,6 +118,10 @@ const styles = theme => ({
     createGroupBoardPopover: {
         width: 600,
         padding: '2rem'
+    },
+    createPrivateBoardPopover: {
+        width: 600,
+        padding: '2rem'
     }
 });
 class ChatBoard extends React.Component {
@@ -117,8 +132,12 @@ class ChatBoard extends React.Component {
             textInputValue: '',
             popoverListSticker: null,
             popoverCreateGroupBoard: null,
+            popoverCreatePrivateBoard: null,
             dataChessmans: [],
             dataAllUsersGroupChat: [],
+            dataInitPrivateBoard: {
+                sizeChessBoard: 10,
+            },
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -133,13 +152,28 @@ class ChatBoard extends React.Component {
 
         this.openPopoverCreateGroupBoard = this.openPopoverCreateGroupBoard.bind(this);
         this.closePopoverCreateGroupBoard = this.closePopoverCreateGroupBoard.bind(this);
+        this.openPopoverCreatePrivateBoard = this.openPopoverCreatePrivateBoard.bind(this);
+        this.closePopoverCreatePrivateBoard = this.closePopoverCreatePrivateBoard.bind(this);
 
         this.createPrivateBoard = this.createPrivateBoard.bind(this);
         this.createGroupBoard = this.createGroupBoard.bind(this);
+
+        this.handleInitPrivateBoardChange = this.handleInitPrivateBoardChange.bind(this);
+
     }
 
     componentDidMount() {
 
+    }
+
+    handleInitPrivateBoardChange(name, value) {
+        const {
+            dataInitPrivateBoard
+        } = this.state;
+        dataInitPrivateBoard[name] = value;
+        this.setState({
+            dataInitPrivateBoard: dataInitPrivateBoard
+        })
     }
 
     onSendMessage(contentMessage, typeMessage) {
@@ -280,6 +314,18 @@ class ChatBoard extends React.Component {
             case MESSAGE_TYPE_STICKER:
                 return <img src={dataItemMessage.contentMessage} alt=""/>
                 break;
+            case MESSAGE_TYPE_CREATE_PRIVATE_BOARD:
+                return <div><NavLink
+                    to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
+                >
+                    chess board
+                </NavLink></div>;
+            case MESSAGE_TYPE_CREATE_GROUP_BOARD:
+                return <div><NavLink
+                    to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
+                >
+                    chess board
+                </NavLink></div>;
             default:
                 return '';
                 break;
@@ -293,26 +339,37 @@ class ChatBoard extends React.Component {
         })
     }
 
+    openPopoverCreatePrivateBoard(event) {
+        this.setState({
+            popoverCreatePrivateBoard: event.currentTarget
+        })
+    }
+
     createPrivateBoard() {
         const {
             dataInfoChatBoard,
             dataUser
         } = this.props;
+        const {
+            dataInitPrivateBoard
+        } = this.state;
         console.log(dataInfoChatBoard);
         const idChessBoard = dataUser.userId + '_' + dataInfoChatBoard.idChatBox + '_' + new Date().getTime();
         const userCanViewBoard = {};
-        const userIdChessmanB = null;
+        const dataMembersBoard = {};
         for (let [key, value] of Object.entries(dataInfoChatBoard.dataMembers)) {
-            userCanViewBoard[key] = value;
+            dataMembersBoard[key] = value;
         }
         const dataChessBoard = {
             idChessBoard: idChessBoard,
-            dataBoard: null,
+            dataBoard: {
+                sizeChessBoard: dataInitPrivateBoard.sizeChessBoard,
+            },
             userIdChessmanA: dataUser.userId,
             userIdChessmanB: null,
             chessBoardType: PRIVATE_BOARD,
             createBy: dataUser.userId,
-            ...userCanViewBoard
+            dataMembersBoard: dataMembersBoard
         }
 
         firebase.database().ref('chessBoards/' + idChessBoard).set(dataChessBoard, (error) => {
@@ -337,6 +394,12 @@ class ChatBoard extends React.Component {
     closePopoverCreateGroupBoard() {
         this.setState({
             popoverCreateGroupBoard: null
+        });
+    }
+
+    closePopoverCreatePrivateBoard() {
+        this.setState({
+            popoverCreatePrivateBoard: null
         });
     }
 
@@ -382,13 +445,16 @@ class ChatBoard extends React.Component {
             dataChessmans,
             popoverCreateGroupBoard,
             dataAllUsersGroupChat,
+            popoverCreatePrivateBoard,
+            dataInitPrivateBoard,
+
         } = this.state;
         const {
             classes,
             dataUserAuth,
             match,
             dataMessagesChatBoard,
-            dataInfoChatBoard
+            dataInfoChatBoard,
         } = this.props;
         console.log(dataMessagesChatBoard);
         console.log(popoverCreateGroupBoard);
@@ -503,12 +569,47 @@ class ChatBoard extends React.Component {
                                 :
                                 (dataInfoChatBoard.chatBoxType === PRIVATE_CHAT)
                                     ?
-                                    <img
-                                        className="icOpenSticker"
-                                        src={CaroIcon}
-                                        alt="icon open sticker"
-                                        onClick={this.createPrivateBoard}
-                                    />
+                                    <React.Fragment>
+                                        <img
+                                            className="icOpenSticker"
+                                            src={CaroIcon}
+                                            alt="icon open sticker"
+                                            onClick={this.openPopoverCreatePrivateBoard}
+                                        />
+                                        {popoverCreatePrivateBoard && <Popover
+                                            open={true}
+                                            anchorEl={popoverCreatePrivateBoard}
+                                            onClose={this.closePopoverCreatePrivateBoard}
+                                            anchorOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'center',
+                                            }}
+                                            transformOrigin={{
+                                                vertical: 'bottom',
+                                                horizontal: 'left',
+                                            }}
+                                        >
+                                            <div className={classes.createPrivateBoardPopover}>
+                                                <Input
+                                                    type="number"
+                                                    name="sizeChessBoard"
+                                                    value={dataInitPrivateBoard.sizeChessBoard}
+                                                    onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}
+                                                />
+                                                {/*<Input*/}
+                                                {/*    name="sizeChessBoard"*/}
+                                                {/*    value={dataInitPrivateBoard.sizeChessBoard}*/}
+                                                {/*    type="text"*/}
+                                                {/*    onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}*/}
+                                                {/*/>*/}
+                                                <Button
+                                                    onClick={this.createPrivateBoard}
+                                                >
+                                                    create private board
+                                                </Button>
+                                            </div>
+                                        </Popover>}
+                                    </React.Fragment>
                                     :
                                     ''
                             :

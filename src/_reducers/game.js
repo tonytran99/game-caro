@@ -10,6 +10,8 @@ const initState = {
     dataBoardTrainingWithAI: dataBoardTrainingWithAI,
     dataMessagesChatBoard: null,
     dataInfoChatBoard: null,
+    dataChessBoard: null,
+    dataChessmans: [],
 }
 const gameReducer = (state = initState, action) => {
     switch (action.type) {
@@ -67,15 +69,21 @@ const gameReducer = (state = initState, action) => {
                 ...state,
                 dataInfoChatBoard: action.dataInfoChatBoard
             }
-        // case types.GAME_SHOW_DATA_ALL_USERS:
-        //     if (action.dataAllUsers) {
-        //         localStorage.setItem("dataAllUsers", JSON.stringify(action.dataAllUsers));
-        //     } else {
-        //         localStorage.removeItem("dataAllUsers");
-        //     }
-        //     return {
-        //         dataAllUsers: action.dataAllUsers
-        //     }
+        case types.GAME_SHOW_DATA_CHESS_BOARD:
+            return {
+                ...state,
+                dataChessBoard: action.dataChessBoard
+            }
+        case types.GAME_SAVE_DATA_CHESS_BOARD:
+            return {
+                ...state,
+                dataChessBoard: action.dataChessBoard
+            }
+        case types.GAME_SHOW_DATA_CHESSMANS:
+            return {
+                ...state,
+                dataChessmans: action.dataChessmans
+            }
         default:
             return state;
     }

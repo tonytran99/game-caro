@@ -139,16 +139,14 @@ class ListChatBoard extends React.Component {
                 [dataUserPrivateChat.userId]: dataUserPrivateChat,
             };
 
-            dataInitChatBox[dataUser.userId] = 2;
-            dataInitChatBox[dataUserPrivateChat.userId] = 1;
+            dataInitChatBox[dataUser.userId + '_checkUpdate'] = 2;
+            dataInitChatBox[dataUserPrivateChat.userId + '_checkUpdate'] = 1;
             dataInitChatBox[dataUser.userId + '_checkMember'] = true;
-            dataInitChatBox[dataUserPrivateChat.userId + '_checkMember'] = 1;
+            dataInitChatBox[dataUserPrivateChat.userId + '_checkMember'] = true;
             dataInitChatBox.dataMembers = dataMembers;
 
             firebase.database().ref('chats/' + idChatBox).set(dataInitChatBox, (error) => {
                 if (error) {
-
-
                     this.setState({
                         popoverCreatePrivateChat: null,
                     })
@@ -353,7 +351,7 @@ class ListChatBoard extends React.Component {
             [dataUser.userId]: 2
         };
         const dataUserIdCheckMember = {
-            [dataUser.userId]: true
+            [dataUser.userId + '_checkUpdate']: true
         };
         const dataMembers = {
             [dataUser.userId + '_checkMember']: true
@@ -361,7 +359,7 @@ class ListChatBoard extends React.Component {
         // dataMembers.push(dataUser);
         dataUserGroupChat.map((item, index) => {
             // dataMembers.push(item);
-            dataUserId[item.userId] = 1;
+            dataUserId[item.userId + '_checkUpdate'] = 1;
             dataMembers[item.userId] = dataUser;
             dataUserIdCheckMember[item.userId + '_checkMember'] = true;
         });
@@ -504,7 +502,7 @@ class ListChatBoard extends React.Component {
             dataUserAuth,
             dataUser
         } = this.props;
-
+        console.log(dataUser);
         return (
             <div className={classes.viewListChatBoard}>
                 <div className={classes.createPrivateChat}>

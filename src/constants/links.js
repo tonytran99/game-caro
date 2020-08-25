@@ -5,6 +5,8 @@ export const LINK_USER_INFO = '/user-info';
 export const LINK_CHESSMAN = '/chessman';
 export const LINK_TRAINING_WITH_AI = '/training-with-ai';
 export const LINK_TRAINING_WITH_YOURSELF = '/training-with-yourself';
+export const LINK_LIST_CHESS_BOARD = '/list-chess-board';
+
 export const LINK_CHESS_BOARD = '/chess-board/:idChessBoard';
 
 export const LINK_CHAT_PAGE = '/chat';

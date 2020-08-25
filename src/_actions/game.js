@@ -70,3 +70,66 @@ export const setDataInfoChatBoard = (idChatBox) => {
         });
     }
 }
+
+export const showDataChessBoard = (idChessBoard) => {
+    return (dispatch) => {
+        firebase.database().ref('chessBoards/' + idChessBoard).on('value', (snap) => {
+            if (snap.val()) {
+                console.log(snap.val());
+                dispatch({
+                    type: types.GAME_SHOW_DATA_CHESS_BOARD,
+                    dataChessBoard: snap.val()
+                });
+            }
+        });
+    };
+};
+
+export const saveDataChessBoard = (idChessBoard, dataChessBoard) => {
+    firebase.database().ref('chessBoards/' + idChessBoard).set(dataChessBoard);
+    return {
+        type: types.GAME_SAVE_DATA_CHESS_BOARD,
+        dataChessBoard: dataChessBoard
+    };
+};
+
+export const showDataChessmans = () => {
+    return (dispatch) => {
+        firebase.database().ref('chessmans/').orderByChild('default').on('value', (snap) => {
+            if (snap.val()) {
+                let dataChessmansTemp = [];
+                Object.keys(snap.val()).map((key, index)=>{
+                    dataChessmansTemp.push(snap.val()[key]);
+                });
+                // sort
+                dataChessmansTemp.sort((chessmanA, chessmanB) => {
+                    return (
+                        chessmanB.default - chessmanA.default
+                    );
+                });
+                // filter default = 1
+                const dataChessmansDefault = dataChessmansTemp.filter((data) => {
+                    return data.default;
+                }).sort((chessmanA, chessmanB) => {
+                    return (
+                        chessmanB.updateAt - chessmanA.updateAt
+                    );
+                });
+                // filter default = 0
+                const dataChessmansNotDefault = dataChessmansTemp.filter((data) => {
+                    return !data.default;
+                }).sort((chessmanA, chessmanB) => {
+                    return (
+                        chessmanB.updateAt - chessmanA.updateAt
+                    );
+                });
+                dataChessmansTemp = dataChessmansDefault.concat(dataChessmansNotDefault);
+
+                dispatch({
+                    type: types.GAME_SHOW_DATA_CHESSMANS,
+                    dataChessmans: dataChessmansTemp
+                });
+            }
+        });
+    };
+};

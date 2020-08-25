@@ -8,7 +8,8 @@ const initState = {
     dataUser: dataUser,
     dataBoardTrainingWithYourself: dataBoardTrainingWithYourself,
     dataBoardTrainingWithAI: dataBoardTrainingWithAI,
-    // dataChatBoard: null,
+    dataMessagesChatBoard: null,
+    dataInfoChatBoard: null,
 }
 const gameReducer = (state = initState, action) => {
     switch (action.type) {
@@ -54,11 +55,17 @@ const gameReducer = (state = initState, action) => {
                 ...state,
                 dataBoardTrainingWithAI: action.dataTraining
             }
-        case types.GAME_SET_DATA_CHAT_BOARD:
-            console.log(action.dataChatBoard)
+        case types.GAME_SET_DATA_MESSAGE_CHAT_BOARD:
+            console.log(action.dataMessagesChatBoard)
             return {
                 ...state,
-                dataChatBoard: action.dataChatBoard
+                dataMessagesChatBoard: action.dataMessagesChatBoard
+            }
+        case types.GAME_SET_DATA_INFO_CHAT_BOARD:
+            console.log(action.dataInfoChatBoard)
+            return {
+                ...state,
+                dataInfoChatBoard: action.dataInfoChatBoard
             }
         // case types.GAME_SHOW_DATA_ALL_USERS:
         //     if (action.dataAllUsers) {

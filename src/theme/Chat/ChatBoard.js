@@ -4,28 +4,29 @@ import {withStyles} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import {compose} from "redux";
 import {
-    BOARD_GROUP,
-    BOARD_TW0,
     GROUP_BOARD,
-    MESSAGE_TYPE_CREATE_CHAT_BOX, MESSAGE_TYPE_IMAGE, MESSAGE_TYPE_STICKER,
-    MESSAGE_TYPE_TEXT
-} from "../constants/constants";
-import UserIcon from "./../images/user_icon.svg";
-import Header from "../component/Header";
-import Content from "../component/Content";
-import Footer from "../component/Footer";
-import PhotoIcon from "../images/ic_photo.png";
-import StickerIcon from "../images/ic_sticker.png";
-import CaroIcon from "../images/caro_icon.png";
+    GROUP_CHAT,
+    MESSAGE_TYPE_CREATE_CHAT_BOX, MESSAGE_TYPE_CREATE_PRIVATE_BOARD, MESSAGE_TYPE_IMAGE, MESSAGE_TYPE_STICKER,
+    MESSAGE_TYPE_TEXT, PRIVATE_BOARD, PRIVATE_CHAT
+} from "../../constants/constants";
+import UserIcon from "../../images/user_icon.svg";
+import PhotoIcon from "../../images/ic_photo.png";
+import StickerIcon from "../../images/ic_sticker.png";
+import CaroIcon from "../../images/caro_icon.png";
 
-import SendIcon from "../images/ic_send.png";
-import {paramsToObject} from "../functions/functions";
-import firebase, {storage} from "../firebase";
+import SendIcon from "../../images/ic_send.png";
+import {paramsToObject} from "../../functions/functions";
+import firebase, {storage} from "../../firebase";
 import Popover from "@material-ui/core/Popover";
+import ListSticker from "../ListSticker";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import Checkbox from "@material-ui/core/Checkbox";
 import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import ListSticker from "./ListSticker";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 
 const styles = theme => ({
@@ -102,6 +103,10 @@ const styles = theme => ({
                 outline: 0
             }
         },
+    },
+    createGroupBoardPopover: {
+        width: 600,
+        padding: '2rem'
     }
 });
 class ChatBoard extends React.Component {
@@ -112,6 +117,8 @@ class ChatBoard extends React.Component {
             textInputValue: '',
             popoverListSticker: null,
             popoverCreateGroupBoard: null,
+            dataChessmans: [],
+            dataAllUsersGroupChat: [],
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -122,9 +129,17 @@ class ChatBoard extends React.Component {
         this.getSticker = this.getSticker.bind(this);
         this.onChoosePhoto = this.onChoosePhoto.bind(this);
         this.uploadPhoto = this.uploadPhoto.bind(this);
+        this.handleChessmansChange = this.handleChessmansChange.bind(this);
 
         this.openPopoverCreateGroupBoard = this.openPopoverCreateGroupBoard.bind(this);
         this.closePopoverCreateGroupBoard = this.closePopoverCreateGroupBoard.bind(this);
+
+        this.createPrivateBoard = this.createPrivateBoard.bind(this);
+        this.createGroupBoard = this.createGroupBoard.bind(this);
+    }
+
+    componentDidMount() {
+
     }
 
     onSendMessage(contentMessage, typeMessage) {
@@ -237,10 +252,10 @@ class ChatBoard extends React.Component {
             classes,
             dataUserAuth,
             match,
-            dataChatBoard,
+            dataMessagesChatBoard,
         } = this.props;
         let dataMessages = [];
-        for (let [key, value] of Object.entries(dataChatBoard)) {
+        for (let [key, value] of Object.entries(dataMessagesChatBoard)) {
             dataMessages = [
                 ...dataMessages,
                 value
@@ -278,6 +293,47 @@ class ChatBoard extends React.Component {
         })
     }
 
+    createPrivateBoard() {
+        const {
+            dataInfoChatBoard,
+            dataUser
+        } = this.props;
+        console.log(dataInfoChatBoard);
+        const idChessBoard = dataUser.userId + '_' + dataInfoChatBoard.idChatBox + '_' + new Date().getTime();
+        const userCanViewBoard = {};
+        const userIdChessmanB = null;
+        for (let [key, value] of Object.entries(dataInfoChatBoard.dataMembers)) {
+            userCanViewBoard[key] = value;
+        }
+        const dataChessBoard = {
+            idChessBoard: idChessBoard,
+            dataBoard: null,
+            userIdChessmanA: dataUser.userId,
+            userIdChessmanB: null,
+            chessBoardType: PRIVATE_BOARD,
+            createBy: dataUser.userId,
+            ...userCanViewBoard
+        }
+
+        firebase.database().ref('chessBoards/' + idChessBoard).set(dataChessBoard, (error) => {
+            if (error) {
+                // this.setState({
+                //     popoverCreateGroupChat: null,
+                //     photoChatBox: null,
+                //     photoChatBoxPreview: '',
+                //     photoChatBoxName: '',
+                // })
+            } else {
+                this.onSendMessage(idChessBoard, MESSAGE_TYPE_CREATE_PRIVATE_BOARD);
+            }
+        });
+
+    }
+
+    createGroupBoard() {
+
+    }
+
     closePopoverCreateGroupBoard() {
         this.setState({
             popoverCreateGroupBoard: null
@@ -304,20 +360,39 @@ class ChatBoard extends React.Component {
         });
     }
 
+    handleChessmansChange(event, value) {
+        this.setState({
+            dataChessmans: value,
+        })
+    }
+
+    showOptionsAllUsersChatBoard() {
+        const {
+            dataAllUsersGroupChat
+        } = this.props;
+
+    }
+
     render() {
         const {
             board,
             idChatBoxCurrent,
             textInputValue,
-            popoverListSticker
+            popoverListSticker,
+            dataChessmans,
+            popoverCreateGroupBoard,
+            dataAllUsersGroupChat,
         } = this.state;
         const {
             classes,
             dataUserAuth,
             match,
-            dataChatBoard,
+            dataMessagesChatBoard,
+            dataInfoChatBoard
         } = this.props;
-        console.log(dataChatBoard);
+        console.log(dataMessagesChatBoard);
+        console.log(popoverCreateGroupBoard);
+        console.log(dataInfoChatBoard);
         return (
             <div className={classes.chatBoardWrapper}>
                 <div className={classes.chatBoardHeader}>
@@ -325,7 +400,7 @@ class ChatBoard extends React.Component {
                     <p>Tony Tran</p>
                 </div>
                 <div className={classes.chatBoardContent}>
-                    {dataChatBoard && this.viewMessages().map((item, index) => {
+                    {dataMessagesChatBoard && this.viewMessages().map((item, index) => {
                        return this.viewItemMessage(item)
                     })}
                 </div>
@@ -372,12 +447,73 @@ class ChatBoard extends React.Component {
                             />
                         </div>
                     </Popover>}
-                    <img
-                        className="icOpenSticker"
-                        src={CaroIcon}
-                        alt="icon open sticker"
-                        onClick={this.openPopoverCreateGroupBoard}
-                    />
+                    {
+                        dataInfoChatBoard
+                            ?
+                            dataInfoChatBoard.chatBoxType === GROUP_CHAT
+                                ?
+                                <React.Fragment>
+                                    <img
+                                        className="icOpenSticker"
+                                        src={CaroIcon}
+                                        alt="icon open sticker"
+                                        onClick={this.openPopoverCreateGroupBoard}
+                                    />
+                                    {popoverCreateGroupBoard && <Popover
+                                        open={true}
+                                        anchorEl={popoverCreateGroupBoard}
+                                        onClose={this.closePopoverCreateGroupBoard}
+                                        anchorOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'center',
+                                        }}
+                                        transformOrigin={{
+                                            vertical: 'bottom',
+                                            horizontal: 'left',
+                                        }}
+                                    >
+                                        <div className={classes.createGroupBoardPopover}>
+                                            <Autocomplete
+                                                multiple
+                                                id="checkboxes-tags-demo"
+                                                options={this.showOptionsAllUsersChatBoard}
+                                                disableCloseOnSelect
+                                                getOptionLabel={(option) => option.displayName}
+                                                onChange={this.handleChessmansChange}
+                                                renderOption={(option, {selected}) => (
+                                                    <React.Fragment>
+                                                        <Checkbox
+                                                            icon={icon}
+                                                            checkedIcon={checkedIcon}
+                                                            style={{marginRight: 8}}
+                                                            checked={selected}
+                                                        />
+                                                        {option.displayName}
+                                                    </React.Fragment>
+                                                )}
+                                                style={{width: 500}}
+                                                renderInput={(params) => (
+                                                    <TextField {...params} variant="outlined" label="Checkboxes"
+                                                               placeholder="Favorites"/>
+                                                )}
+                                            />
+                                        </div>
+                                    </Popover>}
+                                </React.Fragment>
+                                :
+                                (dataInfoChatBoard.chatBoxType === PRIVATE_CHAT)
+                                    ?
+                                    <img
+                                        className="icOpenSticker"
+                                        src={CaroIcon}
+                                        alt="icon open sticker"
+                                        onClick={this.createPrivateBoard}
+                                    />
+                                    :
+                                    ''
+                            :
+                            ''
+                    }
                     <input
                         className="viewInput"
                         placeholder="Type your message..."
@@ -404,8 +540,9 @@ ChatBoard.propTypes = {
 
 const mapStateToProps = state => ({
     dataUserAuth: state.authReducer.dataUserAuth,
-    dataChatBoard: state.gameReducer.dataChatBoard,
-    dataUser: state.gameReducer.dataUser
+    dataMessagesChatBoard: state.gameReducer.dataMessagesChatBoard,
+    dataUser: state.gameReducer.dataUser,
+    dataInfoChatBoard: state.gameReducer.dataInfoChatBoard,
 });
 
 const mapDispatchToProps = (dispatch) => {

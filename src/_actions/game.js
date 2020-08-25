@@ -43,14 +43,28 @@ export const saveDataBoardTrainingWithAI = (dataTraining) => {
 //     }
 // }
 
-export const setDataChatBoard = (idChatBox) => {
+export const setDataMessagesChatBoard = (idChatBox) => {
     return (dispatch) => {
         firebase.database().ref('messages/' + idChatBox).on('value', (snap) => {
             if (snap.val()) {
                 console.log(snap.val());
                 dispatch({
-                    type: types.GAME_SET_DATA_CHAT_BOARD,
-                    dataChatBoard: snap.val()
+                    type: types.GAME_SET_DATA_MESSAGE_CHAT_BOARD,
+                    dataMessagesChatBoard: snap.val()
+                })
+            }
+        });
+    }
+}
+
+export const setDataInfoChatBoard = (idChatBox) => {
+    return (dispatch) => {
+        firebase.database().ref('chats/' + idChatBox).on('value', (snap) => {
+            if (snap.val()) {
+                console.log(snap.val());
+                dispatch({
+                    type: types.GAME_SET_DATA_INFO_CHAT_BOARD,
+                    dataInfoChatBoard: snap.val()
                 })
             }
         });

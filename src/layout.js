@@ -22,7 +22,7 @@ import firebase from "./firebase";
 import PublicRoute from "./PublicRoute";
 import Auth from "./component/Auth/Auth";
 import {PERMISSION_USER} from "./constants/constants";
-import ChatBoard from "./theme/ChatBoard";
+import ChatBoard from "./theme/Chat/ChatBoard";
 const styles = theme => ({
     legalResponsibleBlock: {
         backgroundColor: '#e0e7f2'

@@ -6,13 +6,9 @@ import {compose} from "redux";
 import Footer from "../Footer";
 import Header from "../Header";
 import Content from "../Content";
-import Board from "../../theme/Game/Board";
-import {BOARD_GROUP, BOARD_TW0, GROUP_BOARD} from "../../constants/constants";
-import Button from "@material-ui/core/Button";
 import ListChatBoard from "./ListChatBoard";
-import {paramsToObject} from "../../functions/functions";
 import firebase from "../../firebase";
-import ChatBoard from "../../theme/ChatBoard";
+import ChatBoard from "../../theme/Chat/ChatBoard";
 
 const styles = theme => ({
     chatPageWrapper: {

@@ -44,7 +44,8 @@ const styles = theme => ({
         '& button': {
             margin: '1rem 0rem',
         }
-    }
+    },
+
 });
 class ListChatBoard extends React.Component {
 
@@ -140,6 +141,8 @@ class ListChatBoard extends React.Component {
 
             dataInitChatBox[dataUser.userId] = 2;
             dataInitChatBox[dataUserPrivateChat.userId] = 1;
+            dataInitChatBox[dataUser.userId + '_checkMember'] = true;
+            dataInitChatBox[dataUserPrivateChat.userId + '_checkMember'] = 1;
             dataInitChatBox.dataMembers = dataMembers;
 
             firebase.database().ref('chats/' + idChatBox).set(dataInitChatBox, (error) => {
@@ -191,7 +194,9 @@ class ListChatBoard extends React.Component {
                     idChatBoxCurrent: idChatBox,
                     idChatBoxChange: false
                 });
-                this.props.setDataChatBoard(idChatBox);
+                this.props.setDataMessagesChatBoard(idChatBox);
+                console.log('setDataInfoChatBoard')
+                this.props.setDataInfoChatBoard(idChatBox);
             }
         }
     }
@@ -213,7 +218,7 @@ class ListChatBoard extends React.Component {
                 })
             }
         });
-        this.viewDataUserById(this.props.dataUser.userId);
+        // this.viewDataUserById(this.props.dataUser.userId);
     }
 
     openPopoverCreatePrivateChat(event) {
@@ -347,14 +352,18 @@ class ListChatBoard extends React.Component {
         const dataUserId = {
             [dataUser.userId]: 2
         };
+        const dataUserIdCheckMember = {
+            [dataUser.userId]: true
+        };
         const dataMembers = {
-            [dataUser.userId]: dataUser
+            [dataUser.userId + '_checkMember']: true
         };
         // dataMembers.push(dataUser);
         dataUserGroupChat.map((item, index) => {
             // dataMembers.push(item);
             dataUserId[item.userId] = 1;
             dataMembers[item.userId] = dataUser;
+            dataUserIdCheckMember[item.userId + '_checkMember'] = true;
         });
         const dataInitChatBox = {
             idChatBox: idChatBox,
@@ -365,7 +374,8 @@ class ListChatBoard extends React.Component {
             chatBoxType: GROUP_CHAT,
             updatedAt: new Date().getTime(),
             dataMembers: dataMembers,
-            ...dataUserId
+            ...dataUserId,
+            ...dataUserIdCheckMember
         };
 
         console.log(dataInitChatBox);
@@ -423,10 +433,10 @@ class ListChatBoard extends React.Component {
 
     showChats() {
         const {
-            dataUserAuth
+            dataUser
         } = this.props;
-
-        firebase.database().ref('chats').orderByChild(dataUserAuth.uid).on('value', (snap) => {
+        console.log(dataUser.userId);
+        firebase.database().ref('chats').orderByChild(dataUser.userId + '_checkMember').equalTo(true).on('value', (snap) => {
             if (snap.val()) {
                 let dataAllChatBoxTemp = [];
                 Object.keys(snap.val()).map((key, index)=>{
@@ -444,15 +454,15 @@ class ListChatBoard extends React.Component {
         });
     }
 
-    async viewDataUserById(userId) {
-        return firebase.database().ref('users/' + userId).on('value', (snap) => {
-            if (snap.val()) {
-                return snap.val();
-            } else {
-                return null;
-            }
-        });
-    }
+    // async viewDataUserById(userId) {
+    //     return firebase.database().ref('users/' + userId).on('value', (snap) => {
+    //         if (snap.val()) {
+    //             return snap.val();
+    //         } else {
+    //             return null;
+    //         }
+    //     });
+    // }
 
     // viewDataUserById(userId) {
     //     let data = null;
@@ -643,12 +653,14 @@ ListChatBoard.propTypes = {
 const mapStateToProps = state => ({
     dataUserAuth: state.authReducer.dataUserAuth,
     dataUser: state.gameReducer.dataUser,
+    dataInfoChatBoard: state.gameReducer.dataInfoChatBoard,
 
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setDataChatBoard: (idChatBox) => dispatch(gameActions.setDataChatBoard(idChatBox))
+        setDataMessagesChatBoard: (idChatBox) => dispatch(gameActions.setDataMessagesChatBoard(idChatBox)),
+        setDataInfoChatBoard: (idChatBox) => dispatch(gameActions.setDataInfoChatBoard(idChatBox))
     }
 };
 

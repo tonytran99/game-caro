@@ -359,7 +359,7 @@ class ListChatBoard extends React.Component {
         dataUserGroupChat.map((item, index) => {
             // dataMembers.push(item);
             dataUserId[item.userId + '_checkUpdate'] = 1;
-            dataMembers[item.userId] = dataUser;
+            dataMembers[item.userId] = item;
             dataUserIdCheckMember[item.userId + '_checkMember'] = true;
         });
         const dataInitChatBox = {

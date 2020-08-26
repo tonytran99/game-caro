@@ -78,9 +78,14 @@ class ChessBoard extends React.Component {
     joinChessBoard(userIdChessman, userId) {
         const {
             dataChessBoard,
-            chessBoardType
+            chessBoardType,
+            dataUser
         } = this.props;
         dataChessBoard[userIdChessman] = userId;
+        if (!dataChessBoard.dataMembersBoard[userId]) {
+            dataChessBoard.dataMembersBoard[userId] = dataUser;
+            dataChessBoard.chessBoardOpen = false;
+        }
         this.props.saveDataChessBoard(this.props.match.params.idChessBoard, dataChessBoard);
     }
 
@@ -238,6 +243,12 @@ class ChessBoard extends React.Component {
             checkHasChessmanIcon = true;
         }
         console.log(checkHasChessmanIcon);
+        let checkUserIdChessmanAB = dataChessBoard && dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB;
+        let checkIconChessmanAB = dataChessBoard && dataChessBoard.iconChessmanA && dataChessBoard.iconChessmanB;
+        let checkIsChessman = false;
+        if (checkUserIdChessmanAB) {
+            checkIsChessman = [dataChessBoard.userIdChessmanA, dataChessBoard.userIdChessmanB].includes(dataUser.userId)
+        }
         return (
             <React.Fragment>
                 <Header />
@@ -246,8 +257,10 @@ class ChessBoard extends React.Component {
                         {
                             dataChessBoard
                             ?
-                            dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB && dataChessBoard.iconChessmanA && dataChessBoard.iconChessmanB
+                                checkUserIdChessmanAB
                             ?
+                                    checkIconChessmanAB
+                                    ?
                                 <Board
                                     size={dataChessBoard.dataBoard && dataChessBoard.dataBoard.sizeChessBoard ? dataChessBoard.dataBoard.sizeChessBoard : 10}
                                     chessmanA={dataChessBoard.userIdChessmanA}
@@ -260,31 +273,12 @@ class ChessBoard extends React.Component {
                                     checkWinChessman={this.checkWinChessman}
                                     chessBoardType={CHESS_BOARD_TYPE_ONLINE}
                                     chessmanUserId={dataUser.userId}
+                                    canPlayChess={checkIsChessman}
                                 />
-                                :
-                                ![dataChessBoard.userIdChessmanA, dataChessBoard.userIdChessmanB].includes(dataUser.userId)
-                                ?
-                                    <div className='sds'>
-                                        <Button
-                                            className={classes.joinChessBoard}
-                                            onClick={() => {
-                                                if (!dataChessBoard.userIdChessmanA) {
-                                                    this.joinChessBoard('userIdChessmanA', dataUser.userId);
-                                                } else if (!dataChessBoard.userIdChessmanB) {
-                                                    this.joinChessBoard('userIdChessmanB', dataUser.userId);
-                                                }
-                                            }}
-                                        >
-                                            join chess board
-                                        </Button>
-                                    </div>
-                                :
-                                    (!(dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB))
-                                ?
-                                        <div>Doi thang kia join vao da</div>
-                                        :
-                                    dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB && !checkHasChessmanIcon
+                                : !checkHasChessmanIcon
                                     ?
+                                        checkIsChessman
+                                        ?
                                         <div className={classes.setupDataBoard}>
                                             <Button aria-controls="simple-menu" aria-haspopup="true" onClick={this.openMenuSelectChessmanIcon}>
                                                 {dataSetupChessBoard && dataSetupChessBoard.iconChessman &&
@@ -317,10 +311,31 @@ class ChessBoard extends React.Component {
                                                 Submit Setup
                                             </Button>
                                         </div>
+                                            :
+                                            <div>Van chua duoc setup</div>
                                         :
                                         <div>Doi ty thang kia setup da</div>
+                                    :
+                                    ![dataChessBoard.userIdChessmanA, dataChessBoard.userIdChessmanB].includes(dataUser.userId)
+                                        ?
+                                        <div className='sds'>
+                                            <Button
+                                                className={classes.joinChessBoard}
+                                                onClick={() => {
+                                                    if (!dataChessBoard.userIdChessmanA) {
+                                                        this.joinChessBoard('userIdChessmanA', dataUser.userId);
+                                                    } else if (!dataChessBoard.userIdChessmanB) {
+                                                        this.joinChessBoard('userIdChessmanB', dataUser.userId);
+                                                    }
+                                                }}
+                                            >
+                                                join chess board
+                                            </Button>
+                                        </div>
+                                        :
+                                        <div>Doi thang kia join vao da</div>
                                 :
-                                <div>tu tu da</div>
+                                <div>'loading'</div>
                         }
 
                     </div>

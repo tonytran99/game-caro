@@ -10,7 +10,10 @@ import Content from "../Content";
 import Button from "@material-ui/core/Button";
 import {NavLink} from "react-router-dom";
 import * as links from "./../../constants/links";
-import {PRIVATE_CHAT} from "../../constants/constants";
+import {MESSAGE_TYPE_CREATE_PRIVATE_BOARD, PRIVATE_BOARD, PRIVATE_CHAT} from "../../constants/constants";
+import Popover from "@material-ui/core/Popover";
+import Input from "@material-ui/core/Input";
+import firebase from "../../firebase";
 
 const styles = theme => ({
     welcomeWrapper: {
@@ -34,48 +37,87 @@ class Welcome extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isSignedIn: true
+            popoverCreatePrivateBoard: null,
+            dataInitPrivateBoard: {
+                sizeChessBoard: 10,
+            },
         };
 
-        // this.signOut = this.signOut.bind(this);
+        this.openPopoverCreatePrivateBoard = this.openPopoverCreatePrivateBoard.bind(this);
+        this.closePopoverCreatePrivateBoard = this.closePopoverCreatePrivateBoard.bind(this);
+        this.createChessBoard = this.createChessBoard.bind(this);
+        this.handleInitPrivateBoardChange = this.handleInitPrivateBoardChange.bind(this);
     }
 
     componentDidMount() {
 
     }
 
+    openPopoverCreatePrivateBoard(event) {
+        this.setState({
+            popoverCreatePrivateBoard: event.currentTarget
+        })
+    }
+
+    closePopoverCreatePrivateBoard() {
+        this.setState({
+            popoverCreatePrivateBoard: null
+        });
+    }
     createChessBoard() {
         const {
-            dataUserAuth
+            dataUser
         } = this.props;
         const {
-
+            dataInitPrivateBoard
         } = this.state;
-        const idChatBox = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime();
-
-        const dataInitChatBox = {
-            idChatBox: dataUserAuth.id,
-            userIdMemberA: null,
-            userIdMemberB: null,
-            photoChatBox: null,
-            dataMemberA: {
-
+        const idChessBoard = dataUser.userId + '_' + new Date().getTime();
+        const dataChessBoard = {
+            idChessBoard: idChessBoard,
+            dataBoard: {
+                sizeChessBoard: dataInitPrivateBoard.sizeChessBoard,
             },
-            dataMemberB: {
-
+            userIdChessmanA: dataUser.userId,
+            userIdChessmanB: null,
+            chessBoardType: PRIVATE_BOARD,
+            createBy: dataUser.userId,
+            dataMembersBoard: {
+                [dataUser.userId]: dataUser
             },
-            dataMembersUpdate: [
+            chessBoardOpen: true,
+        }
 
-            ],
-            chatBoxType: PRIVATE_CHAT,
-            updatedAt: new Date(),
-        };
+        // console.log(dataChessBoard);
+
+        firebase.database().ref('chessBoards/' + idChessBoard).set(dataChessBoard, (error) => {
+            if (error) {
+                // this.setState({
+                //     popoverCreateGroupChat: null,
+                //     photoChatBox: null,
+                //     photoChatBoxPreview: '',
+                //     photoChatBoxName: '',
+                // })
+            } else {
+
+            }
+        });
+
+    }
+    handleInitPrivateBoardChange(name, value) {
+        const {
+            dataInitPrivateBoard
+        } = this.state;
+        dataInitPrivateBoard[name] = value;
+        this.setState({
+            dataInitPrivateBoard: dataInitPrivateBoard
+        })
     }
 
     render() {
-        // const {
-        //
-        // } = this.state;
+        const {
+            popoverCreatePrivateBoard,
+            dataInitPrivateBoard
+        } = this.state;
         const {
             classes,
             dataUserAuth
@@ -105,12 +147,12 @@ class Welcome extends React.Component {
                                 go to training with yourself
                             </Button>
                         </NavLink>
-                        {dataUserAuth && <Button
-                            className={classes.btnCreateChessBoard}
-                            onClick={() => this.createChessBoard()}
-                        >
-                            Create Private Chat
-                        </Button>}
+                        {/*{dataUserAuth && <Button*/}
+                        {/*    className={classes.btnCreateChessBoard}*/}
+                        {/*    onClick={() => this.createChessBoard()}*/}
+                        {/*>*/}
+                        {/*    Create Private Chat*/}
+                        {/*</Button>}*/}
                         {dataUserAuth && <NavLink
                             to={links.LINK_CHAT_PAGE}
                         >
@@ -120,9 +162,51 @@ class Welcome extends React.Component {
                                 Go To Chat Page
                             </Button>
                         </NavLink>}
+                        {dataUserAuth && <NavLink
+                            to={links.LINK_LIST_CHESS_BOARD}
+                        >
+                            <Button
+                                className={classes.goToChatPage}
+                            >
+                                Go To Chess Page
+                            </Button>
+                        </NavLink>}
+                        {dataUserAuth && <React.Fragment>
+                            <Button
+                                onClick={this.openPopoverCreatePrivateBoard}
+                            >
+                                create chess board
+                            </Button>
+                            {popoverCreatePrivateBoard && <Popover
+                                open={true}
+                                anchorEl={popoverCreatePrivateBoard}
+                                onClose={this.closePopoverCreatePrivateBoard}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'center',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                            >
+                                <div className={classes.createPrivateBoardPopover}>
+                                    <Input
+                                        type="number"
+                                        name="sizeChessBoard"
+                                        value={dataInitPrivateBoard.sizeChessBoard}
+                                        onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}
+                                    />
+                                    <Button
+                                        onClick={this.createChessBoard}
+                                    >
+                                        create private board
+                                    </Button>
+                                </div>
+                            </Popover>}
+                        </React.Fragment>}
                     </div>
                 </Content>
-                {/*{!dataUser ? <AuthBlock /> : <span>sdds sd</span>}*/}
                 <Footer />
             </React.Fragment>
         );
@@ -135,7 +219,8 @@ Welcome.propTypes = {
 
 
 const mapStateToProps = state => ({
-    dataUserAuth: state.authReducer.dataUserAuth
+    dataUserAuth: state.authReducer.dataUserAuth,
+    dataUser: state.gameReducer.dataUser,
 });
 
 const mapDispatchToProps = (dispatch) => {

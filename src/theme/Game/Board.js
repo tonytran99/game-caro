@@ -151,6 +151,7 @@ class Board extends React.Component {
             iconChessmanA,
             iconChessmanB,
             dataBoardTrainingDefault,
+            canPlayChess
         } = this.props;
 
         return (
@@ -182,7 +183,9 @@ class Board extends React.Component {
                                         }}
                                         onClick={() => {
                                             if (cell === CHESSMAN_NONE) {
-                                                this.playChessman(x, y);
+                                                if (canPlayChess || canPlayChess === undefined) {
+                                                    this.playChessman(x, y);
+                                                }
                                             }
                                         }}
                                     >

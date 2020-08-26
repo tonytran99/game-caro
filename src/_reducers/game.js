@@ -12,6 +12,7 @@ const initState = {
     dataInfoChatBoard: null,
     dataChessBoard: null,
     dataChessmans: [],
+    dataListChessBoard: []
 }
 const gameReducer = (state = initState, action) => {
     switch (action.type) {
@@ -79,6 +80,11 @@ const gameReducer = (state = initState, action) => {
             return {
                 ...state,
                 dataChessmans: action.dataChessmans
+            }
+        case types.GAME_SHOW_LIST_CHESS_BOARD:
+            return {
+                ...state,
+                dataListChessBoard: action.dataListChessBoard
             }
         default:
             return state;

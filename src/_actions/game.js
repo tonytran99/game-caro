@@ -92,7 +92,7 @@ export const saveDataChessBoard = (idChessBoard, dataChessBoard) => {
 
 export const showDataChessmans = () => {
     return (dispatch) => {
-        firebase.database().ref('chessmans/').orderByChild('default').on('value', (snap) => {
+        firebase.database().ref('chessmans/').on('value', (snap) => {
             if (snap.val()) {
                 let dataChessmansTemp = [];
                 Object.keys(snap.val()).map((key, index)=>{
@@ -125,6 +125,25 @@ export const showDataChessmans = () => {
                 dispatch({
                     type: types.GAME_SHOW_DATA_CHESSMANS,
                     dataChessmans: dataChessmansTemp
+                });
+            }
+        });
+    };
+};
+
+export const showListChessBoard = () => {
+    return (dispatch) => {
+        firebase.database().ref('chessBoards/').orderByChild('chessBoardOpen').equalTo(true).on('value', (snap) => {
+            if (snap.val()) {
+                console.log(snap.val());
+                let dataListChessBoardTemp = [];
+                Object.keys(snap.val()).map((key, index)=>{
+                    dataListChessBoardTemp.push(snap.val()[key]);
+                });
+                console.log(dataListChessBoardTemp);
+                dispatch({
+                    type: types.GAME_SHOW_LIST_CHESS_BOARD,
+                    dataListChessBoard: dataListChessBoardTemp
                 });
             }
         });

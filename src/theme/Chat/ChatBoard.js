@@ -133,11 +133,15 @@ class ChatBoard extends React.Component {
             popoverListSticker: null,
             popoverCreateGroupBoard: null,
             popoverCreatePrivateBoard: null,
-            dataChessmans: [],
+            // dataChessmans: [],
             dataAllUsersGroupChat: [],
             dataInitPrivateBoard: {
                 sizeChessBoard: 10,
             },
+            dataInitGroupBoard: {
+                sizeChessBoard: 10,
+                dataChessmans: [],
+            }
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -159,7 +163,8 @@ class ChatBoard extends React.Component {
         this.createGroupBoard = this.createGroupBoard.bind(this);
 
         this.handleInitPrivateBoardChange = this.handleInitPrivateBoardChange.bind(this);
-
+        this.handleInitGroupBoardChange = this.handleInitGroupBoardChange.bind(this);
+        this.showOptionsAllUsersChatBoard = this.showOptionsAllUsersChatBoard.bind(this);
     }
 
     componentDidMount() {
@@ -175,6 +180,17 @@ class ChatBoard extends React.Component {
             dataInitPrivateBoard: dataInitPrivateBoard
         })
     }
+
+    handleInitGroupBoardChange(name, value) {
+        const {
+            dataInitGroupBoard
+        } = this.state;
+        dataInitGroupBoard[name] = value;
+        this.setState({
+            dataInitGroupBoard: dataInitGroupBoard
+        })
+    }
+
 
     onSendMessage(contentMessage, typeMessage) {
         const {
@@ -334,6 +350,7 @@ class ChatBoard extends React.Component {
     }
 
     openPopoverCreateGroupBoard(event) {
+        this.showOptionsAllUsersChatBoard();
         this.setState({
             popoverCreateGroupBoard: event.currentTarget
         })
@@ -369,7 +386,8 @@ class ChatBoard extends React.Component {
             userIdChessmanB: null,
             chessBoardType: PRIVATE_BOARD,
             createBy: dataUser.userId,
-            dataMembersBoard: dataMembersBoard
+            dataMembersBoard: dataMembersBoard,
+            chessBoardOpen: false,
         }
 
         firebase.database().ref('chessBoards/' + idChessBoard).set(dataChessBoard, (error) => {
@@ -388,7 +406,48 @@ class ChatBoard extends React.Component {
     }
 
     createGroupBoard() {
+        const {
+            dataInfoChatBoard,
+            dataUser
+        } = this.props;
+        const {
+            dataInitGroupBoard
+        } = this.state;
+        console.log(dataInitGroupBoard);
+        if (dataInitGroupBoard.dataChessmans.length === 2) {
+            const idChessBoard = dataUser.userId + '_' + dataInfoChatBoard.idChatBox + '_' + new Date().getTime();
+            const dataMembersBoard = {};
+            for (let [key, value] of Object.entries(dataInfoChatBoard.dataMembers)) {
+                dataMembersBoard[key] = value;
+            }
+            const dataChessBoard = {
+                idChessBoard: idChessBoard,
+                dataBoard: {
+                    sizeChessBoard: dataInitGroupBoard.sizeChessBoard,
+                },
+                userIdChessmanA: dataInitGroupBoard.dataChessmans[0].userId,
+                userIdChessmanB: dataInitGroupBoard.dataChessmans[1].userId,
+                chessBoardType: GROUP_BOARD,
+                createBy: dataUser.userId,
+                dataMembersBoard: dataMembersBoard,
+                chessBoardOpen: false,
+            }
 
+            console.log(dataChessBoard);
+
+            firebase.database().ref('chessBoards/' + idChessBoard).set(dataChessBoard, (error) => {
+                if (error) {
+                    // this.setState({
+                    //     popoverCreateGroupChat: null,
+                    //     photoChatBox: null,
+                    //     photoChatBoxPreview: '',
+                    //     photoChatBoxName: '',
+                    // })
+                } else {
+                    this.onSendMessage(idChessBoard, MESSAGE_TYPE_CREATE_GROUP_BOARD);
+                }
+            });
+        }
     }
 
     closePopoverCreateGroupBoard() {
@@ -416,7 +475,6 @@ class ChatBoard extends React.Component {
     }
 
     getSticker(urlSticker) {
-        console.log(urlSticker);
         this.onSendMessage(urlSticker, MESSAGE_TYPE_STICKER);
         this.setState({
             popoverListSticker: null
@@ -424,16 +482,29 @@ class ChatBoard extends React.Component {
     }
 
     handleChessmansChange(event, value) {
+        const {
+            dataInitGroupBoard
+        } = this.state;
+        dataInitGroupBoard.dataChessmans = value;
         this.setState({
-            dataChessmans: value,
+            dataInitGroupBoard: dataInitGroupBoard,
         })
     }
 
     showOptionsAllUsersChatBoard() {
         const {
-            dataAllUsersGroupChat
+            dataInfoChatBoard
         } = this.props;
+        let dataAllUsersGroupChat = [];
+        if (dataInfoChatBoard && dataInfoChatBoard.dataMembers) {
+            for (let [key, value] of Object.entries(dataInfoChatBoard.dataMembers)) {
+                dataAllUsersGroupChat.push(value);
+            }
+        }
 
+        this.setState({
+            dataAllUsersGroupChat: dataAllUsersGroupChat
+        })
     }
 
     render() {
@@ -447,7 +518,7 @@ class ChatBoard extends React.Component {
             dataAllUsersGroupChat,
             popoverCreatePrivateBoard,
             dataInitPrivateBoard,
-
+            dataInitGroupBoard
         } = this.state;
         const {
             classes,
@@ -458,7 +529,6 @@ class ChatBoard extends React.Component {
         } = this.props;  
         
         
-        console.log(dataInfoChatBoard);
         return (
             <div className={classes.chatBoardWrapper}>
                 <div className={classes.chatBoardHeader}>
@@ -542,7 +612,7 @@ class ChatBoard extends React.Component {
                                             <Autocomplete
                                                 multiple
                                                 id="checkboxes-tags-demo"
-                                                options={this.showOptionsAllUsersChatBoard}
+                                                options={dataAllUsersGroupChat}
                                                 disableCloseOnSelect
                                                 getOptionLabel={(option) => option.displayName}
                                                 onChange={this.handleChessmansChange}
@@ -563,6 +633,17 @@ class ChatBoard extends React.Component {
                                                                placeholder="Favorites"/>
                                                 )}
                                             />
+                                            <Input
+                                                type="number"
+                                                name="sizeChessBoard"
+                                                value={dataInitPrivateBoard.sizeChessBoard}
+                                                onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}
+                                            />
+                                            <Button
+                                                onClick={this.createGroupBoard}
+                                            >
+                                                create group board
+                                            </Button>
                                         </div>
                                     </Popover>}
                                 </React.Fragment>

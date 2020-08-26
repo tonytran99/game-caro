@@ -6,8 +6,9 @@ import {compose} from "redux";
 import Footer from "../Footer";
 import Header from "../Header";
 import Content from "../Content";
-import Board from "../../theme/Game/Board";
-import {BOARD_GROUP, BOARD_TW0, GROUP_BOARD} from "../../constants/constants";
+import * as gameActions from "../../_actions/game";
+import {NavLink} from "react-router-dom";
+import * as links from "../../constants/links";
 
 const styles = theme => ({
     trainingWithAIWrapper: {
@@ -28,7 +29,7 @@ class ListChessBoard extends React.Component {
     }
 
     componentDidMount() {
-
+        this.props.showListChessBoard();
     }
 
     render() {
@@ -39,15 +40,27 @@ class ListChessBoard extends React.Component {
             classes,
             dataUserAuth,
             match,
-
+            dataListChessBoard
         } = this.props;
-
+        console.log(dataListChessBoard);
         return (
             <React.Fragment>
                 <Header />
                 <Content>
                     <div className={classes.trainingWithAIWrapper}>
-                       List Chess man
+                        {
+                            dataListChessBoard.map((item, index) => {
+                                return (
+                                    <div>
+                                    <NavLink
+                                        to={links.LINK_CHESS_BOARD.replace(":idChessBoard", item.idChessBoard)}
+                                    >
+                                        <span>chess board <span>{index}</span></span>
+                                    </NavLink>
+                                    </div>
+                                );
+                            })
+                        }
                     </div>
                 </Content>
                 {/*{!dataUser ? <AuthBlock /> : <span>sdds sd</span>}*/}
@@ -63,12 +76,13 @@ ListChessBoard.propTypes = {
 
 
 const mapStateToProps = state => ({
-    dataUserAuth: state.authReducer.dataUserAuth
+    dataUserAuth: state.authReducer.dataUserAuth,
+    dataListChessBoard: state.gameReducer.dataListChessBoard
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
-
+        showListChessBoard: () => dispatch(gameActions.showListChessBoard())
     }
 };
 

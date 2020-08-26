@@ -1,19 +1,18 @@
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-// import XHR from "i18next-xhr-backend";
 import translations_en from "./translations/en";
 import translations_vi from "./translations/vi";
+import {LANGUAGE_EN, LANGUAGE_VI} from "./constants/constants";
 
 
-export const LANGUAGE_ = "fr";
-export const LANGUAGE_EN = "en";
+const language_translate = localStorage.getItem("language_translate") && [LANGUAGE_EN, LANGUAGE_VI] ? JSON.parse(localStorage.getItem("language_translate")) : null;
+
 i18n
     // .use(XHR)
     .use(LanguageDetector)
     .init({
         // we init with resources
-        // lng:DEFAULT_LOCALE,
-        // fallbackLng: DEFAULT_LOCALE,
+        lng:language_translate,
         debug: false,
         defaultNS: "translations",
         interpolation: {

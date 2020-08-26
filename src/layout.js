@@ -7,11 +7,9 @@ import {connect} from "react-redux";
 import {BrowserRouter as Router} from "react-router-dom"
 import {I18nextProvider} from "react-i18next";
 import rootReducer from "./_reducers";
-// import i18n from './i18n';
 import { createStore, applyMiddleware } from "redux";
 import './css/app.scss';
 import reduxThunk from "redux-thunk";
-
 import * as links from "./constants/links";
 import * as authActions from "./_actions/auth";
 import * as gameActions from "./_actions/game";
@@ -22,28 +20,24 @@ import firebase from "./firebase";
 import PublicRoute from "./PublicRoute";
 import Auth from "./component/Auth/Auth";
 import {PERMISSION_USER} from "./constants/constants";
-import ChatBoard from "./theme/Chat/ChatBoard";
+import backgroundDefault from "./images/background_default.jpg";
+import i18n from "./i18n";
+import {withRouter} from "react-router";
+
 const styles = theme => ({
-    legalResponsibleBlock: {
-        backgroundColor: '#e0e7f2'
+    layoutWrapper: {
+        backgroundColor: '#123152',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        height: '100%',
     }
 });
 const Welcome = lazy(() => import("./component/Welcome/Welcome"));
 const TrainingWithAI = lazy(() => import("./component/Game/TrainingWithAI"));
 const TrainingWithYourself = lazy(() => import("./component/Game/TrainingWithYourself"));
 
-const store = createStore(
-    rootReducer,
-    applyMiddleware(reduxThunk)
-);
-
-// firebase.initializeApp({
-//     apiKey: 'AIzaSyBCUeyx_VUdt7CyTFAX5JoSJmpeNqRSItg',
-//     authDomain: 'game-caro-a57c5.firebaseapp.com'
-// });
-
 class Layout extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -84,20 +78,24 @@ class Layout extends React.Component {
     render() {
         const {
             dataUserAuth,
-            dataUser
+            dataUser,classes,
+            match
         } = this.props;
+        console.log(match);
         return (
-            <div style={
+            <div
+                className={classes.layoutWrapper}
+                style={
                 dataUser && dataUser.background && dataUser.background.backgroundUrl ? {
                     backgroundImage: `url('${dataUser.background.backgroundUrl}')`,
 
             } : {
-                    backgroundColor: '#0a676b'
+                    backgroundImage: `url('${backgroundDefault}')`,
                 }
             }>
             <Router>
                 <I18nextProvider
-                    // i18n={ i18n }
+                    i18n={i18n}
                 >
                     <Suspense fallback={<LoadingAction/>}>
                         <Switch>
@@ -106,7 +104,6 @@ class Layout extends React.Component {
                                 exact={true}
                             >
                                 <Welcome />
-                                {/*<ChatBoard />*/}
                             </Route>
                             <Route
                                 path={links.LINK_TRAINING_WITH_AI}
@@ -155,5 +152,4 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation()
 ) (Layout);

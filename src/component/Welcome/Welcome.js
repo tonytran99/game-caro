@@ -14,10 +14,28 @@ import {MESSAGE_TYPE_CREATE_PRIVATE_BOARD, PRIVATE_BOARD, PRIVATE_CHAT} from "..
 import Popover from "@material-ui/core/Popover";
 import Input from "@material-ui/core/Input";
 import firebase from "../../firebase";
+import i18n from "../../i18n";
+import AppInput from "../../theme/AppInput";
 
 const styles = theme => ({
     welcomeWrapper: {
-
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+    },
+    btnWelcomePage: {
+        backgroundColor: '#dfe3f1',
+        textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        marginBottom: '1rem',
+        color: '#123152',
+        '&:hover': {
+            backgroundColor: '#dfe3f1',
+        }
     },
     goToTrainingWithAI: {
 
@@ -28,9 +46,30 @@ const styles = theme => ({
     goToChatPage: {
 
     },
+    goToListChessBoard: {
+
+    },
     btnCreateChessBoard: {
 
     },
+    submitCreateBoard: {
+        backgroundColor: '#123152',
+        textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        marginBottom: '1rem',
+        color: '#dfe3f1',
+        '&:hover': {
+            backgroundColor: '#123152',
+        }
+    },
+    createPrivateBoardPopover: {
+        padding: '1rem 0.5rem',
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: 11,
+    }
 });
 class Welcome extends React.Component {
 
@@ -120,62 +159,56 @@ class Welcome extends React.Component {
         } = this.state;
         const {
             classes,
-            dataUserAuth
+            dataUserAuth,
         } = this.props;
 
         return (
             <React.Fragment>
                 <Header />
                 <Content>
-
                     <div className={classes.welcomeWrapper}>
                         <NavLink
                             to={links.LINK_TRAINING_WITH_AI}
                         >
                             <Button
-                                className={classes.goToTrainingWithAI}
+                                className={classes.goToTrainingWithAI + ' ' + classes.btnWelcomePage}
                             >
-                                go to training with ai
+                                {i18n.t('welcome.goToTrainingWithAI')}
                             </Button>
                         </NavLink>
                         <NavLink
                             to={links.LINK_TRAINING_WITH_YOURSELF}
                         >
                             <Button
-                                className={classes.goToTrainingWithYourself}
+                                className={classes.goToTrainingWithYourself + ' ' + classes.btnWelcomePage}
                             >
-                                go to training with yourself
+                                {i18n.t('welcome.goToTrainingWithYourself')}
                             </Button>
                         </NavLink>
-                        {/*{dataUserAuth && <Button*/}
-                        {/*    className={classes.btnCreateChessBoard}*/}
-                        {/*    onClick={() => this.createChessBoard()}*/}
-                        {/*>*/}
-                        {/*    Create Private Chat*/}
-                        {/*</Button>}*/}
                         {dataUserAuth && <NavLink
                             to={links.LINK_CHAT_PAGE}
                         >
                             <Button
-                                className={classes.goToChatPage}
+                                className={classes.goToChatPage + ' ' + classes.btnWelcomePage}
                             >
-                                Go To Chat Page
+                                {i18n.t('welcome.goToChatPage')}
                             </Button>
                         </NavLink>}
                         {dataUserAuth && <NavLink
                             to={links.LINK_LIST_CHESS_BOARD}
                         >
                             <Button
-                                className={classes.goToChatPage}
+                                className={classes.goToListChessBoard + ' ' + classes.btnWelcomePage}
                             >
-                                Go To Chess Page
+                                {i18n.t('welcome.goToListChessBoard')}
                             </Button>
                         </NavLink>}
                         {dataUserAuth && <React.Fragment>
                             <Button
+                                className={classes.goToListChessBoard + ' ' + classes.btnWelcomePage}
                                 onClick={this.openPopoverCreatePrivateBoard}
                             >
-                                create chess board
+                                {i18n.t('welcome.createChessBoard')}
                             </Button>
                             {popoverCreatePrivateBoard && <Popover
                                 open={true}
@@ -187,20 +220,25 @@ class Welcome extends React.Component {
                                 }}
                                 transformOrigin={{
                                     vertical: 'bottom',
-                                    horizontal: 'left',
+                                    horizontal: 'center',
                                 }}
                             >
                                 <div className={classes.createPrivateBoardPopover}>
-                                    <Input
+                                    <AppInput
                                         type="number"
                                         name="sizeChessBoard"
                                         value={dataInitPrivateBoard.sizeChessBoard}
                                         onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}
+                                        inputProps={{
+                                            min: 10,
+                                            max: 20
+                                        }}
                                     />
                                     <Button
+                                        className={classes.submitCreateBoard}
                                         onClick={this.createChessBoard}
                                     >
-                                        create private board
+                                        {i18n.t('welcome.createChessBoard')}
                                     </Button>
                                 </div>
                             </Popover>}

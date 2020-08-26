@@ -11,6 +11,7 @@ import {NavLink} from "react-router-dom";
 import * as links from "./../../constants/links";
 import Content from "../Content";
 import Footer from "../Footer";
+import {withRouter} from "react-router";
 
 const styles = theme => ({
     authWrapper: {
@@ -68,9 +69,10 @@ class Auth extends React.Component {
         // } = this.state;
         const {
             classes,
-            dataUserAuth
+            dataUserAuth,
+            match
         } = this.props;
-
+        console.log(match);
         return (
             <div className={classes.authWrapper}>
                 <div className={classes.headerAuth}>
@@ -78,7 +80,7 @@ class Auth extends React.Component {
                         <img className="logo" src={LogoIcon} alt=""/>
                     </NavLink>
                 </div>
-                <Content>
+                <Content match={match}>
                     <StyledFirebaseAuth
                         uiConfig={uiConfig}
                         firebaseAuth={firebase.auth()}
@@ -108,5 +110,5 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation()
+    withRouter,
 ) (Auth);

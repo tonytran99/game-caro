@@ -6,7 +6,7 @@ import {compose} from "redux";
 import Footer from "../Footer";
 import Header from "../Header";
 import Content from "../Content";
-import Board from "../../theme/Game/Board";
+import Board from "./Board";
 import {
     BOARD_GROUP,
     BOARD_TW0,

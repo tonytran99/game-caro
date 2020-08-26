@@ -8,7 +8,7 @@ import Header from "../Header";
 import Content from "../Content";
 import ListChatBoard from "./ListChatBoard";
 import firebase from "../../firebase";
-import ChatBoard from "../../theme/Chat/ChatBoard";
+import ChatBoard from "./ChatBoard";
 
 const styles = theme => ({
     chatPageWrapper: {

@@ -7,7 +7,7 @@ import Footer from "../Footer";
 import Header from "../Header";
 import AuthBlock from "../Auth/Auth";
 import Content from "../Content";
-import Board from "../../theme/Game/Board";
+import Board from "./Board";
 import {CHESSMAN_YOURSELF_A, CHESSMAN_YOURSELF_B} from "../../constants/constants";
 import * as gameActions from "../../_actions/game";
 

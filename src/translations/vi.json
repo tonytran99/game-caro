@@ -1,12 +1,27 @@
 {
     "translations": {
-        "en": "English",
-        "vi": "Vietnamese",
+        "en": "Tiếng Anh",
+        "vi": "Tiếng Việt",
         "lang": "vi"
     },
     "management_background": {
         "upload_background": {
             "change_avatar": "df"
         }
+    },
+    "label": {
+        "goToHome": "Chuyển đến trang chủ"
+    },
+    "error": {
+        "404": {
+            "title": "Không tìm thấy trang!"
+        }
+    },
+    "welcome": {
+        "goToTrainingWithAI": "Luyện tập với máy",
+        "goToTrainingWithYourself": "Tự luyện tập",
+        "goToChatPage": "Đến trang trò chuyện",
+        "goToListChessBoard": "Đến đấu trường caro",
+        "createChessBoard": "Tạo bàn cờ caro"
     }
 }

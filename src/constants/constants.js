@@ -30,3 +30,12 @@ export const MESSAGE_TYPE_CREATE_PRIVATE_BOARD = 'MESSAGE_TYPE_CREATE_PRIVATE_BO
 export const CHESS_BOARD_TYPE_TRAINING_WITH_AI = 'CHESS_BOARD_TYPE_TRAINING_WITH_AI';
 export const CHESS_BOARD_TYPE_TRAINING_WITH_YOURSELF = 'CHESS_BOARD_TYPE_TRAINING_WITH_YOURSELF';
 export const CHESS_BOARD_TYPE_ONLINE = 'CHESS_BOARD_TYPE_ONLINE';
+
+export const LANGUAGE_EN = 'en';
+export const LANGUAGE_VI = 'vi';
+
+export const XS = 'xs';
+export const SM = 'sm';
+export const MD = 'md';
+export const LG = 'lg';
+export const XL = 'xl';

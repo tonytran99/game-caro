@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 import {compose} from "redux";
 import Footer from "../Footer";
 import Header from "../Header";
-import AuthBlock from "../Auth/Auth";
 import Content from "../Content";
 import Input from "@material-ui/core/Input";
 import firebase, {storage} from "../../firebase";
@@ -16,7 +15,7 @@ import {withTranslation} from "react-i18next";
 import * as gameActions from "../../_actions/game";
 
 const styles = theme => ({
-    userInfoWrapper: {
+    profileWrapper: {
         display: 'flex',
         flexDirection: 'column',
         width: 500,
@@ -31,7 +30,7 @@ const styles = theme => ({
         textTransform: 'initial',
     },
 });
-class UserInfo extends React.Component {
+class Profile extends React.Component {
 
     constructor(props) {
         super(props);
@@ -186,7 +185,7 @@ class UserInfo extends React.Component {
                 {isLoading && <LoadingAction />}
                 <Header />
                 <Content>
-                    <div className={classes.userInfoWrapper}>
+                    <div className={classes.profileWrapper}>
                         <Input
                             name="displayName"
                             value={displayName}
@@ -235,7 +234,7 @@ class UserInfo extends React.Component {
     }
 }
 
-UserInfo.propTypes = {
+Profile.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -257,4 +256,4 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
     withTranslation()
-) (UserInfo);
+) (Profile);

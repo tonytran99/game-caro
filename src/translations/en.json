@@ -8,5 +8,26 @@
         "upload_background": {
             "change_avatar": ""
         }
+    },
+    "label": {
+        "goToHome": "Go To Home"
+    },
+    "error": {
+        "404": {
+            "title": "Page Not Found!"
+        }
+    },
+    "welcome": {
+        "goToTrainingWithAI": "Training With AI",
+        "goToTrainingWithYourself": "Training With Yourself",
+        "goToChatPage": "Go To Chat Page",
+        "goToListChessBoard": "Go To Caro Arena",
+        "createChessBoard": "Create Chess Board"
+    },
+    "header": {
+        "menu_select": {
+            "background": "Background",
+            "chessman": "Chessman"
+        }
     }
 }

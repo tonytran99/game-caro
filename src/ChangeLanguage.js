@@ -1,10 +1,31 @@
 import React from "react";
-import { withTranslation } from "react-i18next";
 import i18n from "./i18n";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import Cookies from 'js-cookie';
-import moment from "moment";
+import {LANGUAGE_EN, LANGUAGE_VI, MD, SM} from "./constants/constants";
+import {compose} from "redux";
+import {withStyles} from "@material-ui/core/styles";
+
+const styles = theme => ({
+    changeLanguageWrapper: {
+        '& .itemMenu': {
+            color: '#ffdead',
+            fontWeight: 600,
+        },
+        '& svg': {
+            '& path': {
+                fill: '#ffdead',
+                stroke: '#ffdead',
+            }
+        }
+    },
+    itemSelectLanguage: {
+        '& .itemMenu': {
+            color: '#123152',
+            fontWeight: 700,
+        }
+    }
+});
 
 class ChangeLanguage extends React.Component{
     constructor(props) {
@@ -17,32 +38,39 @@ class ChangeLanguage extends React.Component{
 
     changeLanguage = (language) => {
         i18n.changeLanguage(language);
-        Cookies.set('_locale',language, { expires: 30, path: "/" });
-        moment.locale(language);
+        if (language) {
+            localStorage.setItem("language_translate", JSON.stringify(language));
+        } else {
+            localStorage.removeItem("language_translate");
+        }
         this.setState({
             language: language
         })
     };
 
     render() {
+        const {
+            classes
+        } = this.props;
+        const data = [
+            LANGUAGE_EN,
+            LANGUAGE_VI
+        ];
         return (
-            <div>
-                {typeof SUPPORTED_LOCALES === "object" && SUPPORTED_LOCALES.length > 1 && <Select
-                    name="selectedYear"
+            <div className={classes.changeLanguageWrapper}>
+                <Select
                     value={this.state.language}
-                    // displayEmpty
-                    // className={classes.selectButton}
                     onChange={(event) => this.changeLanguage(event.target.value)}
                 >
-                    {SUPPORTED_LOCALES.map((lang => <MenuItem value={lang}>
-                        {i18n.t('translations:translations.' + lang, {"lng": lang})}
+                    {data.map((lang => <MenuItem value={lang} className={classes.itemSelectLanguage}>
+                        <span className="itemMenu">{i18n.t('translations:translations.' + lang, {"lang": lang})}</span>
                     </MenuItem>))}
                 </Select>
-                }
             </div>
         );
     }
 }
 
-// extended main view with translate hoc
-export default ChangeLanguage;
+export default compose(
+    withStyles(styles),
+) (ChangeLanguage);

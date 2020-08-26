@@ -23,6 +23,8 @@ import { ReactComponent as ChessmanIcon } from "./../images/chessman_icon.svg";
 
 import Popover from "@material-ui/core/Popover";
 import {PERMISSION_ADMIN} from "../constants/constants";
+import ChangeLanguage from "../ChangeLanguage";
+import i18n from "../i18n";
 const styles = theme => ({
     headerWrapper: {
         display: 'flex',
@@ -45,9 +47,11 @@ const styles = theme => ({
             borderRadius: '50%',
         },
         '& .btnLogout': {
-            '& path': {
-                fill: '#fff!important',
-                stroke: '#fff!important',
+            '& svg': {
+                '& path': {
+                    fill: '#ffdead!important',
+                    stroke: '#ffdead!important',
+                }
             }
         },
         '& .btnLogin': {
@@ -58,8 +62,13 @@ const styles = theme => ({
         }
     },
     popoverMenu: {
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '1rem 0.5rem',
         '& .menuItemBackground': {
             '& button': {
+                margin: '0.5rem 0rem',
+                width: '100%',
                 '& svg': {
                     '& path': {
                         // fill: 'black!important',
@@ -141,11 +150,13 @@ class Header extends React.Component {
             <div className={classes.headerWrapper}>
                 <NavLink to={links.LINK_WELCOME}>
                 <img className="logo" src={LogoIcon} alt=""/>
+
                 </NavLink>
                 {
                     dataUserAuth
                     ?
                         <div className="leftHeader">
+                            <ChangeLanguage />
                             <Button
                                 onClick={(event) => this.handlePopoverMenuOpen(event)}
                             >
@@ -157,7 +168,7 @@ class Header extends React.Component {
                             >
                                 <LogoutIcon width={36} height={36} />
                             </Button>
-                            <NavLink to={links.LINK_USER_INFO}>
+                            <NavLink to={links.LINK_PROFILE}>
                                 <img className="avatarUser" src={dataUser && dataUser.avatarUrl ? dataUser.avatarUrl : UserIcon} alt=""/>
                             </NavLink>
                             {openPopoverMenu && <Popover
@@ -180,7 +191,7 @@ class Header extends React.Component {
                                     >
                                         <Button>
                                             <BackgroundIcon width={36} height={36} />
-                                            <span className="text">background</span>
+                                            <span className="text">{i18n.t('header.menu_select.background')}</span>
                                         </Button>
                                     </NavLink>
                                     {
@@ -191,7 +202,7 @@ class Header extends React.Component {
                                         >
                                             <Button>
                                                 <ChessmanIcon width={36} height={36} />
-                                                <span className="text">chessman</span>
+                                                <span className="text">{i18n.t('header.menu_select.chessman')}</span>
                                             </Button>
                                         </NavLink>
                                     }
@@ -200,6 +211,7 @@ class Header extends React.Component {
                         </div>
                         :
                         <div className="leftHeader">
+                            <ChangeLanguage />
                             <NavLink to={links.LINK_AUTH}>
                                 <Button
                                     className="btnLogin"
@@ -207,18 +219,6 @@ class Header extends React.Component {
                                     <LoginIcon width={36} height={36} />
                                 </Button>
                             </NavLink>
-                            <Dialog onClose={this.handleDialogAuthClose} aria-labelledby="simple-dialog-title" open={openDialogAuth}>
-                                <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText
-                                        id="scroll-dialog-description"
-                                        // ref={descriptionElementRef}
-                                        tabIndex={-1}
-                                    >
-                                        <AuthBlock />
-                                    </DialogContentText>
-                                </DialogContent>
-                            </Dialog>
                         </div>
                 }
             </div>

@@ -37,10 +37,8 @@ const gameReducer = (state = initState, action) => {
             }
         case types.GAME_SAVE_DATA_BOARD_TRAINING_WITH_YOURSELF:
             if (action.dataTraining) {
-                console.log('setItem')
                 localStorage.setItem("dataBoardTrainingWithYourself", JSON.stringify(action.dataTraining));
             } else {
-                console.log('removeItem')
                 localStorage.removeItem("dataBoardTrainingWithYourself");
             }
             return {
@@ -58,13 +56,11 @@ const gameReducer = (state = initState, action) => {
                 dataBoardTrainingWithAI: action.dataTraining
             }
         case types.GAME_SET_DATA_MESSAGE_CHAT_BOARD:
-            console.log(action.dataMessagesChatBoard)
             return {
                 ...state,
                 dataMessagesChatBoard: action.dataMessagesChatBoard
             }
         case types.GAME_SET_DATA_INFO_CHAT_BOARD:
-            console.log(action.dataInfoChatBoard)
             return {
                 ...state,
                 dataInfoChatBoard: action.dataInfoChatBoard

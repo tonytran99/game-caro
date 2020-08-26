@@ -7,7 +7,14 @@ import Footer from "../Footer";
 import Header from "../Header";
 import Content from "../Content";
 import Board from "../../theme/Game/Board";
-import {BOARD_GROUP, BOARD_TW0, CHESSMAN_YOURSELF_A, CHESSMAN_YOURSELF_B, GROUP_BOARD} from "../../constants/constants";
+import {
+    BOARD_GROUP,
+    BOARD_TW0,
+    CHESS_BOARD_TYPE_ONLINE,
+    CHESSMAN_YOURSELF_A,
+    CHESSMAN_YOURSELF_B,
+    GROUP_BOARD
+} from "../../constants/constants";
 import * as gameActions from "../../_actions/game";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
@@ -46,6 +53,8 @@ class ChessBoard extends React.Component {
         this.closeMenuSelectChessmanIcon = this.closeMenuSelectChessmanIcon.bind(this);
         this.handleChessmanChange = this.handleChessmanChange.bind(this);
         this.submitSetupChessBoard = this.submitSetupChessBoard.bind(this);
+        this.getDataBoardCurrent = this.getDataBoardCurrent.bind(this);
+        this.checkWinChessman = this.checkWinChessman.bind(this);
     }
 
     componentDidMount() {
@@ -68,7 +77,8 @@ class ChessBoard extends React.Component {
 
     joinChessBoard(userIdChessman, userId) {
         const {
-            dataChessBoard
+            dataChessBoard,
+            chessBoardType
         } = this.props;
         dataChessBoard[userIdChessman] = userId;
         this.props.saveDataChessBoard(this.props.match.params.idChessBoard, dataChessBoard);
@@ -107,15 +117,12 @@ class ChessBoard extends React.Component {
             dataSetupChessBoard,
             checkShowChessBoard
         } = this.state;
-        console.log(dataChessmans);
-        console.log(checkChess);
 
         if (dataChessBoard && dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB && !checkShowChessBoard) {
             this.setState({
                 checkShowChessBoard: true
             })
             if (dataChessBoard.userIdChessmanA === dataUser.userId) {
-                console.log('aaaaaaaaaaaaa')
                 this.setState({
                     checkChess: CHESS_A
                 });
@@ -123,7 +130,6 @@ class ChessBoard extends React.Component {
                     this.props.showDataChessmans();
                 }
             } else if (dataChessBoard.userIdChessmanB === dataUser.userId) {
-                console.log('aaaaaaaaaaaaa')
                 this.setState({
                     checkChess: CHESS_B
                 });
@@ -134,7 +140,6 @@ class ChessBoard extends React.Component {
         }
 
         if (Array.isArray(dataChessmans) && dataChessmans.length && !checkShowChessmans && checkChess) {
-            console.log('checkShowChessmans')
             if (checkChess === CHESS_A) {
                 dataSetupChessBoard.iconChessman = dataChessmans[0];
             } else {
@@ -177,6 +182,38 @@ class ChessBoard extends React.Component {
         }
     }
 
+    getDataBoardCurrent(dataBoard) {
+        console.log(dataBoard);
+       const {
+           dataChessBoard
+       } = this.props;
+       delete dataBoard.chessmanUserId;
+        delete dataBoard.dataBoardUpdateChessBoard;
+        delete dataBoard.updateState;
+        delete dataBoard.update;
+
+        dataChessBoard.dataBoard = {
+           ...dataChessBoard.dataBoard,
+           ...dataBoard
+       };
+        // let board = {};
+        // let boardRow;
+        // dataChessBoard.dataBoard.board.map((item, index) => {
+        //     boardRow = {};
+        //     item.map((itemRow, indexRow) => {
+        //         boardRow[indexRow] = itemRow ? itemRow : 0;
+        //     });
+        //     board[index] = boardRow;
+        // });
+        // dataChessBoard.dataBoard.board = board;
+        console.log(dataChessBoard);
+        this.props.saveDataChessBoard(this.props.match.params.idChessBoard, dataChessBoard);
+    }
+
+    checkWinChessman(winChessman) {
+        console.log(winChessman + ' - win');
+    }
+
     render() {
         const {
             board,
@@ -192,29 +229,40 @@ class ChessBoard extends React.Component {
             dataChessmans,
             dataUser,
         } = this.props;
-        console.log(dataSetupChessBoard);
-        console.log(checkChess);
+        console.log(dataChessBoard);
+        // console.log(checkChess);
         let checkHasChessmanIcon = false;
         if (dataChessBoard && dataChessBoard.userIdChessmanA === dataUser.userId && dataChessBoard.iconChessmanA) {
             checkHasChessmanIcon = true;
         } else if (dataChessBoard && dataChessBoard.userIdChessmanB === dataUser.userId && dataChessBoard.iconChessmanB) {
             checkHasChessmanIcon = true;
         }
+        console.log(checkHasChessmanIcon);
         return (
             <React.Fragment>
                 <Header />
                 <Content>
                     <div className={classes.trainingWithAIWrapper}>
                         {
-                            dataChessBoard && dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB && dataChessBoard.iconChessmanA && dataChessBoard.iconChessmanB
+                            dataChessBoard
+                            ?
+                            dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB && dataChessBoard.iconChessmanA && dataChessBoard.iconChessmanB
                             ?
                                 <Board
-                                    size={10}
-                                    chessmanA={CHESSMAN_YOURSELF_A}
-                                    chessmanB={CHESSMAN_YOURSELF_B}
+                                    size={dataChessBoard.dataBoard && dataChessBoard.dataBoard.sizeChessBoard ? dataChessBoard.dataBoard.sizeChessBoard : 10}
+                                    chessmanA={dataChessBoard.userIdChessmanA}
+                                    chessmanB={dataChessBoard.userIdChessmanB}
+                                    firstTurn={dataChessBoard.userIdChessmanA}
+                                    iconChessmanA={dataChessBoard.iconChessmanA}
+                                    iconChessmanB={dataChessBoard.iconChessmanB}
+                                    getDataBoardCurrent={this.getDataBoardCurrent}
+                                    dataBoardUpdateChessBoard={dataChessBoard.dataBoard}
+                                    checkWinChessman={this.checkWinChessman}
+                                    chessBoardType={CHESS_BOARD_TYPE_ONLINE}
+                                    chessmanUserId={dataUser.userId}
                                 />
                                 :
-                                dataChessBoard && ![dataChessBoard.userIdChessmanA, dataChessBoard.userIdChessmanB].includes(dataUser.userId)
+                                ![dataChessBoard.userIdChessmanA, dataChessBoard.userIdChessmanB].includes(dataUser.userId)
                                 ?
                                     <div className='sds'>
                                         <Button
@@ -231,47 +279,52 @@ class ChessBoard extends React.Component {
                                         </Button>
                                     </div>
                                 :
-                                    !checkHasChessmanIcon
-                                    ?
-                                <div className={classes.setupDataBoard}>
-                                    <Button aria-controls="simple-menu" aria-haspopup="true" onClick={this.openMenuSelectChessmanIcon}>
-                                        {dataSetupChessBoard && dataSetupChessBoard.iconChessman &&
-                                            <div>
-                                                <img src={dataSetupChessBoard.iconChessman.chessmanUrl} alt="" style={{width: 50, height: 50}}/>
-                                                <span>{dataSetupChessBoard.iconChessman.name}</span>
-                                            </div>
-                                        }
-                                    </Button>
-                                    {menuSelectChessmanIcon && <Menu
-                                        id="simple-menu"
-                                        anchorEl={menuSelectChessmanIcon}
-                                        keepMounted
-                                        open={true}
-                                        onClose={this.closeMenuSelectChessmanIcon}
-                                    >
-                                        {
-                                            dataChessmans.map((item, index) => {
-                                                return (<MenuItem onClick={() => this.handleChessmanChange(item)}>
-                                                    <img src={item.chessmanUrl} alt="" style={{width: 50, height: 50}}/>
-                                                    <span>{item.name}</span>
-                                                </MenuItem>);
-                                            })
-                                        }
-                                    </Menu>}
-                                    <Button
-                                        className="submitSetup"
-                                        onClick={this.submitSetupChessBoard}
-                                    >
-                                        Submit Setup
-                                    </Button>
-                                </div>
+                                    (!(dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB))
+                                ?
+                                        <div>Doi thang kia join vao da</div>
                                         :
-                                        <div>Doi ty thang kia chua xac nhan</div>
+                                    dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB && !checkHasChessmanIcon
+                                    ?
+                                        <div className={classes.setupDataBoard}>
+                                            <Button aria-controls="simple-menu" aria-haspopup="true" onClick={this.openMenuSelectChessmanIcon}>
+                                                {dataSetupChessBoard && dataSetupChessBoard.iconChessman &&
+                                                    <div>
+                                                        <img src={dataSetupChessBoard.iconChessman.chessmanUrl} alt="" style={{width: 50, height: 50}}/>
+                                                        <span>{dataSetupChessBoard.iconChessman.name}</span>
+                                                    </div>
+                                                }
+                                            </Button>
+                                            {menuSelectChessmanIcon && <Menu
+                                                id="simple-menu"
+                                                anchorEl={menuSelectChessmanIcon}
+                                                keepMounted
+                                                open={true}
+                                                onClose={this.closeMenuSelectChessmanIcon}
+                                            >
+                                                {
+                                                    dataChessmans.map((item, index) => {
+                                                        return (<MenuItem onClick={() => this.handleChessmanChange(item)}>
+                                                            <img src={item.chessmanUrl} alt="" style={{width: 50, height: 50}}/>
+                                                            <span>{item.name}</span>
+                                                        </MenuItem>);
+                                                    })
+                                                }
+                                            </Menu>}
+                                            <Button
+                                                className="submitSetup"
+                                                onClick={this.submitSetupChessBoard}
+                                            >
+                                                Submit Setup
+                                            </Button>
+                                        </div>
+                                        :
+                                        <div>Doi ty thang kia setup da</div>
+                                :
+                                <div>tu tu da</div>
                         }
 
                     </div>
                 </Content>
-                {/*{!dataUser ? <AuthBlock /> : <span>sdds sd</span>}*/}
                 <Footer />
             </React.Fragment>
         );

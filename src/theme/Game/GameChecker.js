@@ -1,28 +1,30 @@
+import {CHESSMAN_NONE} from "../../constants/constants";
+
 const getCell = (board, x, y) => {
     if (board[x]) return board[x][y];
     return undefined;
 };
 
 const horizontalChecker = (board, x, y, type) => {
-    return Array.from({ length: 7 }, (_, p) => ((p !== 0 && p !== 6) ?  (getCell(board, x, y + p) === type) : ([type, null].includes(getCell(board, x, y + p))))).find(
+    return Array.from({ length: 7 }, (_, p) => ((p !== 0 && p !== 6) ?  (getCell(board, x, y + p) === type) : ([type, CHESSMAN_NONE].includes(getCell(board, x, y + p))))).find(
         v => !v
     ) === undefined;
 };
 
 const verticalChecker = (board, x, y, type) => {
-    return Array.from({ length: 7 }, (_, p) => ((p !== 0 && p !== 6) ?  (getCell(board, x + p, y) === type) : ([type, null].includes(getCell(board, x + p, y))))).find(
+    return Array.from({ length: 7 }, (_, p) => ((p !== 0 && p !== 6) ?  (getCell(board, x + p, y) === type) : ([type, CHESSMAN_NONE].includes(getCell(board, x + p, y))))).find(
         v => !v
     ) === undefined;
 };
 
 const crossChecker =  (board, x, y, type) => {
-    return Array.from({ length: 7 }, (_, p) => ((p !== 0 && p !== 6) ?  (getCell(board, x + p, y + p) === type) : ([type, null].includes(getCell(board, x + p, y + p))))).find(
+    return Array.from({ length: 7 }, (_, p) => ((p !== 0 && p !== 6) ?  (getCell(board, x + p, y + p) === type) : ([type, CHESSMAN_NONE].includes(getCell(board, x + p, y + p))))).find(
         v => !v
     ) === undefined;
 }
 
 const antiCrossChecker = (board, x, y, type) => {
-    return Array.from({ length: 7 }, (_, p) => ((p !== 0 && p !== 6) ?  (getCell(board, x + p, y - p) === type) : ([type, null].includes(getCell(board, x + p, y - p))))).find(
+    return Array.from({ length: 7 }, (_, p) => ((p !== 0 && p !== 6) ?  (getCell(board, x + p, y - p) === type) : ([type, CHESSMAN_NONE].includes(getCell(board, x + p, y - p))))).find(
         v => !v
     ) === undefined;
 }

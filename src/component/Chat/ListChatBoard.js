@@ -141,7 +141,7 @@ class ListChatBoard extends React.Component {
 
             dataInitChatBox[dataUser.userId + '_checkUpdate'] = 2;
             dataInitChatBox[dataUserPrivateChat.userId + '_checkUpdate'] = 1;
-            dataInitChatBox[dataUser.userId + '_checkMember'] = true;
+            dataInitChatBox[dataUser.userId + '_checkMember'] = true
             dataInitChatBox[dataUserPrivateChat.userId + '_checkMember'] = true;
             dataInitChatBox.dataMembers = dataMembers;
 
@@ -193,7 +193,6 @@ class ListChatBoard extends React.Component {
                     idChatBoxChange: false
                 });
                 this.props.setDataMessagesChatBoard(idChatBox);
-                console.log('setDataInfoChatBoard')
                 this.props.setDataInfoChatBoard(idChatBox);
             }
         }
@@ -348,12 +347,12 @@ class ListChatBoard extends React.Component {
         } = this.state;
         // let dataMembers = [];
         const dataUserId = {
-            [dataUser.userId]: 2
-        };
-        const dataUserIdCheckMember = {
-            [dataUser.userId + '_checkUpdate']: true
+            [dataUser.userId + '_checkUpdate']: 2
         };
         const dataMembers = {
+            [dataUser.userId]: dataUser
+        };
+        const dataUserIdCheckMember = {
             [dataUser.userId + '_checkMember']: true
         };
         // dataMembers.push(dataUser);
@@ -376,7 +375,6 @@ class ListChatBoard extends React.Component {
             ...dataUserIdCheckMember
         };
 
-        console.log(dataInitChatBox);
 
         firebase.database().ref('chats/' + idChatBox).set(dataInitChatBox, (error) => {
             if (error) {
@@ -387,7 +385,6 @@ class ListChatBoard extends React.Component {
                     photoChatBoxName: '',
                 })
             } else {
-                console.log('SUCCESS !');
                 const createdAt = new Date().getTime();
                 const dataMessage = {
                     createdAt: createdAt,
@@ -433,7 +430,6 @@ class ListChatBoard extends React.Component {
         const {
             dataUser
         } = this.props;
-        console.log(dataUser.userId);
         firebase.database().ref('chats').orderByChild(dataUser.userId + '_checkMember').equalTo(true).on('value', (snap) => {
             if (snap.val()) {
                 let dataAllChatBoxTemp = [];
@@ -502,7 +498,6 @@ class ListChatBoard extends React.Component {
             dataUserAuth,
             dataUser
         } = this.props;
-        console.log(dataUser);
         return (
             <div className={classes.viewListChatBoard}>
                 <div className={classes.createPrivateChat}>

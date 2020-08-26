@@ -180,7 +180,6 @@ class UserInfo extends React.Component {
             classes,
             dataUserAuth
         } = this.props;
-        console.log(dataUserAuth);
 
         return (
             <React.Fragment>

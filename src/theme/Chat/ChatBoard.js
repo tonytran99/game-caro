@@ -455,9 +455,9 @@ class ChatBoard extends React.Component {
             match,
             dataMessagesChatBoard,
             dataInfoChatBoard,
-        } = this.props;
-        console.log(dataMessagesChatBoard);
-        console.log(popoverCreateGroupBoard);
+        } = this.props;  
+        
+        
         console.log(dataInfoChatBoard);
         return (
             <div className={classes.chatBoardWrapper}>
@@ -596,12 +596,6 @@ class ChatBoard extends React.Component {
                                                     value={dataInitPrivateBoard.sizeChessBoard}
                                                     onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}
                                                 />
-                                                {/*<Input*/}
-                                                {/*    name="sizeChessBoard"*/}
-                                                {/*    value={dataInitPrivateBoard.sizeChessBoard}*/}
-                                                {/*    type="text"*/}
-                                                {/*    onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}*/}
-                                                {/*/>*/}
                                                 <Button
                                                     onClick={this.createPrivateBoard}
                                                 >

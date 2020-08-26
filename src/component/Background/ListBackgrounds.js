@@ -127,7 +127,6 @@ class ListBackgrounds extends React.Component {
             dataUserAuth,
             dataUser
         } = this.props;
-        console.log(dataUser);
 
         return (
             <div className={classes.managementBGWrapper}>

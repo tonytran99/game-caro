@@ -54,7 +54,6 @@ class PrivateChat extends React.Component {
             match,
 
         } = this.props;
-        console.log(match);
 
         return (
             <React.Fragment>

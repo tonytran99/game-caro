@@ -7,6 +7,7 @@ import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import {initBoard} from "../../functions/functions";
 import {checkGameFinished} from "./GameChecker";
+import {CHESS_BOARD_TYPE_ONLINE, CHESSMAN_NONE} from "../../constants/constants";
 
 const styles = theme => ({
     welcomeWrapper: {
@@ -23,25 +24,54 @@ class Board extends React.Component {
             board: initBoard(props.size),
             updateState: false,
             chessmanUserId: props.chessmanUserId,
-            gameFinished: false
+            gameFinished: false,
+            dataBoardUpdateChessBoard: null,
+            update: false
         };
 
         this.playChessman = this.playChessman.bind(this);
     }
 
     componentDidMount() {
-        if (this.props.dataBoardTrainingDefault) {
-            this.setState(this.props.dataBoardTrainingDefault);
+        const {
+            dataBoardTrainingDefault,
+            dataBoardUpdateChessBoard,
+        } = this.props;
+        if (dataBoardTrainingDefault) {
+            this.setState({
+                dataBoardTrainingDefault: dataBoardTrainingDefault
+            });
+        }
+        if (dataBoardUpdateChessBoard) {
+            this.setState({
+                ...dataBoardUpdateChessBoard,
+                dataBoardUpdateChessBoard: dataBoardUpdateChessBoard
+            });
         }
     }
 
+    static getDerivedStateFromProps(props, state) {
+        if (props.dataBoardUpdateChessBoard && JSON.stringify(props.dataBoardUpdateChessBoard) !== JSON.stringify(state.dataBoardUpdateChessBoard)){
+            return {
+                update: true,
+            }
+        }
+        return null;
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.state.updateState && !this.state.gameFinished) {
-            console.log('updateState updateState updateState')
-            this.props.getDataBoardCurrent(this.state);
+        const {
+            dataBoardUpdateChessBoard,
+        } = this.props;
+        if (this.state.update){
             this.setState({
-                updateState: false
-            })
+                update: false,
+            },function(){
+                this.setState({
+                    ...dataBoardUpdateChessBoard,
+                    dataBoardUpdateChessBoard: dataBoardUpdateChessBoard
+                });
+            });
         }
     }
 
@@ -55,9 +85,14 @@ class Board extends React.Component {
         const {
             chessmanA,
             chessmanB,
-            size
+            size,
+            chessBoardType,
+            chessmanUserId,
         } = this.props;
-        if (!gameFinished) {
+        let stateCurrent = this.state;
+        console.log(turnCurrent);
+        console.log(chessmanUserId);
+        if (!gameFinished && turnCurrent === chessmanUserId) {
             let updateState = {};
             let boardTemp = board;
             // board
@@ -68,11 +103,20 @@ class Board extends React.Component {
                 updateState: true
             }
             updateState.board = boardTemp;
-            if (turnCurrent === chessmanA) {
-                updateState.turnCurrent = chessmanB;
+            if (chessBoardType === CHESS_BOARD_TYPE_ONLINE) {
+                if (turnCurrent === chessmanA ) {
+                    updateState.turnCurrent = chessmanB;
+                } else {
+                    updateState.turnCurrent = chessmanA;
+                }
             } else {
-                updateState.turnCurrent = chessmanA;
+                if (turnCurrent === chessmanA ) {
+                    updateState.turnCurrent = chessmanB;
+                } else {
+                    updateState.turnCurrent = chessmanA;
+                }
             }
+
             if (checkGameFinished(boardTemp, size, chessmanA)) {
                 this.props.checkWinChessman(chessmanA);
                 updateState.gameFinished = true;
@@ -80,7 +124,12 @@ class Board extends React.Component {
                 this.props.checkWinChessman(chessmanB);
                 updateState.gameFinished = true;
             }
-            console.log("AAAAAAAAAAAa asdas asd")
+            console.log(updateState);
+            stateCurrent = {
+                ...stateCurrent,
+                ...updateState
+            }
+            this.props.getDataBoardCurrent(stateCurrent);
             this.setState(updateState);
         }
 
@@ -101,10 +150,9 @@ class Board extends React.Component {
             chessmanB,
             iconChessmanA,
             iconChessmanB,
+            dataBoardTrainingDefault,
         } = this.props;
-        console.log(board);
-        console.log(turnCurrent);
-        console.log(countTurn);
+
         return (
             <GridList
                 // className={useStyles(size)({}).gridList}
@@ -133,7 +181,7 @@ class Board extends React.Component {
                                             height: '100%',
                                         }}
                                         onClick={() => {
-                                            if (cell === null) {
+                                            if (cell === CHESSMAN_NONE) {
                                                 this.playChessman(x, y);
                                             }
                                         }}
@@ -141,11 +189,11 @@ class Board extends React.Component {
                                         {
                                             (cell === chessmanA)
                                                 ?
-                                                iconChessmanA
+                                                <img style={{width: 30, height: 30}} src={iconChessmanA.chessmanUrl} alt={iconChessmanA.name ? iconChessmanA.name : ''}/>
                                                 :
                                                 (cell === chessmanB)
                                                     ?
-                                                    iconChessmanB
+                                                    <img style={{width: 30, height: 30}} src={iconChessmanB.chessmanUrl} alt={iconChessmanB.name ? iconChessmanB.name : ''}/>
                                                     :
                                                     ''
                                         }

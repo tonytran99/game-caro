@@ -96,7 +96,6 @@ class Background extends React.Component {
             classes,
             dataUserAuth
         } = this.props;
-        console.log(valueOptionBackground);
 
         return (
             <React.Fragment>

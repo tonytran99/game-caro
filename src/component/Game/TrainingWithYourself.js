@@ -53,13 +53,11 @@ class TrainingWithYourself extends React.Component {
     }
 
     getDataBoardCurrent(dataBoard) {
-        console.log('sssssssssssssss getItem')
         this.props.saveDataBoardTrainingWithYourself(dataBoard);
     }
 
     checkWinChessman(chessmanWin) {
         this.props.saveDataBoardTrainingWithYourself(null);
-        console.log(chessmanWin);
         this.setState({
             chessmanWin: chessmanWin
         })
@@ -97,7 +95,6 @@ class TrainingWithYourself extends React.Component {
         // if (chessmanWin === CHESSMAN_YOURSELF_A) {
         //
         // }
-        console.log(chessmanWin);
         return (
             <React.Fragment>
                 <Header />

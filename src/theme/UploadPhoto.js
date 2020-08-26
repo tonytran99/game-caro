@@ -12,7 +12,9 @@ import {ReactComponent as RemoveIcon } from "../images/remove_icon.svg";
 
 const styles = theme => ({
     uploadPhotoWrapper: {
-
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden'
     },
     photoPreview: {
         position: 'absolute',
@@ -150,7 +152,6 @@ class UploadPhoto extends React.Component {
         return (
             <div className={classes.uploadPhotoWrapper}>
                 <BorderLinearProgress
-                    className={classes.margin}
                     variant="determinate"
                     color="secondary"
                     value={progressUploadBackground}

@@ -41,12 +41,12 @@ class AppInput extends React.Component{
     }
 
     render() {
-        const {classes,...otherProps} = this.props;
+        const {classes, className, ...otherProps} = this.props;
         let self = this;
 
 
         return <FormControl
-            className={classes.appInput + ' appInput'}
+            className={classes.appInput + ' appInput ' + (className ? className : '')}
         >
             <Input
                 {...otherProps}

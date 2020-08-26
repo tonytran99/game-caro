@@ -13,22 +13,39 @@ import {ReactComponent as CameraIcon} from "../../images/camera_icon.svg";
 import Button from "@material-ui/core/Button";
 import {withTranslation} from "react-i18next";
 import * as gameActions from "../../_actions/game";
+import UploadPhoto from "../../theme/UploadPhoto";
+import AppInput from "../../theme/AppInput";
 
 const styles = theme => ({
     profileWrapper: {
         display: 'flex',
         flexDirection: 'column',
-        width: 500,
+        width: 250,
         margin: 'auto',
         alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+    },
+    displayNameInput: {
+        marginBottom: '1rem',
+        width: '100%'
     },
     btnSaveProfile: {
-        borderRadius: 11,
-        marginTop: '1rem',
-        backgroundColor: '#fff',
-        padding: '0.5rem 1rem',
+        backgroundColor: '#dfe3f1',
         textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        marginTop: '1rem',
+        color: '#123152',
+        '&:hover': {
+            backgroundColor: '#dfe3f1',
+        }
     },
+    avatarUploadWrapper: {
+        width: 250,
+        height: 250
+    }
 });
 class Profile extends React.Component {
 
@@ -43,8 +60,8 @@ class Profile extends React.Component {
             progressUploadBackground: 0,
         };
 
-        this.handleBackground = this.handleBackground.bind(this);
-        this.removeBackground = this.removeBackground.bind(this);
+        this.handleAvatar = this.handleAvatar.bind(this);
+        this.removeAvatar = this.removeAvatar.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.saveProfile = this.saveProfile.bind(this);
         this.inputAvatarRef = React.createRef();
@@ -60,7 +77,7 @@ class Profile extends React.Component {
         });
     }
 
-    handleBackground(event) {
+    handleAvatar(event) {
         this.setState({
             avatar: event.target.files[0],
             avatarPreview: URL.createObjectURL(event.target.files[0]),
@@ -68,7 +85,7 @@ class Profile extends React.Component {
         });
     }
 
-    removeBackground() {
+    removeAvatar() {
         this.setState({
             avatar: null,
             avatarPreview: '',
@@ -186,39 +203,22 @@ class Profile extends React.Component {
                 <Header />
                 <Content>
                     <div className={classes.profileWrapper}>
-                        <Input
+                        <AppInput
                             name="displayName"
                             value={displayName}
                             type="text"
+                            className={classes.displayNameInput}
                             onChange={(event) => this.handleChange('displayName', event.target.value)}
                         />
-                        <div className={classes.uploadAvatarContent}>
-                            <input
-                                accept="image/*"
-                                style={{display: 'none'}}
-                                onChange={this.handleBackground}
-                                id="text-button-file"
-                                type="file"
-                                ref={this.inputAvatarRef}
+                        <div className={classes.avatarUploadWrapper}>
+                            <UploadPhoto
+                                onChange={this.handleAvatar}
+                                removePhoto={this.removeAvatar}
+                                photo={avatar}
+                                photoPreview={avatarPreview}
+                                photoName={avatarName}
+                                progressUploadBackground={progressUploadBackground}
                             />
-                            <div className={classes.actionAvatar}>
-                                <div className={classes.actionLabel}>
-                                    <label htmlFor="text-button-file">
-                                        <div className={classes.actionText}>
-                                            {avatarPreview ? this.props.t('label.edit') : this.props.t("label.upload")}
-                                        </div>
-                                    </label>
-                                </div>
-                                {avatarPreview &&
-                                <div className={classes.actionLabel}>
-                                    <div onClick={this.removeBackground} className={classes.actionText}>{this.props.t('label.remove')}</div>
-                                </div>
-                                }
-                            </div>
-                            {avatarPreview && <div className={classes.avatarPreview}>
-                                <img src={avatarPreview} alt={avatarName}/>
-                            </div>}
-                            {!avatarPreview && <CameraIcon />}
                         </div>
                         <Button
                             onClick={() => this.saveProfile()}

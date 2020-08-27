@@ -65,10 +65,11 @@ const styles = theme => ({
         }
     },
     createPrivateBoardPopover: {
-        padding: '1rem 0.5rem',
+        padding: '2rem 0.5rem',
         display: 'flex',
         flexDirection: 'column',
         borderRadius: 11,
+        width: 400,
     }
 });
 class Welcome extends React.Component {

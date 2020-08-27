@@ -12,34 +12,55 @@ import {withRouter} from "react-router";
 import * as links from "./../../constants/links";
 import {paramsToObject} from "../../functions/functions";
 import ListChessmans from "./ListChessmans";
+import i18n from "../../i18n";
 
 const styles = theme => ({
-    backgroundWrapper: {
+    chessmanWrapper: {
         width: '90%',
         margin: 'auto',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
     },
-    headerBackground: {
+    headerChessman: {
         paddingTop: '1rem',
-        borderBottom: '1px dashed black',
+        borderBottom: '2px dashed #f1f3de',
         marginBottom: '1rem',
         '& .menuItem': {
             textTransform: 'initial',
             borderRadius: '11px 11px 0px 0px',
+            fontWeight: 600,
+            color: '#f1f3de',
+            padding: '0.5rem 1rem',
             '&.active': {
-                border: '2px solid black',
+                border: '2px solid #f1f3de',
+                backgroundColor: '#f1f3de',
+                color: '#123152',
             }
         }
     },
-    contentBackground: {
+    contentChessman: {
         flexGrow: 1,
         overflowY: 'scroll',
+        backgroundColor: '#e0ece4',
+        padding: '1rem 0.5rem',
+        borderRadius: 9,
+        boxShadow: '0 5px 5px 0 #e0ece4',
+        '&::-webkit-scrollbar': {
+            width: 9,
+        },
+        '&::-webkit-scrollbar-track': {
+            background: '#ee6f57',
+            borderRadius: 9,
+        },
+        '&::-webkit-scrollbar-thumb': {
+            borderRadius: 9,
+            background: '#ee6f57',
+        },
     }
 });
 
-const LIST_CHESSMANS_TYPE = 'management-chessmans';
+const LIST_CHESSMANS_TYPE = 'list-chessmans';
 const UPLOAD_CHESSMAN_TYPE = 'upload-chessman';
 const ALL_TAB = [
     LIST_CHESSMANS_TYPE,
@@ -101,22 +122,22 @@ class Chessman extends React.Component {
             <React.Fragment>
                 <Header />
                 <Content>
-                    <div className={classes.backgroundWrapper}>
-                        <div className={classes.headerBackground}>
+                    <div className={classes.chessmanWrapper}>
+                        <div className={classes.headerChessman}>
                             <Button
                                 onClick={() => this.changeChessmanType(LIST_CHESSMANS_TYPE)}
                                 className={"menuItem" + (valueOptionChessman === LIST_CHESSMANS_TYPE ? ' active' : '')}
                             >
-                                list chessman
+                                {i18n.t('chessman.menu.list_chessman')}
                             </Button>
                             <Button
                                 onClick={() => this.changeChessmanType(UPLOAD_CHESSMAN_TYPE)}
                                 className={"menuItem" + (valueOptionChessman === UPLOAD_CHESSMAN_TYPE ? ' active' : '')}
                             >
-                                upload chessman
+                                {i18n.t('chessman.menu.upload_chessman')}
                             </Button>
                         </div>
-                        <div className={classes.contentBackground}>
+                        <div className={classes.contentChessman}>
                             {
                                 valueOptionChessman === LIST_CHESSMANS_TYPE
                                     ?

@@ -13,7 +13,7 @@ const styles = {
             width: '100%',
             border: 'none',
             borderRadius: 9,
-            color: '#54516a',
+            color: '#123152',
             display: 'flex',
             fontSize: '1rem',
             fontWeight: 600,

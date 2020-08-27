@@ -1,4 +1,8 @@
 {
+    "alert": {
+        "error": "Error",
+        "success": "Success"
+    },
     "translations": {
         "en": "English",
         "vi": "Vietnamese",
@@ -29,5 +33,60 @@
             "background": "Background",
             "chessman": "Chessman"
         }
+    },
+    "profile": {
+        "displayName": "Display name",
+        "btnSaveProfile": "Save"
+    },
+    "background": {
+        "menu": {
+            "list_background": "List Background",
+            "upload_background": "Upload Background"
+        },
+        "list_background": {
+            "text_not_bg": "Not background",
+            "goUploadBG": "Go To Upload Background"
+        },
+        "upload_background": {
+            "btn_upload": "Upload Background"
+        }
+    },
+    "chessman": {
+        "menu": {
+            "list_chessman": "List Chessman",
+            "upload_chessman": "Upload Chessman"
+        },
+        "list_chessman": {
+            "text_not_bg": "Not chessman",
+            "goUploadChessman": "Go To Upload Chessman"
+        },
+        "upload_chessman": {
+            "nameChessman": "Name",
+            "btn_upload": "Upload Chessman"
+        }
+    },
+    "chat": {
+        "user": "User",
+        "group": "Group",
+        "chat_page": {
+            "btnCreatePrivate": "Create Chat",
+            "btnCreateGroup": "Create Group Chat",
+            "selectUser": "Select user",
+            "create_group": {
+                "nameGroupChat": "Name group chat"
+            }
+        },
+        "list_chat": {
+
+        },
+        "chat_board": {
+            "not_data_chat_board": "Hello {{name}} !",
+            "chat_content": {
+                "createChat": "{{user}} create chat box !"
+            }
+        }
+    },
+    "chessBoard": {
+
     }
 }

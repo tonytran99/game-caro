@@ -1,4 +1,8 @@
 {
+    "alert": {
+        "error": "Error",
+        "success": "Success"
+    },
     "translations": {
         "en": "Tiếng Anh",
         "vi": "Tiếng Việt",
@@ -23,5 +27,57 @@
         "goToChatPage": "Đến trang trò chuyện",
         "goToListChessBoard": "Đến đấu trường caro",
         "createChessBoard": "Tạo bàn cờ caro"
+    },
+    "header": {
+        "menu_select": {
+            "background": "Background",
+            "chessman": "Chessman"
+        }
+    },
+    "profile": {
+        "displayName": "Display name",
+        "btnSaveProfile": "Save"
+    },
+    "background": {
+        "menu": {
+            "list_background": "List Background",
+            "upload_background": "Upload Background"
+        },
+        "list_background": {
+            "text_not_bg": "Not background",
+            "goUploadBG": "Go To Upload Background"
+        },
+        "upload_background": {
+            "btn_upload": "Upload Background"
+        }
+    },
+    "chessman": {
+        "menu": {
+            "list_chessman": "List Chessman",
+            "upload_chessman": "Upload Chessman"
+        },
+        "list_chessman": {
+            "text_not_bg": "Not chessman",
+            "goUploadChessman": "Go To Upload Chessman"
+        },
+        "upload_chessman": {
+            "nameChessman": "Name",
+            "btn_upload": "Upload Chessman"
+        }
+    },
+    "chat": {
+        "chat_page": {
+            "btnCreatePrivate": "Create Chat",
+            "selectUser": "Select user"
+        },
+        "list_chat": {
+
+        },
+        "chat_board": {
+
+        }
+    },
+    "chessBoard": {
+
     }
 }

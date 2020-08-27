@@ -11,6 +11,9 @@ import {storage} from "../../firebase";
 import LoadingAction from "../../theme/LoadingAction";
 import firebase from "./../../firebase";
 import UploadPhoto from "../../theme/UploadPhoto";
+import i18n from "../../i18n";
+import SuccessAlert from "../../theme/Alert/SuccessAlert";
+import ErrorAlert from "../../theme/Alert/ErrorAlert";
 
 const styles = theme => ({
     uploadBackgroundWrapper: {
@@ -20,173 +23,36 @@ const styles = theme => ({
         flexDirection: 'column',
         overflow: 'hidden',
     },
-    uploadAvatar: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        '& > div': {
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: 180,
-            height: 180,
-            borderRadius: '50%',
-            background: '#cad4e5',
-            position: 'relative',
-            overflow: 'hidden',
-            '& span': {
-                position: 'absolute',
-                display: 'block',
-                background: 'rgba(0,0,0,0.5)',
-                color: '#fff',
-                fontSize: 13,
-                textAlign: 'center',
-                bottom: -41,
-                left: 0,
-                zIndex: 999,
-                width: '100%',
-                padding: '8px 0 15px',
-                cursor: 'pointer',
-                transition: '0.3s',
-                '&:hover': {
-                    background: 'rgba(0,0,0,0.7)'
-                }
-            },
-            '&:hover': {
-                '& span': {
-                    bottom: 0
-                }
-            }
-        }
-    },
-    avatarPreview: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        top: 0,
-        left: 0,
-        zIndex: 99,
-        '& img': {
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover'
-        },
-        '& .removeAvatar': {
-            position: 'absolute',
-            zIndex: 3,
-            top: 20,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 22,
-            height: 22,
-            display: 'flex',
-            background: '#fff',
-            borderRadius: '50%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            transition: '0.3s',
-            '&:hover': {
-                // background: red[500],
-                color: '#fff'
-            }
-        }
-    },
-    uploadAvatarContent: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        position: 'relative',
-        border: '2px solid #1976b7',
-        background: '#b3d8de',
-        '&::before': {
-            content: `''`,
-            background: 'rgba(0,0,0,.5)',
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            top: 0,
-            left: 0,
-            zIndex: 10,
-            opacity: 0,
-            visibility: 'hidden',
-            transition: '0.3s'
-        },
-        '&:hover': {
-            '& $actionLabel': {
-                transform: 'translateX(0)'
-            },
-            '&::before': {
-                opacity: 1,
-                visibility: 'visible'
-            }
-        }
-    },
-    actionAvatar: {
-        position: 'absolute',
-        zIndex: 999,
-        width: '100%',
-        display: 'flex',
-        height: '100%',
-        justifyContent: 'center',
-        flexDirection: 'column'
-    },
-    actionLabel: {
-        fontSize: '0.8rem',
-        color: '#46435a',
-        background: '#fff',
-        width: 90,
-        borderRadius: '0 30px 30px 0',
-        textAlign: 'center',
-        transition: '0.3s',
-        transform: 'translateX(-100%)',
-        '&:nth-of-type(2)': {
-            transitionDelay: '0.1s',
-            marginTop: 5
-        },
-        '&:hover': {
-            color: '#fff',
-            background: '#645d7b'
-        }
-    },
-    actionText: {
-        padding: '0.25rem',
-        cursor: 'pointer'
-    },
     uploadBgBtn: {
-        borderRadius: 11,
         marginTop: '1rem',
-        backgroundColor: '#fff',
-        padding: '0.5rem 1rem',
+        backgroundColor: '#123152',
         textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        marginBottom: '1rem',
+        color: '#dfe3f1',
+        '&:hover': {
+            backgroundColor: '#123152',
+        }
     }
 });
 
-
-const BorderLinearProgress = withStyles({
-    root: {
-        height: 10,
-        backgroundColor: lighten('#ff6c5c', 0.5),
-    },
-    bar: {
-        borderRadius: 20,
-        backgroundColor: '#ff6c5c',
-    },
-})(LinearProgress);
 class UploadBackground extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            avatar: null,
-            avatarPreview: '',
-            avatarName: '',
+            background: null,
+            backgroundPreview: '',
+            backgroundName: '',
             progressUploadBackground: 0,
             isLoading: false,
-
+            successOpen: false,
+            errorOpen: false,
         };
 
+        this.handleCloseNotice = this.handleCloseNotice.bind(this);
         this.handleBackground = this.handleBackground.bind(this);
         this.removeBackground = this.removeBackground.bind(this);
         this.uploadBackground = this.uploadBackground.bind(this);
@@ -196,23 +62,20 @@ class UploadBackground extends React.Component {
     componentDidMount() {
 
     }
-
     handleBackground(event) {
         this.setState({
-            avatar: event.target.files[0],
-            avatarPreview: URL.createObjectURL(event.target.files[0]),
-            avatarName: event.target.files[0].name,
+            background: event.target.files[0],
+            backgroundPreview: URL.createObjectURL(event.target.files[0]),
+            backgroundName: event.target.files[0].name,
         });
     }
-
     removeBackground() {
         this.setState({
-            avatar: null,
-            avatarPreview: '',
-            avatarName: '',
+            background: null,
+            backgroundPreview: '',
+            backgroundName: '',
         });
     }
-
     uploadBackground() {
         const {avatar} = this.state;
         const {
@@ -234,6 +97,7 @@ class UploadBackground extends React.Component {
                 this.setState({
                     progressUploadBackground: 0,
                     isLoading: false,
+                    errorOpen: true
                 });
             },
             () => {
@@ -246,25 +110,33 @@ class UploadBackground extends React.Component {
                     }, (error) => {
                         if (error) {
                             this.setState({
-                                avatar: null,
-                                avatarPreview: '',
-                                avatarName: '',
+                                background: null,
+                                backgroundPreview: '',
+                                backgroundName: '',
                                 progressUploadBackground: 0,
                                 isLoading: false,
+                                errorOpen: true
                             });
                         } else {
                             this.setState({
-                                avatar: null,
-                                avatarPreview: '',
-                                avatarName: '',
+                                background: null,
+                                backgroundPreview: '',
+                                backgroundName: '',
                                 progressUploadBackground: 0,
                                 isLoading: false,
+                                successOpen: true
                             });
                         }
                     });
                 });
             });
 
+    }
+    handleCloseNotice() {
+        this.setState({
+            successOpen: false,
+            errorOpen: false,
+        });
     }
 
     render() {
@@ -273,7 +145,9 @@ class UploadBackground extends React.Component {
             avatarPreview,
             avatarName,
             progressUploadBackground,
-            isLoading
+            isLoading,
+            successOpen,
+            errorOpen,
         } = this.state;
         const {
             classes,
@@ -294,8 +168,22 @@ class UploadBackground extends React.Component {
                     onClick={() => this.uploadBackground()}
                     className={classes.uploadBgBtn}
                 >
-                        dsds
+                    {i18n.t('background.upload_background.btn_upload')}
                 </Button>
+                <SuccessAlert
+                    snackbarProps={{
+                        open:successOpen,
+                        onClose:this.handleCloseNotice,
+                    }}
+                    message={i18n.t('alert.success')}
+                />
+                <ErrorAlert
+                    snackbarProps={{
+                        open:errorOpen,
+                        onClose:this.handleCloseNotice,
+                    }}
+                    message={i18n.t('alert.error')}
+                />
             </div>
         );
     }

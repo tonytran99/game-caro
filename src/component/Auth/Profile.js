@@ -15,6 +15,9 @@ import {withTranslation} from "react-i18next";
 import * as gameActions from "../../_actions/game";
 import UploadPhoto from "../../theme/UploadPhoto";
 import AppInput from "../../theme/AppInput";
+import i18n from "../../i18n";
+import SuccessAlert from "../../theme/Alert/SuccessAlert";
+import ErrorAlert from "../../theme/Alert/ErrorAlert";
 
 const styles = theme => ({
     profileWrapper: {
@@ -58,8 +61,11 @@ class Profile extends React.Component {
             avatarName: '',
             isLoading: false,
             progressUploadBackground: 0,
+            successOpen: false,
+            errorOpen: false,
         };
 
+        this.handleCloseNotice = this.handleCloseNotice.bind(this);
         this.handleAvatar = this.handleAvatar.bind(this);
         this.removeAvatar = this.removeAvatar.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -80,8 +86,8 @@ class Profile extends React.Component {
     handleAvatar(event) {
         this.setState({
             avatar: event.target.files[0],
-            avatarPreview: URL.createObjectURL(event.target.files[0]),
-            avatarName: event.target.files[0].name,
+            avatarPreview: event.target.files[0] ? URL.createObjectURL(event.target.files[0]): '',
+            avatarName:  event.target.files[0] ? event.target.files[0].name : '',
         });
     }
 
@@ -127,6 +133,7 @@ class Profile extends React.Component {
                     this.setState({
                         isLoading: false,
                         progressUploadBackground: 0,
+                        errorOpen: true
                     });
                 },
                 () => {
@@ -145,6 +152,7 @@ class Profile extends React.Component {
                                     // avatarName: '',
                                     isLoading: false,
                                     progressUploadBackground: 0,
+                                    errorOpen: true
                                 });
                             } else {
                                 this.props.showDataUser(dataUserAuth.uid);
@@ -155,6 +163,7 @@ class Profile extends React.Component {
                                     // avatarName: '',
                                     isLoading: false,
                                     progressUploadBackground: 0,
+                                    successOpen: true
                                 });
                             }
                         });
@@ -170,17 +179,26 @@ class Profile extends React.Component {
                     this.setState({
                         isLoading: false,
                         progressUploadBackground: 0,
+                        errorOpen: true
                     });
                 } else {
                     this.props.showDataUser(dataUserAuth.uid);
                     this.setState({
                         isLoading: false,
                         progressUploadBackground: 0,
+                        successOpen: true
                     });
                 }
             });
         }
 
+    }
+
+    handleCloseNotice() {
+        this.setState({
+            successOpen: false,
+            errorOpen: false,
+        });
     }
 
     render() {
@@ -191,6 +209,8 @@ class Profile extends React.Component {
             progressUploadBackground,
             isLoading,
             displayName,
+            successOpen,
+            errorOpen,
         } = this.state;
         const {
             classes,
@@ -208,6 +228,7 @@ class Profile extends React.Component {
                             value={displayName}
                             type="text"
                             className={classes.displayNameInput}
+                            placeholder={i18n.t('profile.displayName')}
                             onChange={(event) => this.handleChange('displayName', event.target.value)}
                         />
                         <div className={classes.avatarUploadWrapper}>
@@ -224,8 +245,22 @@ class Profile extends React.Component {
                             onClick={() => this.saveProfile()}
                             className={classes.btnSaveProfile}
                         >
-                            dsds
+                            {i18n.t('profile.btnSaveProfile')}
                         </Button>
+                        <SuccessAlert
+                            snackbarProps={{
+                                open:successOpen,
+                                onClose:this.handleCloseNotice,
+                            }}
+                            message={i18n.t('alert.success')}
+                        />
+                        <ErrorAlert
+                            snackbarProps={{
+                                open:errorOpen,
+                                onClose:this.handleCloseNotice,
+                            }}
+                            message={i18n.t('alert.error')}
+                        />
                     </div>
                 </Content>
                 <Footer />

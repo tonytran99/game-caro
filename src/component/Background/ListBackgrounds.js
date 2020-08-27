@@ -12,29 +12,12 @@ import CheckedIcon from "../../theme/CheckBox/CheckedIcon";
 import CheckedBg from "../../theme/CheckBox/CheckedBg";
 import {ReactComponent as CheckIcon} from "../../images/check_icon.svg";
 import * as gameActions from "../../_actions/game";
+import i18n from "../../i18n";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const styles = theme => ({
-    managementBackgroundWrapper: {
-        width: '90%',
-        margin: 'auto'
-    },
-    headerBackground: {
-        paddingTop: '1rem',
-        borderBottom: '1px dashed black',
-        marginBottom: '1rem',
-        '& .menuItem': {
-            textTransform: 'initial',
-            borderRadius: '11px 11px 0px 0px',
-            '&.active': {
-                border: '2px solid black',
-            }
-        }
-    },
-    contentBackground: {
-
-    },
-    managementBGWrapper: {
-
+    listBackgroundWrapper: {
+        height: '100%',
     },
     backgroundList: {
 
@@ -45,18 +28,19 @@ const styles = theme => ({
         height: 240,
         justifyContent: 'flex-end',
         padding: '0.5rem 0rem',
-        '& .imgWrapper': {
+        '& .dataWrapper': {
             height: '100%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-start',
             width: '100%',
-            // border: '1px solid black',
-            padding: '0.25rem 0.5rem',
-            backgroundColor: '#ce7a7a',
+            padding: '0.5rem 1rem',
+            backgroundColor: '#bfdcae',
+            borderRadius: 9,
             '& img': {
                 objectFit: 'cover',
                 height: '100%',
+                maxWidth: '100%',
             }
         },
         '& .checkWrapper': {
@@ -65,13 +49,48 @@ const styles = theme => ({
                 width: 48,
                 height: 48,
                 backgroundColor: '#fff',
-                minWidth: 'auto'
+                minWidth: 'auto',
+                '& svg': {
+                    '& path': {
+                        fill: '#123152',
+                        stroke: '#123152',
+                    }
+                }
             }
         }
 
     },
     notBg: {
-
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        '& .text': {
+            color: '#123152',
+            fontWeight: 600,
+            fontSize: '1.8rem',
+            paddingBottom: '1rem'
+        },
+        '& .btnGoToUpload': {
+            backgroundColor: '#123152',
+            textTransform: 'initial',
+            padding: '0.5rem 1.5rem',
+            fontWeight: 600,
+            borderRadius: 9,
+            marginBottom: '1rem',
+            color: '#dfe3f1',
+            '&:hover': {
+                backgroundColor: '#123152',
+            }
+        }
+    },
+    loadingWrapper: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 });
 
@@ -80,7 +99,8 @@ class ListBackgrounds extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            dataBackgrounds: [],
+            dataBackgrounds: null,
+            loadingData: false,
         };
         this.handleBackgroundChange = this.handleBackgroundChange.bind(this);
 
@@ -98,7 +118,12 @@ class ListBackgrounds extends React.Component {
                     dataBackgroundsTemp.push(snap.val()[key]);
                 });
                 this.setState({
-                    dataBackgrounds: dataBackgroundsTemp
+                    dataBackgrounds: dataBackgroundsTemp,
+                    loadingData: true
+                })
+            } else {
+                this.setState({
+                    loadingData: true
                 })
             }
         });
@@ -121,24 +146,27 @@ class ListBackgrounds extends React.Component {
     render() {
         const {
             dataBackgrounds,
+            loadingData
         } = this.state;
         const {
             classes,
             dataUserAuth,
-            dataUser
+            dataUser,
         } = this.props;
 
         return (
-            <div className={classes.managementBGWrapper}>
+            <div className={classes.listBackgroundWrapper}>
                 {
-                    Array.isArray(dataBackgrounds) && dataBackgrounds.length
+                    loadingData
+                    ?
+                        Array.isArray(dataBackgrounds) && dataBackgrounds.length
                     ?
                         <div className={classes.backgroundList}>
                             {
                                 dataBackgrounds.map((item, index) => {
                                     return (
                                         <div className={classes.backgroundItem}>
-                                            <div className="imgWrapper">
+                                            <div className="dataWrapper">
                                                 <img src={item.backgroundUrl} alt=""/>
                                             </div>
                                             <div className="checkWrapper">
@@ -162,14 +190,6 @@ class ListBackgrounds extends React.Component {
 
                                                         </Button>
                                                 }
-                                                {/*<Checkbox*/}
-                                                {/*    checkedIcon={<CheckedIcon widthImage="20px" width="30px" height="30px"*/}
-                                                {/*                              borderRadius="4px"/>}*/}
-                                                {/*    icon={<CheckedBg background="#ffffff" width="30px" height="30px"*/}
-                                                {/*                     borderRadius="4px"/>}*/}
-                                                {/*    checked={dataUser && dataUser.background.backgroundId === item.backgroundId}*/}
-                                                {/*    onChange={(event) => this.handleBackgroundChange(event, item)}*/}
-                                                {/*/>*/}
                                             </div>
                                         </div>
                                     );
@@ -179,14 +199,19 @@ class ListBackgrounds extends React.Component {
                         </div>
                         :
                         <div className={classes.notBg}>
-                            <span>Not Background</span>
+                            <span className="text">{i18n.t('background.list_background.text_not_bg')}</span>
                             <Button
                                 onClick={() => {
                                     this.props.goToUploadBackground()
                                 }}
+                                className="btnGoToUpload"
                             >
-                                Upload Background
+                                {i18n.t('background.list_background.goUploadBG')}
                             </Button>
+                        </div>
+                        :
+                        <div className={classes.loadingWrapper}>
+                            <CircularProgress color="#123152"/>
                         </div>
                 }
             </div>

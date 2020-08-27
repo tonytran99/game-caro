@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="37" height="26" viewBox="0 0 37 26">
     <defs>
         <style>
-            .prefix__cls-1{fill:#fff;stroke:#ac5a8b}.prefix__cls-2{stroke:none}.prefix__cls-3{fill:none}
+            .prefix__cls-1{fill: transparent;stroke:#ffdead}.prefix__cls-2{stroke:none}.prefix__cls-3{fill:none}
         </style>
     </defs>
     <g id="prefix__Groupe_7005" data-name="Groupe 7005" transform="translate(-398 -462)">

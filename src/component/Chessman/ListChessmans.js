@@ -8,52 +8,42 @@ import firebase from "./../../firebase";
 import Button from "@material-ui/core/Button";
 import {ReactComponent as CheckIcon} from "../../images/check_icon.svg";
 import * as gameActions from "../../_actions/game";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import i18n from "../../i18n";
 
 const styles = theme => ({
-    managementBackgroundWrapper: {
-        width: '90%',
-        margin: 'auto'
+    listChessmanWrapper: {
+        height: '100%',
     },
-    headerBackground: {
-        paddingTop: '1rem',
-        borderBottom: '1px dashed black',
-        marginBottom: '1rem',
-        '& .menuItem': {
-            textTransform: 'initial',
-            borderRadius: '11px 11px 0px 0px',
-            '&.active': {
-                border: '2px solid black',
-            }
-        }
-    },
-    contentBackground: {
+    chessmanList: {
 
     },
-    managementBGWrapper: {
-
-    },
-    backgroundList: {
-
-    },
-    backgroundItem: {
+    chessmanItem: {
         display: 'flex',
         alignItems: 'center',
-        height: 240,
+        height: 180,
         justifyContent: 'flex-end',
         padding: '0.5rem 0rem',
-        '& .imgWrapper': {
+        '& .dataWrapper': {
             height: '100%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-start',
             width: '100%',
-            // border: '1px solid black',
-            padding: '0.25rem 0.5rem',
-            backgroundColor: '#ce7a7a',
+            padding: '0.5rem 1rem',
+            backgroundColor: '#bfdcae',
+            borderRadius: 9,
             '& img': {
                 objectFit: 'cover',
                 height: '100%',
+                maxWidth: '100%',
             }
+        },
+        '& .nameChess': {
+            width: 200,
+            padding: '0.5rem',
+            color: '#123152',
+            fontWeight: 600,
         },
         '& .checkWrapper': {
             padding: '0rem 0.5rem',
@@ -61,13 +51,48 @@ const styles = theme => ({
                 width: 48,
                 height: 48,
                 backgroundColor: '#fff',
-                minWidth: 'auto'
+                minWidth: 'auto',
+                '& svg': {
+                    '& path': {
+                        fill: '#123152',
+                        stroke: '#123152',
+                    }
+                }
             }
         }
 
     },
     notBg: {
-
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        '& .text': {
+            color: '#123152',
+            fontWeight: 600,
+            fontSize: '1.8rem',
+            paddingBottom: '1rem'
+        },
+        '& .btnGoToUpload': {
+            backgroundColor: '#123152',
+            textTransform: 'initial',
+            padding: '0.5rem 1.5rem',
+            fontWeight: 600,
+            borderRadius: 9,
+            marginBottom: '1rem',
+            color: '#dfe3f1',
+            '&:hover': {
+                backgroundColor: '#123152',
+            }
+        }
+    },
+    loadingWrapper: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 });
 
@@ -77,18 +102,14 @@ class listChessmans extends React.Component {
         super(props);
         this.state = {
             dataChessmans: [],
+            loadingData: false
         };
         this.getDataChessmans = this.getDataChessmans.bind(this);
         this.setChessmanDefault = this.setChessmanDefault.bind(this);
     }
 
     componentDidMount() {
-        const {
-            dataUserAuth,
-            dataUser
-        } = this.props;
         this.getDataChessmans();
-
     }
 
     getDataChessmans() {
@@ -123,7 +144,12 @@ class listChessmans extends React.Component {
                 dataChessmansTemp = dataChessmansDefault.concat(dataChessmansNotDefault);
 
                 this.setState({
-                    dataChessmans: dataChessmansTemp
+                    dataChessmans: dataChessmansTemp,
+                    loadingData: true
+                })
+            } else {
+                this.setState({
+                    loadingData: true
                 })
             }
         });
@@ -147,67 +173,73 @@ class listChessmans extends React.Component {
     render() {
         const {
             dataChessmans,
+            loadingData
         } = this.state;
         const {
             classes,
-            dataUserAuth,
-            dataUser
         } = this.props;
 
         return (
-            <div className={classes.managementBGWrapper}>
+            <div className={classes.listChessmanWrapper}>
                 {
-                    Array.isArray(dataChessmans) && dataChessmans.length
+                    loadingData
                         ?
-                        <div className={classes.backgroundList}>
-                            {
-                                dataChessmans.map((item, index) => {
-                                    return (
-                                        <div className={classes.backgroundItem}>
-                                            <div className="imgWrapper">
-                                                <img src={item.chessmanUrl} alt=""/>
-                                            </div>
-                                            <div className="nameChess">
-                                                {item.name ? item.name : ''}
-                                            </div>
-                                            <div className="checkWrapper">
-                                                {
-                                                    (index === 0 || index === 1)
-                                                        ?
-                                                        <Button
-                                                            className="checkBackground"
-                                                            onClick={() => this.setChessmanDefault(item, 0)}
-                                                        >
-                                                            <CheckIcon
-                                                                width={36}
-                                                                height={36}
-                                                            />
-                                                        </Button>
-                                                        :
-                                                        <Button
-                                                            className="checkBackground"
-                                                            onClick={() => this.setChessmanDefault(item, 1)}
-                                                        >
+                        Array.isArray(dataChessmans) && dataChessmans.length
+                            ?
+                            <div className={classes.chessmanList}>
+                                {
+                                    dataChessmans.map((item, index) => {
+                                        return (
+                                            <div className={classes.chessmanItem}>
+                                                <div className="dataWrapper">
+                                                    <img src={item.chessmanUrl} alt=""/>
+                                                </div>
+                                                <div className="nameChess">
+                                                    {item.name ? item.name : ''}
+                                                </div>
+                                                <div className="checkWrapper">
+                                                    {
+                                                        (index === 0 || index === 1)
+                                                            ?
+                                                            <Button
+                                                                className="checkBackground"
+                                                                onClick={() => this.setChessmanDefault(item, 0)}
+                                                            >
+                                                                <CheckIcon
+                                                                    width={36}
+                                                                    height={36}
+                                                                />
+                                                            </Button>
+                                                            :
+                                                            <Button
+                                                                className="checkBackground"
+                                                                onClick={() => this.setChessmanDefault(item, 1)}
+                                                            >
 
-                                                        </Button>
-                                                }
+                                                            </Button>
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })
-                            }
+                                        );
+                                    })
+                                }
 
-                        </div>
+                            </div>
+                            :
+                            <div className={classes.notBg}>
+                                <span className="text">{i18n.t('chessman.list_chessman.text_not_bg')}</span>
+                                <Button
+                                    onClick={() => {
+                                        this.props.goToUploadChessman()
+                                    }}
+                                    className="btnGoToUpload"
+                                >
+                                    {i18n.t('chessman.list_chessman.goUploadChessman')}
+                                </Button>
+                            </div>
                         :
-                        <div className={classes.notBg}>
-                            <span>Not Background</span>
-                            <Button
-                                onClick={() => {
-                                    this.props.goToUploadChessman()
-                                }}
-                            >
-                                Upload Background
-                            </Button>
+                        <div className={classes.loadingWrapper}>
+                            <CircularProgress color="#123152"/>
                         </div>
                 }
             </div>

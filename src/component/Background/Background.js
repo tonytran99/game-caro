@@ -12,6 +12,7 @@ import {withRouter} from "react-router";
 import * as links from "./../../constants/links";
 import {paramsToObject} from "../../functions/functions";
 import ManagementBackground from "./ListBackgrounds";
+import i18n from "../../i18n";
 
 const styles = theme => ({
     backgroundWrapper: {
@@ -23,26 +24,46 @@ const styles = theme => ({
     },
     headerBackground: {
         paddingTop: '1rem',
-        borderBottom: '1px dashed black',
+        borderBottom: '2px dashed #f1f3de',
         marginBottom: '1rem',
         '& .menuItem': {
             textTransform: 'initial',
             borderRadius: '11px 11px 0px 0px',
+            fontWeight: 600,
+            color: '#f1f3de',
+            padding: '0.5rem 1rem',
             '&.active': {
-                border: '2px solid black',
+                border: '2px solid #f1f3de',
+                backgroundColor: '#f1f3de',
+                color: '#123152',
             }
         }
     },
     contentBackground: {
         flexGrow: 1,
         overflowY: 'scroll',
+        backgroundColor: '#e0ece4',
+        padding: '1rem 0.5rem',
+        borderRadius: 9,
+        boxShadow: '0 5px 5px 0 #e0ece4',
+        '&::-webkit-scrollbar': {
+            width: 9,
+        },
+        '&::-webkit-scrollbar-track': {
+            background: '#ee6f57',
+            borderRadius: 9,
+        },
+        '&::-webkit-scrollbar-thumb': {
+            borderRadius: 9,
+            background: '#ee6f57',
+        },
     }
 });
 
-const MANAGEMENT_BACKGROUND_TYPE = 'management-background';
+const LIST_BACKGROUNDS_TYPE = 'list-background';
 const UPLOAD_BACKGROUND_TYPE = 'upload-background';
 const ALL_TAB = [
-    MANAGEMENT_BACKGROUND_TYPE,
+    LIST_BACKGROUNDS_TYPE,
     UPLOAD_BACKGROUND_TYPE
 ];
 
@@ -51,7 +72,7 @@ class Background extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            valueOptionBackground: MANAGEMENT_BACKGROUND_TYPE
+            valueOptionBackground: LIST_BACKGROUNDS_TYPE
         };
         this.changeManagementBGType = this.changeManagementBGType.bind(this);
     }
@@ -68,15 +89,15 @@ class Background extends React.Component {
                 });
             } else {
                 this.setState({
-                    valueOptionBackground: MANAGEMENT_BACKGROUND_TYPE,
+                    valueOptionBackground: LIST_BACKGROUNDS_TYPE,
                 });
-                this.props.history.push(links.LINK_BACKGROUND + '?'+'backgroundType='+MANAGEMENT_BACKGROUND_TYPE);
+                this.props.history.push(links.LINK_BACKGROUND + '?'+'backgroundType='+LIST_BACKGROUNDS_TYPE);
             }
         } else {
             this.setState({
-                valueOptionCompany: MANAGEMENT_BACKGROUND_TYPE,
+                valueOptionCompany: LIST_BACKGROUNDS_TYPE,
             });
-            this.props.history.push(links.LINK_BACKGROUND + '?'+'backgroundType='+MANAGEMENT_BACKGROUND_TYPE);
+            this.props.history.push(links.LINK_BACKGROUND + '?'+'backgroundType='+LIST_BACKGROUNDS_TYPE);
         }
     }
 
@@ -104,21 +125,21 @@ class Background extends React.Component {
                     <div className={classes.backgroundWrapper}>
                         <div className={classes.headerBackground}>
                             <Button
-                                onClick={() => this.changeManagementBGType(MANAGEMENT_BACKGROUND_TYPE)}
-                                className={"menuItem" + (valueOptionBackground === MANAGEMENT_BACKGROUND_TYPE ? ' active' : '')}
+                                onClick={() => this.changeManagementBGType(LIST_BACKGROUNDS_TYPE)}
+                                className={"menuItem" + (valueOptionBackground === LIST_BACKGROUNDS_TYPE ? ' active' : '')}
                             >
-                                background management
+                                {i18n.t('background.menu.list_background')}
                             </Button>
                             <Button
                                 onClick={() => this.changeManagementBGType(UPLOAD_BACKGROUND_TYPE)}
                                 className={"menuItem" + (valueOptionBackground === UPLOAD_BACKGROUND_TYPE ? ' active' : '')}
                             >
-                                upload background
+                                {i18n.t('background.menu.upload_background')}
                             </Button>
                         </div>
                         <div className={classes.contentBackground}>
                             {
-                                valueOptionBackground === MANAGEMENT_BACKGROUND_TYPE
+                                valueOptionBackground === LIST_BACKGROUNDS_TYPE
                                 ?
                                     <ManagementBackground goToUploadBackground={() => this.changeManagementBGType(UPLOAD_BACKGROUND_TYPE)}/>
                                     :

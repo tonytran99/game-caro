@@ -35,6 +35,9 @@ import * as links from "../../constants/links";
 import * as gameActions from "../../_actions/game";
 import Button from "@material-ui/core/Button";
 import Input from "@material-ui/core/Input";
+import {ReactComponent as PersonIcon} from "../../images/person_icon.svg";
+import {ReactComponent as GroupIcon} from "../../images/group_icon.svg";
+import i18n from "../../i18n";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -45,31 +48,61 @@ const styles = theme => ({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        width: 600,
         margin: 'auto',
-        backgroundColor: '#fff',
         height: '100%',
         flexDirection: 'column',
+        paddingLeft: '0.5rem',
+    },
+    notDataChatBoard: {
+        width: '100%',
+        textAlign: 'center',
+        fontWeight: 700,
+        color: '#123152',
+        fontSize: '1.2rem'
     },
     chatBoardHeader: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '1rem 0rem',
+        padding: '0.5rem 0rem',
         width: '100%',
-        borderBottom: '1px solid #e8e8e8',
-        // borderBottom: '1px solid #e8e8e8',
-        // padding: 5,
-        // display: 'flex',
-        // alignItems: 'center',
-        // justifyContent: 'center',
-        // flexDirection: 'row',
+        backgroundColor: '#a3d2ca',
+        color: '#123152',
+        fontWeight: 700,
+        borderRadius: 7,
+        '& img': {
+            width: 48,
+            height: 48
+        },
+        '& .chatBoxName': {
+            paddingLeft: '0.5rem'
+        }
+    },
+    contentWrapper: {
+        width: '100%',
+        backgroundColor: '#cffffe',
+        borderRadius: 7,
+        marginTop: '0.5rem',
+        padding: '0.5rem 1rem',
     },
     chatBoardContent: {
         flexGrow: 1,
         height: 250,
         overflowY: 'scroll',
-        width: '100%'
+        width: '100%',
+        padding: '1rem 0.5rem',
+        '&::-webkit-scrollbar': {
+            width: 9,
+            height: 9,
+        },
+        '&::-webkit-scrollbar-track': {
+            // background: '#ee6f57',
+            // borderRadius: 9,
+        },
+        '&::-webkit-scrollbar-thumb': {
+            background: '#ee6f57',
+            borderRadius: 9,
+        },
     },
     chatBoardInput: {
         display: 'flex',
@@ -77,7 +110,7 @@ const styles = theme => ({
         alignItems: 'center',
         justifyContent: 'center',
         height: 50,
-        borderTop: '1px solid #e8e8e8',
+        borderTop: '2px solid #123152',
         width: '100%',
         '& .icOpenGallery': {
             width: 30,
@@ -122,6 +155,51 @@ const styles = theme => ({
     createPrivateBoardPopover: {
         width: 600,
         padding: '2rem'
+    },
+    messageTypeCreate: {
+        width: '100%',
+        textAlign: 'center',
+        color: '#b52b65',
+        fontWeight: 600,
+        fontSize: '1.1rem',
+    },
+    itemMessage: {
+        padding: '1rem 0rem',
+    },
+    contentImage: {
+        maxWidth: '40%',
+        borderRadius: 9,
+    },
+    isMe: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-end',
+    },
+    notMe: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+    },
+    contentTextMessage: {
+        width: '60%',
+        backgroundColor: '#00bcd4',
+        padding: '1rem 0.5rem',
+        borderRadius: 11,
+        color: '#fff',
+        fontWeight: 600,
+        '&.notMe': {
+            backgroundColor: '#ffdbc5',
+            color: '#123152'
+        }
+    },
+    avatarMessage: {
+        width: 36,
+        height: 36,
+        '& img': {
+            width: '100%',
+            height: '100%',
+            borderRadius: '50%'
+        }
     }
 });
 class ChatBoard extends React.Component {
@@ -141,7 +219,8 @@ class ChatBoard extends React.Component {
             dataInitGroupBoard: {
                 sizeChessBoard: 10,
                 dataChessmans: [],
-            }
+            },
+            showOptionsAllUsers: false
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -168,7 +247,15 @@ class ChatBoard extends React.Component {
     }
 
     componentDidMount() {
+    }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.dataInfoChatBoard && !this.state.showOptionsAllUsers) {
+            this.setState({
+                showOptionsAllUsers: true
+            })
+            this.showOptionsAllUsersChatBoard();
+        }
     }
 
     handleInitPrivateBoardChange(name, value) {
@@ -314,39 +401,78 @@ class ChatBoard extends React.Component {
         return dataMessages;
     }
     viewItemMessage(dataItemMessage) {
-        const typeMessage = dataItemMessage.typeMessage;
-        switch (typeMessage) {
-            case MESSAGE_TYPE_CREATE_CHAT_BOX:
-                return <span>
-                    Welcome
-                </span>
-                break;
-            case MESSAGE_TYPE_TEXT:
-                return <div>
-                    {dataItemMessage.contentMessage}
-                </div>
-                break;
-            case MESSAGE_TYPE_IMAGE:
-            case MESSAGE_TYPE_STICKER:
-                return <img src={dataItemMessage.contentMessage} alt=""/>
-                break;
-            case MESSAGE_TYPE_CREATE_PRIVATE_BOARD:
-                return <div><NavLink
-                    to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
-                >
-                    chess board
-                </NavLink></div>;
-            case MESSAGE_TYPE_CREATE_GROUP_BOARD:
-                return <div><NavLink
-                    to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
-                >
-                    chess board
-                </NavLink></div>;
-            default:
-                return '';
-                break;
+        const {
+            dataUser,
+            classes
+        } = this.props;
+        const {
+            dataAllUsersGroupChat
+        } = this.state;
+        let checkMe = false;
+        if (dataUser.userId === dataItemMessage.createdBy) {
+            checkMe = true;
         }
-
+        let dataCreateBy = null;
+        dataAllUsersGroupChat.map((item, index) => {
+            if (item.userId === dataItemMessage.createdBy) {
+                dataCreateBy = item;
+            }
+        });
+        console.log(checkMe);
+        const typeMessage = dataItemMessage.typeMessage;
+        if (dataCreateBy) {
+            switch (typeMessage) {
+                case MESSAGE_TYPE_CREATE_CHAT_BOX:
+                    return <div className={classes.messageTypeCreate + ' ' + classes.itemMessage}>
+                        {i18n.t('chat.chat_board.chat_content.createChat',{user:dataCreateBy.displayName ? dataCreateBy.displayName :
+                                dataCreateBy.email ? dataCreateBy.email :
+                                    i18n.t('chat.user')})}
+                    </div>
+                    break;
+                case MESSAGE_TYPE_TEXT:
+                    return checkMe ? <div className={classes.isMe + ' ' + classes.itemMessage}>
+                        <div className={classes.contentTextMessage}>
+                            {dataItemMessage.contentMessage}
+                        </div>
+                    </div> : <div className={classes.notMe + ' ' + classes.itemMessage}>
+                        <div className={classes.avatarMessage}>
+                            <img src={UserIcon} alt=""/>
+                        </div>
+                        <div className={classes.contentTextMessage + ' notMe'}>
+                            {dataItemMessage.contentMessage}
+                        </div>
+                    </div>
+                    break;
+                case MESSAGE_TYPE_IMAGE:
+                case MESSAGE_TYPE_STICKER:
+                    return checkMe ? <div className={classes.isMe + ' ' + classes.itemMessage}>
+                        <img src={dataItemMessage.contentMessage} className={classes.contentImage} alt=""/>
+                    </div> : <div className={classes.notMe + ' ' + classes.itemMessage}>
+                        <div className={classes.avatarMessage}>
+                            <img src={UserIcon} alt=""/>
+                        </div>
+                        <img src={dataItemMessage.contentMessage} className={classes.contentImage} alt=""/>
+                    </div>
+                    break;
+                case MESSAGE_TYPE_CREATE_PRIVATE_BOARD:
+                    return <div><NavLink
+                        to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
+                    >
+                        chess board
+                    </NavLink></div>;
+                case MESSAGE_TYPE_CREATE_GROUP_BOARD:
+                    return <div><NavLink
+                        to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
+                    >
+                        chess board
+                    </NavLink></div>;
+                default:
+                    return '';
+                    break;
+            }
+        } else {
+            return '';
+        }
     }
 
     openPopoverCreateGroupBoard(event) {
@@ -526,184 +652,227 @@ class ChatBoard extends React.Component {
             match,
             dataMessagesChatBoard,
             dataInfoChatBoard,
-        } = this.props;  
-        
-        
-        return (
-            <div className={classes.chatBoardWrapper}>
-                <div className={classes.chatBoardHeader}>
-                    <img src={UserIcon} alt=""/>
-                    <p>Tony Tran</p>
-                </div>
-                <div className={classes.chatBoardContent}>
-                    {dataMessagesChatBoard && this.viewMessages().map((item, index) => {
-                       return this.viewItemMessage(item)
-                    })}
-                </div>
-                {/*<ListSticker />*/}
-                <div className={classes.chatBoardInput}>
-                    <img
-                        className="icOpenGallery"
-                        src={PhotoIcon}
-                        alt="icon open gallery"
-                        onClick={() => this.refInput.click()}
-                    />
-                    <input
-                        ref={el => {
-                            this.refInput = el
-                        }}
-                        accept="image/*"
-                        className="viewInputGallery"
-                        type="file"
-                        onChange={this.onChoosePhoto}
-                    />
+            dataUser,
+        } = this.props;
 
-                    <img
-                        className="icOpenSticker"
-                        src={StickerIcon}
-                        alt="icon open sticker"
-                        onClick={this.openPopoverListSticker}
-                    />
-                    { popoverListSticker && <Popover
-                        open={true}
-                        anchorEl={popoverListSticker}
-                        onClose={this.closePopoverListSticker}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'center',
-                        }}
-                        transformOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                        }}
-                    >
-                        <div className={classes.createPrivateChatPopover}>
-                            <ListSticker
-                                getSticker={this.getSticker}
-                            />
+        console.log(dataAllUsersGroupChat);
+
+
+        
+        let chatBoxIcon = null;
+        let chatBoxName = '';
+        if (dataInfoChatBoard) {
+            if (dataInfoChatBoard.chatBoxType === PRIVATE_CHAT) {
+                let dataFriend = null;
+                for (let [key, value] of Object.entries(dataInfoChatBoard.dataMembers)) {
+                    if (dataUser.userId !== key) {
+                        dataFriend = value;
+                    }
+                }
+                if (dataFriend.avatarUrl) {
+                    chatBoxIcon = dataFriend.avatarUrl;
+                }
+                chatBoxName = dataFriend.displayName ? dataFriend.displayName :
+                    dataFriend.email ? dataFriend.email  : i18n.t('chat.user');
+            } else if (dataInfoChatBoard.chatBoxType === GROUP_CHAT) {
+                chatBoxIcon = dataInfoChatBoard.photoChatBox;
+                chatBoxName = dataInfoChatBoard.nameGroupChat;
+                if (!chatBoxName) {
+                    let countUserDisplayName = 0;
+                    for (let [key, value] of Object.entries(dataInfoChatBoard.dataMembers)) {
+                        if (dataUser.userId !== key && countUserDisplayName < 2) {
+                            chatBoxName += value.displayName ? value.displayName :
+                                value.email ? value.email :
+                                    i18n.t('chat.user') + ', ';
+                            countUserDisplayName += 1;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        return (
+
+            <div className={classes.chatBoardWrapper}>
+                {dataInfoChatBoard ? <React.Fragment>
+                    <div className={classes.chatBoardHeader}>
+                        {chatBoxIcon ? <img src={chatBoxIcon} alt=""/> : (dataInfoChatBoard.chatBoxType === PRIVATE_CHAT) ? <PersonIcon width={48} height={48}/> : <GroupIcon width={48} height={48} />}
+                        <span className="chatBoxName">{chatBoxName}</span>
+                    </div>
+                    <div className={classes.contentWrapper}>
+                        <div className={classes.chatBoardContent}>
+                            {dataMessagesChatBoard && this.viewMessages().map((item, index) => {
+                                return this.viewItemMessage(item)
+                            })}
                         </div>
-                    </Popover>}
-                    {
-                        dataInfoChatBoard
-                            ?
-                            dataInfoChatBoard.chatBoxType === GROUP_CHAT
-                                ?
-                                <React.Fragment>
-                                    <img
-                                        className="icOpenSticker"
-                                        src={CaroIcon}
-                                        alt="icon open sticker"
-                                        onClick={this.openPopoverCreateGroupBoard}
+                        <div className={classes.chatBoardInput}>
+                            <img
+                                className="icOpenGallery"
+                                src={PhotoIcon}
+                                alt="icon open gallery"
+                                onClick={() => this.refInput.click()}
+                            />
+                            <input
+                                ref={el => {
+                                    this.refInput = el
+                                }}
+                                accept="image/*"
+                                className="viewInputGallery"
+                                type="file"
+                                onChange={this.onChoosePhoto}
+                            />
+
+                            <img
+                                className="icOpenSticker"
+                                src={StickerIcon}
+                                alt="icon open sticker"
+                                onClick={this.openPopoverListSticker}
+                            />
+                            { popoverListSticker && <Popover
+                                open={true}
+                                anchorEl={popoverListSticker}
+                                onClose={this.closePopoverListSticker}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'center',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                            >
+                                <div className={classes.createPrivateChatPopover}>
+                                    <ListSticker
+                                        getSticker={this.getSticker}
                                     />
-                                    {popoverCreateGroupBoard && <Popover
-                                        open={true}
-                                        anchorEl={popoverCreateGroupBoard}
-                                        onClose={this.closePopoverCreateGroupBoard}
-                                        anchorOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'center',
-                                        }}
-                                        transformOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'left',
-                                        }}
-                                    >
-                                        <div className={classes.createGroupBoardPopover}>
-                                            <Autocomplete
-                                                multiple
-                                                id="checkboxes-tags-demo"
-                                                options={dataAllUsersGroupChat}
-                                                disableCloseOnSelect
-                                                getOptionLabel={(option) => option.displayName}
-                                                onChange={this.handleChessmansChange}
-                                                renderOption={(option, {selected}) => (
-                                                    <React.Fragment>
-                                                        <Checkbox
-                                                            icon={icon}
-                                                            checkedIcon={checkedIcon}
-                                                            style={{marginRight: 8}}
-                                                            checked={selected}
-                                                        />
-                                                        {option.displayName}
-                                                    </React.Fragment>
-                                                )}
-                                                style={{width: 500}}
-                                                renderInput={(params) => (
-                                                    <TextField {...params} variant="outlined" label="Checkboxes"
-                                                               placeholder="Favorites"/>
-                                                )}
-                                            />
-                                            <Input
-                                                type="number"
-                                                name="sizeChessBoard"
-                                                value={dataInitPrivateBoard.sizeChessBoard}
-                                                onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}
-                                            />
-                                            <Button
-                                                onClick={this.createGroupBoard}
-                                            >
-                                                create group board
-                                            </Button>
-                                        </div>
-                                    </Popover>}
-                                </React.Fragment>
-                                :
-                                (dataInfoChatBoard.chatBoxType === PRIVATE_CHAT)
+                                </div>
+                            </Popover>}
+                            {
+                                dataInfoChatBoard
                                     ?
-                                    <React.Fragment>
-                                        <img
-                                            className="icOpenSticker"
-                                            src={CaroIcon}
-                                            alt="icon open sticker"
-                                            onClick={this.openPopoverCreatePrivateBoard}
-                                        />
-                                        {popoverCreatePrivateBoard && <Popover
-                                            open={true}
-                                            anchorEl={popoverCreatePrivateBoard}
-                                            onClose={this.closePopoverCreatePrivateBoard}
-                                            anchorOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'center',
-                                            }}
-                                            transformOrigin={{
-                                                vertical: 'bottom',
-                                                horizontal: 'left',
-                                            }}
-                                        >
-                                            <div className={classes.createPrivateBoardPopover}>
-                                                <Input
-                                                    type="number"
-                                                    name="sizeChessBoard"
-                                                    value={dataInitPrivateBoard.sizeChessBoard}
-                                                    onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}
+                                    dataInfoChatBoard.chatBoxType === GROUP_CHAT
+                                        ?
+                                        <React.Fragment>
+                                            <img
+                                                className="icOpenSticker"
+                                                src={CaroIcon}
+                                                alt="icon open sticker"
+                                                onClick={this.openPopoverCreateGroupBoard}
+                                            />
+                                            {popoverCreateGroupBoard && <Popover
+                                                open={true}
+                                                anchorEl={popoverCreateGroupBoard}
+                                                onClose={this.closePopoverCreateGroupBoard}
+                                                anchorOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'center',
+                                                }}
+                                                transformOrigin={{
+                                                    vertical: 'bottom',
+                                                    horizontal: 'left',
+                                                }}
+                                            >
+                                                <div className={classes.createGroupBoardPopover}>
+                                                    <Autocomplete
+                                                        multiple
+                                                        id="checkboxes-tags-demo"
+                                                        options={dataAllUsersGroupChat}
+                                                        disableCloseOnSelect
+                                                        getOptionLabel={(option) => option.displayName}
+                                                        onChange={this.handleChessmansChange}
+                                                        renderOption={(option, {selected}) => (
+                                                            <React.Fragment>
+                                                                <Checkbox
+                                                                    icon={icon}
+                                                                    checkedIcon={checkedIcon}
+                                                                    style={{marginRight: 8}}
+                                                                    checked={selected}
+                                                                />
+                                                                {option.displayName}
+                                                            </React.Fragment>
+                                                        )}
+                                                        style={{width: 500}}
+                                                        renderInput={(params) => (
+                                                            <TextField {...params} variant="outlined" label="Checkboxes"
+                                                                       placeholder="Favorites"/>
+                                                        )}
+                                                    />
+                                                    <Input
+                                                        type="number"
+                                                        name="sizeChessBoard"
+                                                        value={dataInitPrivateBoard.sizeChessBoard}
+                                                        onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}
+                                                    />
+                                                    <Button
+                                                        onClick={this.createGroupBoard}
+                                                    >
+                                                        create group board
+                                                    </Button>
+                                                </div>
+                                            </Popover>}
+                                        </React.Fragment>
+                                        :
+                                        (dataInfoChatBoard.chatBoxType === PRIVATE_CHAT)
+                                            ?
+                                            <React.Fragment>
+                                                <img
+                                                    className="icOpenSticker"
+                                                    src={CaroIcon}
+                                                    alt="icon open sticker"
+                                                    onClick={this.openPopoverCreatePrivateBoard}
                                                 />
-                                                <Button
-                                                    onClick={this.createPrivateBoard}
+                                                {popoverCreatePrivateBoard && <Popover
+                                                    open={true}
+                                                    anchorEl={popoverCreatePrivateBoard}
+                                                    onClose={this.closePopoverCreatePrivateBoard}
+                                                    anchorOrigin={{
+                                                        vertical: 'top',
+                                                        horizontal: 'center',
+                                                    }}
+                                                    transformOrigin={{
+                                                        vertical: 'bottom',
+                                                        horizontal: 'left',
+                                                    }}
                                                 >
-                                                    create private board
-                                                </Button>
-                                            </div>
-                                        </Popover>}
-                                    </React.Fragment>
+                                                    <div className={classes.createPrivateBoardPopover}>
+                                                        <Input
+                                                            type="number"
+                                                            name="sizeChessBoard"
+                                                            value={dataInitPrivateBoard.sizeChessBoard}
+                                                            onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}
+                                                        />
+                                                        <Button
+                                                            onClick={this.createPrivateBoard}
+                                                        >
+                                                            create private board
+                                                        </Button>
+                                                    </div>
+                                                </Popover>}
+                                            </React.Fragment>
+                                            :
+                                            ''
                                     :
                                     ''
-                            :
-                            ''
-                    }
-                    <input
-                        className="viewInput"
-                        placeholder="Type your message..."
-                        value={textInputValue}
-                        onChange={(event) => this.handleChange('textInputValue', event.target.value)}
-                        onKeyPress={this.onKeyboardPressTextInput}
-                    />
-                    <img
-                        className="icSend"
-                        src={SendIcon}
-                        alt="icon send"
-                        onClick={() => this.onSendMessage(textInputValue, MESSAGE_TYPE_TEXT)}
-                    />
-                </div>
+                            }
+                            <input
+                                className="viewInput"
+                                placeholder="Type your message..."
+                                value={textInputValue}
+                                onChange={(event) => this.handleChange('textInputValue', event.target.value)}
+                                onKeyPress={this.onKeyboardPressTextInput}
+                            />
+                            <img
+                                className="icSend"
+                                src={SendIcon}
+                                alt="icon send"
+                                onClick={() => this.onSendMessage(textInputValue, MESSAGE_TYPE_TEXT)}
+                            />
+                        </div>
+                    </div>
+                </React.Fragment> : <div className={classes.notDataChatBoard}>
+                    {i18n.t('chat.chat_board.not_data_chat_board', {"name": dataUser.displayName ? dataUser.displayName : ""})}
+                    </div>}
             </div>
         );
     }

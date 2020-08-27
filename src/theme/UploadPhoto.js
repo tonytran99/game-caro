@@ -55,8 +55,8 @@ const styles = theme => ({
         justifyContent: 'center',
         height: '100%',
         position: 'relative',
-        border: '2px solid #1976b7',
-        background: '#b3d8de',
+        // border: '2px solid #1976b7',
+        background: '#f9f7d9',
         '&::before': {
             content: `''`,
             background: 'rgba(0,0,0,.5)',
@@ -109,7 +109,15 @@ const styles = theme => ({
     },
     actionText: {
         padding: '0.25rem',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        backgroundColor: '#a3d2ca',
+        borderRadius: '0px 9px 9px 0px',
+        '& svg': {
+            '& path': {
+                fill: '#123152',
+                stroke: '#123152'
+            }
+        }
     },
 });
 
@@ -117,11 +125,11 @@ const styles = theme => ({
 const BorderLinearProgress = withStyles({
     root: {
         height: 10,
-        backgroundColor: lighten('#ff6c5c', 0.5),
+        backgroundColor: '#a2d5f2',
     },
     bar: {
         borderRadius: 20,
-        backgroundColor: '#ff6c5c',
+        backgroundColor: '#07689f',
     },
 })(LinearProgress);
 class UploadPhoto extends React.Component {

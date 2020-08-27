@@ -12,35 +12,45 @@ import LoadingAction from "../../theme/LoadingAction";
 import firebase from "./../../firebase";
 import Input from "@material-ui/core/Input";
 import UploadPhoto from "../../theme/UploadPhoto";
+import SuccessAlert from "../../theme/Alert/SuccessAlert";
+import i18n from "../../i18n";
+import ErrorAlert from "../../theme/Alert/ErrorAlert";
+import AppInput from "../../theme/AppInput";
 
 const styles = theme => ({
     chessmanWrapper: {
+        height: '100%',
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        width: 500,
-        margin: 'auto',
-        alignItems: 'center',
+        overflow: 'hidden',
+    },
+    chessmanPhoto: {
+        width: 180,
+        height: 180,
+        margin: 'auto'
+    },
+    nameChessman: {
+        width: 300,
+        margin: 'auto'
     },
     uploadBgBtn: {
-        borderRadius: 11,
         marginTop: '1rem',
-        backgroundColor: '#fff',
-        padding: '0.5rem 1rem',
+        backgroundColor: '#123152',
         textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        marginBottom: '1rem',
+        color: '#dfe3f1',
+        width: 300,
+        margin: 'auto',
+        '&:hover': {
+            backgroundColor: '#123152',
+        }
     }
 });
 
-
-const BorderLinearProgress = withStyles({
-    root: {
-        height: 10,
-        backgroundColor: lighten('#ff6c5c', 0.5),
-    },
-    bar: {
-        borderRadius: 20,
-        backgroundColor: '#ff6c5c',
-    },
-})(LinearProgress);
 class UploadChessman extends React.Component {
 
     constructor(props) {
@@ -52,9 +62,11 @@ class UploadChessman extends React.Component {
             chessmanName: '',
             progressUploadBackground: 0,
             isLoading: false,
-
+            successOpen: false,
+            errorOpen: false,
         };
 
+        this.handleCloseNotice = this.handleCloseNotice.bind(this);
         this.handleChessman = this.handleChessman.bind(this);
         this.removeChessman = this.removeChessman.bind(this);
         this.uploadChessman = this.uploadChessman.bind(this);
@@ -104,6 +116,7 @@ class UploadChessman extends React.Component {
                     this.setState({
                         isLoading: false,
                         progressUploadBackground: 0,
+                        errorOpen: true
                     });
                 },
                 () => {
@@ -125,6 +138,7 @@ class UploadChessman extends React.Component {
                                     chessmanName: '',
                                     progressUploadBackground: 0,
                                     isLoading: false,
+                                    errorOpen: true
                                 });
                             } else {
                                 this.setState({
@@ -134,6 +148,7 @@ class UploadChessman extends React.Component {
                                     chessmanName: '',
                                     progressUploadBackground: 0,
                                     isLoading: false,
+                                    successOpen: true
                                 });
                             }
                         });
@@ -148,6 +163,13 @@ class UploadChessman extends React.Component {
         });
     }
 
+    handleCloseNotice() {
+        this.setState({
+            successOpen: false,
+            errorOpen: false,
+        });
+    }
+
     render() {
         const {
             name,
@@ -155,7 +177,9 @@ class UploadChessman extends React.Component {
             chessmanPreview,
             chessmanName,
             progressUploadBackground,
-            isLoading
+            isLoading,
+            successOpen,
+            errorOpen,
         } = this.state;
         const {
             classes,
@@ -165,26 +189,44 @@ class UploadChessman extends React.Component {
         return (
             <div className={classes.chessmanWrapper}>
                 {isLoading && <LoadingAction />}
-                <Input
+                <AppInput
+                    className={classes.nameChessman}
                     name="name"
                     value={name}
                     type="text"
+                    placeholder={i18n.t('chessman.upload_chessman.nameChessman')}
                     onChange={(event) => this.handleChange('name', event.target.value)}
                 />
-               <UploadPhoto
-                   onChange={this.handleChessman}
-                   removePhoto={this.removeChessman}
-                   photo={chessman}
-                   photoPreview={chessmanPreview}
-                   photoName={chessmanName}
-                   progressUploadBackground={progressUploadBackground}
-               />
+                <div className={classes.chessmanPhoto}>
+                    <UploadPhoto
+                        onChange={this.handleChessman}
+                        removePhoto={this.removeChessman}
+                        photo={chessman}
+                        photoPreview={chessmanPreview}
+                        photoName={chessmanName}
+                        progressUploadBackground={progressUploadBackground}
+                    />
+                </div>
                 <Button
                     onClick={() => this.uploadChessman()}
-                    className={classes.btnSaveProfile}
+                    className={classes.uploadBgBtn}
                 >
-                    dsds
+                    {i18n.t('background.upload_background.btn_upload')}
                 </Button>
+                <SuccessAlert
+                    snackbarProps={{
+                        open:successOpen,
+                        onClose:this.handleCloseNotice,
+                    }}
+                    message={i18n.t('alert.success')}
+                />
+                <ErrorAlert
+                    snackbarProps={{
+                        open:errorOpen,
+                        onClose:this.handleCloseNotice,
+                    }}
+                    message={i18n.t('alert.error')}
+                />
             </div>
         );
     }

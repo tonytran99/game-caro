@@ -24,6 +24,9 @@ import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import { ReactComponent as GroupIcon } from "./../../images/group_icon.svg";
 import i18n from "../../i18n";
 import AppInput from "../../theme/AppInput";
+import * as gameActions from "../../_actions/game";
+import SuccessAlert from "../../theme/Alert/SuccessAlert";
+import ErrorAlert from "../../theme/Alert/ErrorAlert";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -186,8 +189,11 @@ class ChatPage extends React.Component {
             photoChatBoxName: '',
             progressUploadBackground: 0,
             nameGroupChat: '',
+            successOpen: false,
+            errorOpen: false,
         };
 
+        this.handleCloseNotice = this.handleCloseNotice.bind(this);
         this.openPopoverCreatePrivateChat = this.openPopoverCreatePrivateChat.bind(this);
         this.closePopoverCreatePrivateChat = this.closePopoverCreatePrivateChat.bind(this);
         this.openPopoverCreateGroupChat = this.openPopoverCreateGroupChat.bind(this);
@@ -567,6 +573,12 @@ class ChatPage extends React.Component {
         })
     }
 
+    handleCloseNotice() {
+        this.setState({
+            successOpen: false,
+            errorOpen: false,
+        });
+    }
     render() {
         const {
             popoverCreatePrivateChat,
@@ -579,7 +591,9 @@ class ChatPage extends React.Component {
             photoChatBox,
             photoChatBoxPreview,
             photoChatBoxName,
-            progressUploadBackground
+            progressUploadBackground,
+            successOpen,
+            errorOpen,
         } = this.state;
         const {
             classes,
@@ -674,9 +688,7 @@ class ChatPage extends React.Component {
                                                 </React.Fragment>
                                             )}
                                             style={{ width: 500 }}
-                                            renderInput={(params) => (
-                                                <TextField {...params} variant="outlined" label="Checkboxes" placeholder="Favorites" />
-                                            )}
+                                            renderInput={(params) => <TextField {...params} label={i18n.t('chat.chat_page.selectUser')} variant="outlined" />}
                                         />
                                         <div className={classes.photoChatBox}>
                                             <UploadPhoto
@@ -717,6 +729,20 @@ class ChatPage extends React.Component {
                     </div>
                 </Content>
                 <Footer />
+                <SuccessAlert
+                    snackbarProps={{
+                        open:successOpen,
+                        onClose:this.handleCloseNotice,
+                    }}
+                    message={i18n.t('alert.success')}
+                />
+                <ErrorAlert
+                    snackbarProps={{
+                        open:errorOpen,
+                        onClose:this.handleCloseNotice,
+                    }}
+                    message={i18n.t('alert.error')}
+                />
             </React.Fragment>
         );
     }
@@ -728,15 +754,17 @@ ChatPage.propTypes = {
 
 
 const mapStateToProps = state => ({
-    dataUserAuth: state.authReducer.dataUserAuth
+    dataUserAuth: state.authReducer.dataUserAuth,
+    dataUser: state.gameReducer.dataUser,
+    dataInfoChatBoard: state.gameReducer.dataInfoChatBoard,
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
-
+        setDataMessagesChatBoard: (idChatBox) => dispatch(gameActions.setDataMessagesChatBoard(idChatBox)),
+        setDataInfoChatBoard: (idChatBox) => dispatch(gameActions.setDataInfoChatBoard(idChatBox))
     }
 };
-
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),

@@ -82,8 +82,18 @@
         "chat_board": {
             "not_data_chat_board": "Hello {{name}} !",
             "chat_content": {
-                "createChat": "{{user}} create chat box !"
+                "createChat": "{{user}} create chat box !",
+                "chessBoard": "Go To Chessboard"
+            },
+            "input_text": "Type your message...",
+            "create_chess_board": {
+                "errors": {
+                    "selectUser": "You must select 2 users !"
+                }
             }
+        },
+        "listSticker": {
+            "searchSticker": "Search sticker"
         }
     },
     "chessBoard": {

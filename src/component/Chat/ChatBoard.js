@@ -38,6 +38,10 @@ import Input from "@material-ui/core/Input";
 import {ReactComponent as PersonIcon} from "../../images/person_icon.svg";
 import {ReactComponent as GroupIcon} from "../../images/group_icon.svg";
 import i18n from "../../i18n";
+import AppInput from "../../theme/AppInput";
+import SuccessAlert from "../../theme/Alert/SuccessAlert";
+import ErrorAlert from "../../theme/Alert/ErrorAlert";
+import LoadingAction from "../../theme/LoadingAction";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -72,7 +76,8 @@ const styles = theme => ({
         borderRadius: 7,
         '& img': {
             width: 48,
-            height: 48
+            height: 48,
+            borderRadius: '50%'
         },
         '& .chatBoxName': {
             paddingLeft: '0.5rem'
@@ -113,9 +118,10 @@ const styles = theme => ({
         borderTop: '2px solid #123152',
         width: '100%',
         '& .icOpenGallery': {
-            width: 30,
-            height: 30,
+            width: 24,
+            height: 24,
             marginLeft: 10,
+            cursor: 'pointer',
         },
         '& .viewInputGallery': {
             opacity: 0,
@@ -125,16 +131,18 @@ const styles = theme => ({
             width: 30,
         },
         '& .icOpenSticker': {
-            width: 30,
-            height: 30,
+            width: 24,
+            height: 24,
             marginLeft: 5,
             marginRight: 5,
+            cursor: 'pointer',
         },
         '& .icSend' : {
-            width: 30,
-            height: 30,
+            width: 24,
+            height: 24,
             marginLeft: 5,
             marginRight: 5,
+            cursor: 'pointer',
         },
         '& .viewInput' : {
             flex: 1,
@@ -143,18 +151,28 @@ const styles = theme => ({
             paddingRight: 10,
             border: 0,
             height: 30,
+            color: '#123152',
             '&::focus': {
                 outline: 0
             }
         },
     },
     createGroupBoardPopover: {
-        width: 600,
-        padding: '2rem'
+        width: 480,
+        padding: '2rem 0.5rem',
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: 11,
+    },
+    errorText: {
+        color: '#ec0101'
     },
     createPrivateBoardPopover: {
-        width: 600,
-        padding: '2rem'
+        width: 480,
+        padding: '2rem 0.5rem',
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: 11,
     },
     messageTypeCreate: {
         width: '100%',
@@ -166,8 +184,26 @@ const styles = theme => ({
     itemMessage: {
         padding: '1rem 0rem',
     },
+    btnGoToChessBoard: {
+        backgroundColor: '#123152',
+        textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        color: '#ffdead',
+        '&:hover': {
+            backgroundColor: '#123152',
+        },
+        '& img': {
+            width: 24,
+            height: 24,
+        },
+        '& .text': {
+            paddingLeft: '0.5rem'
+        }
+    },
     contentImage: {
-        maxWidth: '40%',
+        maxWidth: 240,
         borderRadius: 9,
     },
     isMe: {
@@ -181,7 +217,7 @@ const styles = theme => ({
         justifyContent: 'flex-start',
     },
     contentTextMessage: {
-        width: '60%',
+        maxWidth: 360,
         backgroundColor: '#00bcd4',
         padding: '1rem 0.5rem',
         borderRadius: 11,
@@ -193,14 +229,33 @@ const styles = theme => ({
         }
     },
     avatarMessage: {
-        width: 36,
+        width: 40,
         height: 36,
+        paddingRight: 4,
         '& img': {
             width: '100%',
             height: '100%',
             borderRadius: '50%'
         }
-    }
+    },
+    popoverSticker: {
+        width: 436,
+        height: 480,
+        padding: '1rem 0.5rem',
+
+    },
+    submitCreateBoard: {
+        backgroundColor: '#123152',
+        textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        marginBottom: '1rem',
+        color: '#dfe3f1',
+        '&:hover': {
+            backgroundColor: '#123152',
+        }
+    },
 });
 class ChatBoard extends React.Component {
 
@@ -220,9 +275,15 @@ class ChatBoard extends React.Component {
                 sizeChessBoard: 10,
                 dataChessmans: [],
             },
-            showOptionsAllUsers: false
+            showOptionsAllUsers: false,
+            successOpen: false,
+            errorOpen: false,
+            isLoading: false,
+            errors: {}
         };
 
+
+        this.handleCloseNotice = this.handleCloseNotice.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSendMessage = this.onSendMessage.bind(this);
         this.onKeyboardPressTextInput = this.onKeyboardPressTextInput.bind(this);
@@ -283,13 +344,6 @@ class ChatBoard extends React.Component {
         const {
             dataUser
         } = this.props;
-        // if (this.state.isShowSticker && type === 2) {
-        //     this.setState({isShowSticker: false})
-        // }
-        //
-        // // if (content.trim() === '') {
-        // //     return
-        // // }
         const createdAt = new Date().getTime();
         const dataMessage = {
             createdAt: createdAt,
@@ -306,18 +360,35 @@ class ChatBoard extends React.Component {
         if (params.hasOwnProperty('idChatBox')) {
             const idChatBox = params.idChatBox;
             firebase.database().ref('messages/' + idChatBox + '/' + createdAt).set(dataMessage, error => {
+                switch (typeMessage) {
+                    case MESSAGE_TYPE_TEXT:
+                        this.setState({
+                            textInputValue: ''
+                        })
+                        break;
+                    case MESSAGE_TYPE_CREATE_GROUP_BOARD:
+                        this.setState({
+                            popoverCreateGroupBoard: null
+                        })
+                        break;
+                    case MESSAGE_TYPE_CREATE_PRIVATE_BOARD:
+                        this.setState({
+                            popoverCreatePrivateBoard: null,
+                        })
+                        break;
+                    default:
+                        break;
+                }
                 if (error) {
-                    if (typeMessage === MESSAGE_TYPE_TEXT) {
-                        this.setState({
-                            textInputValue: ''
-                        })
-                    }
+                   this.setState({
+                       errorOpen: true,
+                       isLoading: false,
+                   })
                 } else {
-                    if (typeMessage === MESSAGE_TYPE_TEXT) {
-                        this.setState({
-                            textInputValue: ''
-                        })
-                    }
+                    this.setState({
+                        successOpen: true,
+                        isLoading: false,
+                    })
                 }
             })
         }
@@ -367,7 +438,7 @@ class ChatBoard extends React.Component {
         const {
 
         } = this.state;
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && this.state.textInputValue !== '') {
             this.onSendMessage(this.state.textInputValue, MESSAGE_TYPE_TEXT);
         }
     }
@@ -418,7 +489,7 @@ class ChatBoard extends React.Component {
                 dataCreateBy = item;
             }
         });
-        console.log(checkMe);
+
         const typeMessage = dataItemMessage.typeMessage;
         if (dataCreateBy) {
             switch (typeMessage) {
@@ -436,7 +507,7 @@ class ChatBoard extends React.Component {
                         </div>
                     </div> : <div className={classes.notMe + ' ' + classes.itemMessage}>
                         <div className={classes.avatarMessage}>
-                            <img src={UserIcon} alt=""/>
+                            <img src={dataCreateBy.avatarUrl ? dataCreateBy.avatarUrl : UserIcon} alt=""/>
                         </div>
                         <div className={classes.contentTextMessage + ' notMe'}>
                             {dataItemMessage.contentMessage}
@@ -449,23 +520,59 @@ class ChatBoard extends React.Component {
                         <img src={dataItemMessage.contentMessage} className={classes.contentImage} alt=""/>
                     </div> : <div className={classes.notMe + ' ' + classes.itemMessage}>
                         <div className={classes.avatarMessage}>
-                            <img src={UserIcon} alt=""/>
+                            <img src={dataCreateBy.avatarUrl ? dataCreateBy.avatarUrl : UserIcon} alt=""/>
                         </div>
                         <img src={dataItemMessage.contentMessage} className={classes.contentImage} alt=""/>
                     </div>
                     break;
                 case MESSAGE_TYPE_CREATE_PRIVATE_BOARD:
-                    return <div><NavLink
-                        to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
-                    >
-                        chess board
-                    </NavLink></div>;
+                    return checkMe ? <div className={classes.isMe + ' ' + classes.itemMessage}>
+                        <NavLink
+                            to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
+                        >
+                            <Button className={classes.btnGoToChessBoard}>
+                                <img src={CaroIcon} alt=""/>
+                                <span className="text">{i18n.t('chat.chat_board.chat_content.chessBoard')}</span>
+                            </Button>
+                        </NavLink>
+                    </div> : <div className={classes.notMe + ' ' + classes.itemMessage}>
+                        <div className={classes.avatarMessage}>
+                            <img src={dataCreateBy.avatarUrl ? dataCreateBy.avatarUrl : UserIcon} alt=""/>
+                        </div>
+                        <NavLink
+                            to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
+                        >
+                            <Button className={classes.btnGoToChessBoard}>
+                                <img src={CaroIcon} alt=""/>
+                                <span className="text">{i18n.t('chat.chat_board.chat_content.chessBoard')}</span>
+                            </Button>
+                        </NavLink>
+                    </div>
+                    break;
                 case MESSAGE_TYPE_CREATE_GROUP_BOARD:
-                    return <div><NavLink
-                        to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
-                    >
-                        chess board
-                    </NavLink></div>;
+                    return checkMe ? <div className={classes.isMe + ' ' + classes.itemMessage}>
+                        <NavLink
+                            to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
+                        >
+                            <Button className={classes.btnGoToChessBoard}>
+                                <img src={CaroIcon} alt=""/>
+                                <span className="text">{i18n.t('chat.chat_board.chat_content.chessBoard')}</span>
+                            </Button>
+                        </NavLink>
+                    </div> : <div className={classes.notMe + ' ' + classes.itemMessage}>
+                        <div className={classes.avatarMessage}>
+                            <img src={dataCreateBy.avatarUrl ? dataCreateBy.avatarUrl : UserIcon} alt=""/>
+                        </div>
+                        <NavLink
+                            to={links.LINK_CHESS_BOARD.replace(":idChessBoard",dataItemMessage.contentMessage)}
+                        >
+                            <Button className={classes.btnGoToChessBoard}>
+                                <img src={CaroIcon} alt=""/>
+                                <span className="text">{i18n.t('chat.chat_board.chat_content.chessBoard')}</span>
+                            </Button>
+                        </NavLink>
+                    </div>
+                    break;
                 default:
                     return '';
                     break;
@@ -515,15 +622,15 @@ class ChatBoard extends React.Component {
             dataMembersBoard: dataMembersBoard,
             chessBoardOpen: false,
         }
+        this.setState({
+            isLoading: true
+        })
 
         firebase.database().ref('chessBoards/' + idChessBoard).set(dataChessBoard, (error) => {
             if (error) {
-                // this.setState({
-                //     popoverCreateGroupChat: null,
-                //     photoChatBox: null,
-                //     photoChatBoxPreview: '',
-                //     photoChatBoxName: '',
-                // })
+                this.setState({
+                    errorOpen: true
+                })
             } else {
                 this.onSendMessage(idChessBoard, MESSAGE_TYPE_CREATE_PRIVATE_BOARD);
             }
@@ -541,6 +648,9 @@ class ChatBoard extends React.Component {
         } = this.state;
         console.log(dataInitGroupBoard);
         if (dataInitGroupBoard.dataChessmans.length === 2) {
+            this.setState({
+                isLoading: true
+            })
             const idChessBoard = dataUser.userId + '_' + dataInfoChatBoard.idChatBox + '_' + new Date().getTime();
             const dataMembersBoard = {};
             for (let [key, value] of Object.entries(dataInfoChatBoard.dataMembers)) {
@@ -563,16 +673,22 @@ class ChatBoard extends React.Component {
 
             firebase.database().ref('chessBoards/' + idChessBoard).set(dataChessBoard, (error) => {
                 if (error) {
-                    // this.setState({
-                    //     popoverCreateGroupChat: null,
-                    //     photoChatBox: null,
-                    //     photoChatBoxPreview: '',
-                    //     photoChatBoxName: '',
-                    // })
+                    this.setState({
+                        errorOpen: true
+                    })
                 } else {
                     this.onSendMessage(idChessBoard, MESSAGE_TYPE_CREATE_GROUP_BOARD);
                 }
             });
+        } else {
+            const {
+                errors
+            } = this.state;
+            errors.selectUser = i18n.t('chat.chat_board.create_chess_board.errors.selectUser')
+            this.setState({
+                errorOpen: true,
+                errors: errors
+            })
         }
     }
 
@@ -609,11 +725,15 @@ class ChatBoard extends React.Component {
 
     handleChessmansChange(event, value) {
         const {
-            dataInitGroupBoard
+            dataInitGroupBoard,
+            errors
         } = this.state;
+        delete errors.selectUser;
+
         dataInitGroupBoard.dataChessmans = value;
         this.setState({
             dataInitGroupBoard: dataInitGroupBoard,
+            errors: errors
         })
     }
 
@@ -633,6 +753,13 @@ class ChatBoard extends React.Component {
         })
     }
 
+    handleCloseNotice() {
+        this.setState({
+            successOpen: false,
+            errorOpen: false,
+        });
+    }
+
     render() {
         const {
             board,
@@ -644,7 +771,11 @@ class ChatBoard extends React.Component {
             dataAllUsersGroupChat,
             popoverCreatePrivateBoard,
             dataInitPrivateBoard,
-            dataInitGroupBoard
+            dataInitGroupBoard,
+            successOpen,
+            errorOpen,
+            isLoading,
+            errors
         } = this.state;
         const {
             classes,
@@ -655,7 +786,7 @@ class ChatBoard extends React.Component {
             dataUser,
         } = this.props;
 
-        console.log(dataAllUsersGroupChat);
+        console.log(errors);
 
 
         
@@ -695,6 +826,7 @@ class ChatBoard extends React.Component {
         return (
 
             <div className={classes.chatBoardWrapper}>
+                {isLoading && <LoadingAction />}
                 {dataInfoChatBoard ? <React.Fragment>
                     <div className={classes.chatBoardHeader}>
                         {chatBoxIcon ? <img src={chatBoxIcon} alt=""/> : (dataInfoChatBoard.chatBoxType === PRIVATE_CHAT) ? <PersonIcon width={48} height={48}/> : <GroupIcon width={48} height={48} />}
@@ -742,7 +874,7 @@ class ChatBoard extends React.Component {
                                     horizontal: 'left',
                                 }}
                             >
-                                <div className={classes.createPrivateChatPopover}>
+                                <div className={classes.popoverSticker}>
                                     <ListSticker
                                         getSticker={this.getSticker}
                                     />
@@ -792,22 +924,29 @@ class ChatBoard extends React.Component {
                                                                 {option.displayName}
                                                             </React.Fragment>
                                                         )}
-                                                        style={{width: 500}}
                                                         renderInput={(params) => (
-                                                            <TextField {...params} variant="outlined" label="Checkboxes"
-                                                                       placeholder="Favorites"/>
+                                                            <TextField {...params} variant="outlined" label={i18n.t('chat.chat_page.selectUser')}
+                                                                       placeholder={i18n.t('chat.chat_page.selectUser')}/>
                                                         )}
                                                     />
-                                                    <Input
+                                                    {errors.selectUser && <div className={classes.errorText}>
+                                                        {errors.selectUser}
+                                                    </div>}
+                                                    <AppInput
                                                         type="number"
                                                         name="sizeChessBoard"
                                                         value={dataInitPrivateBoard.sizeChessBoard}
                                                         onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}
+                                                        inputProps={{
+                                                            min: 10,
+                                                            max: 20
+                                                        }}
                                                     />
                                                     <Button
+                                                        className={classes.submitCreateBoard}
                                                         onClick={this.createGroupBoard}
                                                     >
-                                                        create group board
+                                                        {i18n.t('welcome.createChessBoard')}
                                                     </Button>
                                                 </div>
                                             </Popover>}
@@ -841,11 +980,16 @@ class ChatBoard extends React.Component {
                                                             name="sizeChessBoard"
                                                             value={dataInitPrivateBoard.sizeChessBoard}
                                                             onChange={(event) => this.handleInitPrivateBoardChange('sizeChessBoard', event.target.value)}
+                                                            inputProps={{
+                                                                min: 10,
+                                                                max: 20
+                                                            }}
                                                         />
                                                         <Button
+                                                            className={classes.submitCreateBoard}
                                                             onClick={this.createPrivateBoard}
                                                         >
-                                                            create private board
+                                                            {i18n.t('welcome.createChessBoard')}
                                                         </Button>
                                                     </div>
                                                 </Popover>}
@@ -857,7 +1001,7 @@ class ChatBoard extends React.Component {
                             }
                             <input
                                 className="viewInput"
-                                placeholder="Type your message..."
+                                placeholder={i18n.t('chat.chat_board.input_text')}
                                 value={textInputValue}
                                 onChange={(event) => this.handleChange('textInputValue', event.target.value)}
                                 onKeyPress={this.onKeyboardPressTextInput}
@@ -866,13 +1010,31 @@ class ChatBoard extends React.Component {
                                 className="icSend"
                                 src={SendIcon}
                                 alt="icon send"
-                                onClick={() => this.onSendMessage(textInputValue, MESSAGE_TYPE_TEXT)}
+                                onClick={() => {
+                                    if (textInputValue !== '') {
+                                        this.onSendMessage(textInputValue, MESSAGE_TYPE_TEXT)
+                                    }
+                                }}
                             />
                         </div>
                     </div>
                 </React.Fragment> : <div className={classes.notDataChatBoard}>
                     {i18n.t('chat.chat_board.not_data_chat_board', {"name": dataUser.displayName ? dataUser.displayName : ""})}
                     </div>}
+                <SuccessAlert
+                    snackbarProps={{
+                        open:successOpen,
+                        onClose:this.handleCloseNotice,
+                    }}
+                    message={i18n.t('alert.success')}
+                />
+                <ErrorAlert
+                    snackbarProps={{
+                        open:errorOpen,
+                        onClose:this.handleCloseNotice,
+                    }}
+                    message={i18n.t('alert.error')}
+                />
             </div>
         );
     }

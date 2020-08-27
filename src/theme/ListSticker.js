@@ -6,17 +6,62 @@ import {compose} from "redux";
 import axios from 'axios';
 
 import Input from "@material-ui/core/Input";
+import AppInput from "./AppInput";
+import Button from "@material-ui/core/Button";
+import i18n from "../i18n";
+import Grid from "@material-ui/core/Grid";
 
 
 const styles = theme => ({
     listStickerWrapper: {
-
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
     },
     searchSuggestions: {
-
+        borderTop: '3px solid #123152'
+    },
+    btnSuggestion: {
+        backgroundColor: '#123152',
+        textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        margin: '0.4rem 0.2rem',
+        color: '#fff',
+        '&:hover': {
+            backgroundColor: '#123152',
+        }
     },
     showSticker: {
-
+        padding: '0.5rem',
+        overflowY: 'scroll',
+        '&::-webkit-scrollbar': {
+            width: 9,
+            height: 9,
+        },
+        '&::-webkit-scrollbar-track': {
+            // background: '#ee6f57',
+            // borderRadius: 9,
+        },
+        '&::-webkit-scrollbar-thumb': {
+            borderRadius: 9,
+            background: '#ee6f57',
+        },
+    },
+    itemImageWrapper: {
+        '& img': {
+            width: '100%',
+            cursor: 'pointer',
+        }
+    },
+    stickerKeyword: {
+        width: '100%',
+        paddingBottom: '0.5rem',
+        '& input': {
+            backgroundColor: '#f1f3de',
+            border: '3px solid #557571',
+        }
     }
 });
 const TENOR_API_KEY = '1T64U0GUWGZG';
@@ -32,6 +77,10 @@ class ListSticker extends React.Component {
             dataStickers: []
         };
         this.handleChange = this.handleChange.bind(this);
+    }
+
+    componentDidMount() {
+        this.searchBySearchSuggestion('');
     }
 
     handleChange(name, value) {
@@ -71,7 +120,7 @@ class ListSticker extends React.Component {
                 });
                 // dataApiSearch.map
                 this.setState({
-                    dataStickers: dataStickersTemp
+                    dataStickers: dataStickersTemp,
                 })
             })
             .catch(error => {
@@ -92,40 +141,42 @@ class ListSticker extends React.Component {
         } = this.props;
         return (
             <div className={classes.listStickerWrapper}>
-                <Input
+                <AppInput
+                    className={classes.stickerKeyword}
                     name="stickerKeyword"
                     value={stickerKeyword}
                     type="text"
+                    placeholder={i18n.t('chat.listSticker.searchSticker')}
                     onChange={(event) => this.handleChange('stickerKeyword', event.target.value)}
                 />
                 <div className={classes.searchSuggestions}>
                     {
                         searchSuggestions.map((item, index) => {
                             return (
-                                <div
-                                    style={{
-                                    border: '1px solid black'
-                                    }}
+                                <Button
+                                    className={classes.btnSuggestion}
                                     onClick={() => this.searchBySearchSuggestion(item)}
                                 >
                                     {item}
-                                </div>
+                                </Button>
                             )
                         })
                     }
                 </div>
                 <div className={classes.showSticker}>
+                    <Grid container>
                     {
                         dataStickers.map((item, index) => {
                             return (
-                                <div style={{flexBasis: '33.33%'}}>
+                                <Grid item xs={6} className={classes.itemImageWrapper}>
                                     <img src={item} alt="" onClick={() => {
                                         this.props.getSticker(item);
                                     }}/>
-                                </div>
+                                </Grid>
                             );
                         })
                     }
+                    </Grid>
                 </div>
             </div>
         );

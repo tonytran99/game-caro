@@ -81,7 +81,6 @@ class Layout extends React.Component {
             dataUser,classes,
             match
         } = this.props;
-        console.log(match);
         return (
             <div
                 className={classes.layoutWrapper}

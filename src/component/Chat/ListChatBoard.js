@@ -177,7 +177,6 @@ class ListChatBoard extends React.Component {
             dataUser,
             classes
         } = this.props;
-        console.log(dataChatBoard);
         // let dataFriend = null;
         // for (let [key, value] of Object.entries(dataChatBoard.dataMembers)) {
         //     if (dataUser.userId !== key) {

@@ -42,7 +42,6 @@ class ListChessBoard extends React.Component {
             match,
             dataListChessBoard
         } = this.props;
-        console.log(dataListChessBoard);
         return (
             <React.Fragment>
                 <Header />

@@ -98,7 +98,6 @@ class ListSticker extends React.Component {
                 dataApiSearch.map((item, index) => {
                     dataStickersTemp.push(item.media[0].gif.url);
                 });
-                console.log(dataStickersTemp);
                 // dataApiSearch.map
                 this.setState({
                     searchSuggestions: dataApiSearchSuggestions,

@@ -9,5 +9,23 @@ export const paramsToObject = (entries) => {
     return result;
 }
 export const initBoard = (size) => {
-    return [...Array(size)].map(x => Array(size).fill(CHESSMAN_NONE))
+    let dataBoard = [];
+    for (let index = 0; index < size; index ++) {
+        let itemRow = [];
+        for (let indexCell = 0; indexCell < size; indexCell ++) {
+            itemRow.push(CHESSMAN_NONE);
+        }
+        dataBoard.push(itemRow);
+    }
+    return  dataBoard;
+}
+
+export const fillEmptyMap = (array, width, height) => {
+    for (var x = 0; x < width; x++) {
+        array[x] = [];
+        for (var y = 0; y < height; y++) {
+
+            array[x][y] = [0];
+        }
+    }
 }

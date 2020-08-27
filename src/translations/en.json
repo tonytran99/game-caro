@@ -98,5 +98,27 @@
     },
     "chessBoard": {
 
+    },
+    "trainingWithYourself": {
+        "header": "Training With Yourself",
+        "setupBoard": {
+            "selectChessmanA": {
+                "title": "Select Chessman A"
+            },
+            "selectChessmanB": {
+                "title": "Select Chessman B"
+            },
+            "btnSubmit": "Setup Board",
+            "noticeWin": {
+                "chessmanA": "Chessman A Win",
+                "chessmanB": "Chessman B Win",
+                "newChessBoard": "New Chess Board"
+            }
+        },
+        "dialog": {
+            "content_continue": "Are you continue ?",
+            "no": "No",
+            "yes": "Yes"
+        }
     }
 }

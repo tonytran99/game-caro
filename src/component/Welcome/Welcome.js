@@ -127,7 +127,6 @@ class Welcome extends React.Component {
             chessBoardOpen: true,
         }
 
-        // console.log(dataChessBoard);
 
         firebase.database().ref('chessBoards/' + idChessBoard).set(dataChessBoard, (error) => {
             if (error) {

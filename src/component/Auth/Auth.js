@@ -72,7 +72,6 @@ class Auth extends React.Component {
             dataUserAuth,
             match
         } = this.props;
-        console.log(match);
         return (
             <div className={classes.authWrapper}>
                 <div className={classes.headerAuth}>

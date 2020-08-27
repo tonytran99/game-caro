@@ -603,7 +603,6 @@ class ChatBoard extends React.Component {
         const {
             dataInitPrivateBoard
         } = this.state;
-        console.log(dataInfoChatBoard);
         const idChessBoard = dataUser.userId + '_' + dataInfoChatBoard.idChatBox + '_' + new Date().getTime();
         const userCanViewBoard = {};
         const dataMembersBoard = {};
@@ -646,7 +645,6 @@ class ChatBoard extends React.Component {
         const {
             dataInitGroupBoard
         } = this.state;
-        console.log(dataInitGroupBoard);
         if (dataInitGroupBoard.dataChessmans.length === 2) {
             this.setState({
                 isLoading: true
@@ -668,9 +666,6 @@ class ChatBoard extends React.Component {
                 dataMembersBoard: dataMembersBoard,
                 chessBoardOpen: false,
             }
-
-            console.log(dataChessBoard);
-
             firebase.database().ref('chessBoards/' + idChessBoard).set(dataChessBoard, (error) => {
                 if (error) {
                     this.setState({
@@ -786,10 +781,6 @@ class ChatBoard extends React.Component {
             dataUser,
         } = this.props;
 
-        console.log(errors);
-
-
-        
         let chatBoxIcon = null;
         let chatBoxName = '';
         if (dataInfoChatBoard) {

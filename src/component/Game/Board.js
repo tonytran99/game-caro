@@ -26,7 +26,11 @@ class Board extends React.Component {
             chessmanUserId: props.chessmanUserId,
             gameFinished: false,
             dataBoardUpdateChessBoard: null,
-            update: false
+            update: false,
+            iconChessmanA: props.iconChessmanA,
+            iconChessmanB: props.iconChessmanB,
+            sizeChessBoard: props.size,
+            firstTurn: props.firstTurn
         };
 
         this.playChessman = this.playChessman.bind(this);
@@ -39,7 +43,7 @@ class Board extends React.Component {
         } = this.props;
         if (dataBoardTrainingDefault) {
             this.setState({
-                dataBoardTrainingDefault: dataBoardTrainingDefault
+                ...dataBoardTrainingDefault
             });
         }
         if (dataBoardUpdateChessBoard) {
@@ -90,9 +94,8 @@ class Board extends React.Component {
             chessmanUserId,
         } = this.props;
         let stateCurrent = this.state;
-        console.log(turnCurrent);
-        console.log(chessmanUserId);
-        if (!gameFinished && turnCurrent === chessmanUserId) {
+
+        if (!gameFinished && (chessBoardType === CHESS_BOARD_TYPE_ONLINE ? turnCurrent === chessmanUserId : true)) {
             let updateState = {};
             let boardTemp = board;
             // board
@@ -124,7 +127,6 @@ class Board extends React.Component {
                 this.props.checkWinChessman(chessmanB);
                 updateState.gameFinished = true;
             }
-            console.log(updateState);
             stateCurrent = {
                 ...stateCurrent,
                 ...updateState
@@ -153,16 +155,16 @@ class Board extends React.Component {
             dataBoardTrainingDefault,
             canPlayChess
         } = this.props;
-
+        console.log(size);
+        console.log(board);
         return (
             <GridList
-                // className={useStyles(size)({}).gridList}
-                cellHeight={30}
+                cellHeight={size < 15 ? 40 : 30}
                 cols={size}
                 spacing={0}
                 style={{
-                    width: 30*size,
-                    height: 30*size,
+                    width: size < 15 ? 40*size : 30*size,
+                    height: size < 15 ? 40*size : 30*size,
                 }}
             >
                 {
@@ -172,14 +174,17 @@ class Board extends React.Component {
                                 <GridListTile
                                     key={`row-${x}-cell-${y}`}
                                     style={{
-                                        padding: '2px'
+                                        border: '1px solid #056676'
                                     }}
                                 >
                                     <div
                                         style={{
-                                            backgroundColor: 'red',
+                                            backgroundColor: '#e8ded2',
                                             width: '100%',
                                             height: '100%',
+                                            display: 'flex',
+                                            alignItem: 'center',
+                                            justifyContent: 'center'
                                         }}
                                         onClick={() => {
                                             if (cell === CHESSMAN_NONE) {
@@ -192,11 +197,19 @@ class Board extends React.Component {
                                         {
                                             (cell === chessmanA)
                                                 ?
-                                                <img style={{width: 30, height: 30}} src={iconChessmanA.chessmanUrl} alt={iconChessmanA.name ? iconChessmanA.name : ''}/>
+                                                <img style={{
+                                                    width: size < 15 ? 36 : 27,
+                                                    height: size < 15 ? 36 : 27,
+                                                    cursor: 'pointer'
+                                                }} src={iconChessmanA.chessmanUrl} alt={iconChessmanA.name ? iconChessmanA.name : ''}/>
                                                 :
                                                 (cell === chessmanB)
                                                     ?
-                                                    <img style={{width: 30, height: 30}} src={iconChessmanB.chessmanUrl} alt={iconChessmanB.name ? iconChessmanB.name : ''}/>
+                                                    <img style={{
+                                                        width: size < 15 ? 36 : 27,
+                                                        height: size < 15 ? 36 : 27,
+                                                        cursor: 'pointer'
+                                                    }} src={iconChessmanB.chessmanUrl} alt={iconChessmanB.name ? iconChessmanB.name : ''}/>
                                                     :
                                                     ''
                                         }

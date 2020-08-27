@@ -24,7 +24,25 @@ const styles = theme => ({
     trainingWithAIWrapper: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
+        height: '100%',
+        flexDirection: 'column',
+        overflowY: 'scroll',
+        backgroundColor: '#e0ece4',
+        borderRadius: 9,
+        margin: '0.5rem 1rem',
+        '&::-webkit-scrollbar': {
+            width: 9,
+            height: 9,
+        },
+        '&::-webkit-scrollbar-track': {
+            // background: '#ee6f57',
+            // borderRadius: 9,
+        },
+        '&::-webkit-scrollbar-thumb': {
+            borderRadius: 9,
+            background: '#ee6f57',
+        },
     },
     setupDataBoard: {
 
@@ -188,7 +206,6 @@ class ChessBoard extends React.Component {
     }
 
     getDataBoardCurrent(dataBoard) {
-        console.log(dataBoard);
        const {
            dataChessBoard
        } = this.props;
@@ -211,7 +228,6 @@ class ChessBoard extends React.Component {
         //     board[index] = boardRow;
         // });
         // dataChessBoard.dataBoard.board = board;
-        console.log(dataChessBoard);
         this.props.saveDataChessBoard(this.props.match.params.idChessBoard, dataChessBoard);
     }
 
@@ -234,7 +250,6 @@ class ChessBoard extends React.Component {
             dataChessmans,
             dataUser,
         } = this.props;
-        console.log(dataChessBoard);
         // console.log(checkChess);
         let checkHasChessmanIcon = false;
         if (dataChessBoard && dataChessBoard.userIdChessmanA === dataUser.userId && dataChessBoard.iconChessmanA) {
@@ -242,7 +257,6 @@ class ChessBoard extends React.Component {
         } else if (dataChessBoard && dataChessBoard.userIdChessmanB === dataUser.userId && dataChessBoard.iconChessmanB) {
             checkHasChessmanIcon = true;
         }
-        console.log(checkHasChessmanIcon);
         let checkUserIdChessmanAB = dataChessBoard && dataChessBoard.userIdChessmanA && dataChessBoard.userIdChessmanB;
         let checkIconChessmanAB = dataChessBoard && dataChessBoard.iconChessmanA && dataChessBoard.iconChessmanB;
         let checkIsChessman = false;

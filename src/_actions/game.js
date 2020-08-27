@@ -23,6 +23,7 @@ export const showDataUser = (userId) => {
 }
 
 export const saveDataBoardTrainingWithYourself = (dataTraining) => {
+    console.log(dataTraining);
     return {
         type: types.GAME_SAVE_DATA_BOARD_TRAINING_WITH_YOURSELF,
         dataTraining: dataTraining
@@ -135,12 +136,10 @@ export const showListChessBoard = () => {
     return (dispatch) => {
         firebase.database().ref('chessBoards/').orderByChild('chessBoardOpen').equalTo(true).on('value', (snap) => {
             if (snap.val()) {
-                console.log(snap.val());
                 let dataListChessBoardTemp = [];
                 Object.keys(snap.val()).map((key, index)=>{
                     dataListChessBoardTemp.push(snap.val()[key]);
                 });
-                console.log(dataListChessBoardTemp);
                 dispatch({
                     type: types.GAME_SHOW_LIST_CHESS_BOARD,
                     dataListChessBoard: dataListChessBoardTemp

@@ -28,7 +28,6 @@ class Content extends React.Component{
             classes,
             match
         } = this.props;
-        console.log(match);
         return(
             <div className={classes.contentWrapper + ' ' + (match && match.path === links.LINK_AUTH ? classes.contentAuthWrapper : '')}>
                 {this.props.children}

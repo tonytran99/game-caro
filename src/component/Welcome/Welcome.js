@@ -8,7 +8,7 @@ import Header from "../Header";
 import AuthBlock from "../Auth/Auth";
 import Content from "../Content";
 import Button from "@material-ui/core/Button";
-import {NavLink} from "react-router-dom";
+import {NavLink, withRouter} from "react-router-dom";
 import * as links from "./../../constants/links";
 import {MESSAGE_TYPE_CREATE_PRIVATE_BOARD, PRIVATE_BOARD, PRIVATE_CHAT} from "../../constants/constants";
 import Popover from "@material-ui/core/Popover";
@@ -16,6 +16,10 @@ import Input from "@material-ui/core/Input";
 import firebase from "../../firebase";
 import i18n from "../../i18n";
 import AppInput from "../../theme/AppInput";
+import SuccessAlert from "../../theme/Alert/SuccessAlert";
+import ErrorAlert from "../../theme/Alert/ErrorAlert";
+import LoadingAction from "../../theme/LoadingAction";
+import {withTranslation} from "react-i18next";
 
 const styles = theme => ({
     welcomeWrapper: {
@@ -81,7 +85,11 @@ class Welcome extends React.Component {
             dataInitPrivateBoard: {
                 sizeChessBoard: 10,
             },
+            isLoading: false,
+            successOpen: false,
+            errorOpen: false,
         };
+        this.handleCloseNotice = this.handleCloseNotice.bind(this);
 
         this.openPopoverCreatePrivateBoard = this.openPopoverCreatePrivateBoard.bind(this);
         this.closePopoverCreatePrivateBoard = this.closePopoverCreatePrivateBoard.bind(this);
@@ -127,17 +135,26 @@ class Welcome extends React.Component {
             chessBoardOpen: true,
         }
 
-
+        this.setState({
+            isLoading: true
+        })
         firebase.database().ref('chessBoards/' + idChessBoard).set(dataChessBoard, (error) => {
             if (error) {
-                // this.setState({
-                //     popoverCreateGroupChat: null,
-                //     photoChatBox: null,
-                //     photoChatBoxPreview: '',
-                //     photoChatBoxName: '',
-                // })
+                this.setState({
+                    popoverCreatePrivateBoard: null,
+                    errorOpen: true,
+                    isLoading: false
+                })
             } else {
+                setTimeout(() => {
+                    this.setState({
+                        popoverCreatePrivateBoard: null,
+                        successOpen: true,
+                        isLoading: false
+                    })
 
+                    this.props.history.push(links.LINK_CHESS_BOARD.replace(":idChessBoard", idChessBoard));
+                },500);
             }
         });
 
@@ -146,24 +163,41 @@ class Welcome extends React.Component {
         const {
             dataInitPrivateBoard
         } = this.state;
+        if (name === 'sizeChessBoard') {
+            if (value < 10 || value > 20) {
+                value = dataInitPrivateBoard.sizeChessBoard
+            }
+        }
         dataInitPrivateBoard[name] = value;
         this.setState({
             dataInitPrivateBoard: dataInitPrivateBoard
         })
     }
 
+    handleCloseNotice() {
+        this.setState({
+            successOpen: false,
+            errorOpen: false,
+        });
+    }
+
     render() {
         const {
             popoverCreatePrivateBoard,
-            dataInitPrivateBoard
+            dataInitPrivateBoard,
+            isLoading,
+            errorOpen,
+            successOpen,
         } = this.state;
         const {
             classes,
             dataUserAuth,
+
         } = this.props;
 
         return (
             <React.Fragment>
+                {isLoading && <LoadingAction />}
                 <Header />
                 <Content>
                     <div className={classes.welcomeWrapper}>
@@ -246,6 +280,20 @@ class Welcome extends React.Component {
                     </div>
                 </Content>
                 <Footer />
+                <SuccessAlert
+                    snackbarProps={{
+                        open:successOpen,
+                        onClose:this.handleCloseNotice,
+                    }}
+                    message={i18n.t('alert.success')}
+                />
+                <ErrorAlert
+                    snackbarProps={{
+                        open:errorOpen,
+                        onClose:this.handleCloseNotice,
+                    }}
+                    message={i18n.t('alert.error')}
+                />
             </React.Fragment>
         );
     }
@@ -270,5 +318,6 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation()
+    withTranslation(),
+    withRouter
 ) (Welcome);

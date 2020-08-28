@@ -27,6 +27,7 @@ import AppInput from "../../theme/AppInput";
 import * as gameActions from "../../_actions/game";
 import SuccessAlert from "../../theme/Alert/SuccessAlert";
 import ErrorAlert from "../../theme/Alert/ErrorAlert";
+import {withTranslation} from "react-i18next";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -768,5 +769,5 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation()
+    withTranslation(),
 ) (ChatPage);

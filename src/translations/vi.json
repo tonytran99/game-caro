@@ -30,54 +30,133 @@
     },
     "header": {
         "menu_select": {
-            "background": "Background",
-            "chessman": "Chessman"
+            "background": "Màn hình",
+            "chessman": "Quân cờ"
         }
     },
     "profile": {
-        "displayName": "Display name",
-        "btnSaveProfile": "Save"
+        "displayName": "Tên hiện thị",
+        "btnSaveProfile": "lưu"
     },
     "background": {
         "menu": {
-            "list_background": "List Background",
-            "upload_background": "Upload Background"
+            "list_background": "Danh sách màn hình",
+            "upload_background": "Tải lên màn hình"
         },
         "list_background": {
-            "text_not_bg": "Not background",
-            "goUploadBG": "Go To Upload Background"
+            "text_not_bg": "Chưa có màn hình nào",
+            "goUploadBG": "Đi đến tải lên màn hình"
         },
         "upload_background": {
-            "btn_upload": "Upload Background"
+            "btn_upload": "Tải lên"
         }
     },
     "chessman": {
         "menu": {
-            "list_chessman": "List Chessman",
-            "upload_chessman": "Upload Chessman"
+            "list_chessman": "Danh sách quân cờ",
+            "upload_chessman": "Tải lên quân cờ"
         },
         "list_chessman": {
-            "text_not_bg": "Not chessman",
-            "goUploadChessman": "Go To Upload Chessman"
+            "text_not_bg": "Chưa có quân cờ nào",
+            "goUploadChessman": "Đi đến tải lên quân cờ"
         },
         "upload_chessman": {
-            "nameChessman": "Name",
-            "btn_upload": "Upload Chessman"
+            "nameChessman": "Tên quân cờ",
+            "btn_upload": "Tải lên"
         }
     },
     "chat": {
+        "user": "Thành viên",
+        "group": "Nhóm",
         "chat_page": {
-            "btnCreatePrivate": "Create Chat",
-            "selectUser": "Select user"
+            "btnCreatePrivate": "Tạo trò chuyện",
+            "btnCreateGroup": "Tạo cuộc trò chuyện nhóm",
+            "selectUser": "Chọn thành viên",
+            "create_group": {
+                "nameGroupChat": "Tên cuộc trò chuyện nhóm"
+            }
         },
         "list_chat": {
 
         },
         "chat_board": {
-
+            "not_data_chat_board": "Xin chào {{name}} !",
+            "chat_content": {
+                "createChat": "{{user}} tạo nhóm !",
+                "chessBoard": "Đến trận đấu"
+            },
+            "input_text": "Gõ điều muốn nhập...",
+            "create_chess_board": {
+                "errors": {
+                    "selectUser": "Bạn phải chọn 2 thành viên !"
+                }
+            }
+        },
+        "listSticker": {
+            "searchSticker": "Tìm kiếm sticker"
+        }
+    },
+    "trainingWithYourself": {
+        "header": "Tự mình luyện tập",
+        "setupBoard": {
+            "selectChessmanA": {
+                "title": "Chọn quân cờ cho A"
+            },
+            "selectChessmanB": {
+                "title": "Chọn quân cờ cho B"
+            },
+            "btnSubmit": "Khởi tạo bàn cờ",
+            "noticeWin": {
+                "chessmanA": "Quân cờ A Thắng",
+                "chessmanB": "Quân cờ B Thắng",
+                "newChessBoard": "Tạo bàn cờ mới"
+            }
+        },
+        "dialog": {
+            "content_continue": "Bạn có muốn tiếp tục ?",
+            "no": "Không",
+            "yes": "Có"
+        }
+    },
+    "trainingWithYourAI": {
+        "header": "Luyện tập với AI",
+        "setupBoard": {
+            "selectChessmanA": {
+                "title": "Chọn quân cờ cho AI"
+            },
+            "selectChessmanB": {
+                "title": "Chọn quân cờ cho bạn"
+            },
+            "btnSubmit": "Khởi tạo bàn cờ",
+            "noticeWin": {
+                "chessmanA": "AI Thắng",
+                "chessmanB": "Bạn Thắng",
+                "newChessBoard": "Tạo bàn cờ mới"
+            }
+        },
+        "dialog": {
+            "content_continue": "Bạn có muốn tiếp tục ?",
+            "no": "Không",
+            "yes": "Có"
         }
     },
     "chessBoard": {
-
+        "text": {
+            "waiting_other_join": "Đang chờ thành viên khác tham gia",
+            "waiting_setup": "Đang chờ khởi tạo bàn cờ",
+            "joinToChessBoard": "Tham gia bàn cờ",
+            "waiting_other_setup": "Chờ thành viên khác"
+        },
+        "btn": {
+            "submitSetup": "Khởi tạo",
+            "goToListChessBoard": "Danh sách các bàn cờ"
+        },
+        "chessBoardProcess": {
+            "chessmanTitle": {
+                "chessmanA": "Quân cờ A",
+                "chessmanB": "Quân cờ B"
+            },
+            "you": "Bạn"
+        }
     }
 }

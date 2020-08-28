@@ -23,7 +23,6 @@ export const showDataUser = (userId) => {
 }
 
 export const saveDataBoardTrainingWithYourself = (dataTraining) => {
-    console.log(dataTraining);
     return {
         type: types.GAME_SAVE_DATA_BOARD_TRAINING_WITH_YOURSELF,
         dataTraining: dataTraining

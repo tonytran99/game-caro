@@ -290,5 +290,5 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    withTranslation()
+    withTranslation(),
 ) (Profile);

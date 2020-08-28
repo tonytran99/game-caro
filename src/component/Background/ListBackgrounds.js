@@ -14,6 +14,7 @@ import {ReactComponent as CheckIcon} from "../../images/check_icon.svg";
 import * as gameActions from "../../_actions/game";
 import i18n from "../../i18n";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import {withTranslation} from "react-i18next";
 
 const styles = theme => ({
     listBackgroundWrapper: {
@@ -240,6 +241,6 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation(),
+    withTranslation(),
     withRouter,
 ) (ListBackgrounds);

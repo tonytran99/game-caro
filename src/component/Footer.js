@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 import {withStyles} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import {compose} from "redux";
+import {withTranslation} from "react-i18next";
 
 const styles = theme => ({
     footerWrapper: {
@@ -62,5 +63,5 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation()
+    withTranslation(),
 ) (Footer);

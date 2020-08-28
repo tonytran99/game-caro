@@ -13,4 +13,4 @@ export const LINK_CHAT_PAGE = '/chat';
 
 export const LINK_CHAT_BOX = 'chat-box/:idChatBox';
 
-
+export const LINK_PAGE404 = '/404';

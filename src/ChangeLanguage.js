@@ -5,6 +5,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import {LANGUAGE_EN, LANGUAGE_VI, MD, SM} from "./constants/constants";
 import {compose} from "redux";
 import {withStyles} from "@material-ui/core/styles";
+import {withTranslation} from "react-i18next";
 
 const styles = theme => ({
     changeLanguageWrapper: {
@@ -37,8 +38,9 @@ class ChangeLanguage extends React.Component{
     }
 
     changeLanguage = (language) => {
-        i18n.changeLanguage(language);
+        // Cookies.set('_locale',language, { expires: 30, path: "/" });
         if (language) {
+            i18n.changeLanguage(language);
             localStorage.setItem("language_translate", JSON.stringify(language));
         } else {
             localStorage.removeItem("language_translate");
@@ -56,6 +58,8 @@ class ChangeLanguage extends React.Component{
             LANGUAGE_EN,
             LANGUAGE_VI
         ];
+        console.log(this.state.language);
+        console.log(i18n.language)
         return (
             <div className={classes.changeLanguageWrapper}>
                 <Select
@@ -63,7 +67,7 @@ class ChangeLanguage extends React.Component{
                     onChange={(event) => this.changeLanguage(event.target.value)}
                 >
                     {data.map((lang => <MenuItem value={lang} className={classes.itemSelectLanguage}>
-                        <span className="itemMenu">{i18n.t('translations:translations.' + lang, {"lang": lang})}</span>
+                        <span className="itemMenu">{this.props.t('translations:translations.' + lang, {"lang": lang})}</span>
                     </MenuItem>))}
                 </Select>
             </div>
@@ -73,4 +77,5 @@ class ChangeLanguage extends React.Component{
 
 export default compose(
     withStyles(styles),
+    withTranslation()
 ) (ChangeLanguage);

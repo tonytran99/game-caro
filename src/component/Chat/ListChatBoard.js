@@ -23,6 +23,7 @@ import * as gameActions from "../../_actions/game";
 import { ReactComponent as PersonIcon } from "./../../images/person_icon.svg";
 import { ReactComponent as GroupIcon } from "./../../images/group_icon.svg";
 import i18n from "../../i18n";
+import {withTranslation} from "react-i18next";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -278,5 +279,5 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation()
+    withTranslation(),
 ) (ListChatBoard);

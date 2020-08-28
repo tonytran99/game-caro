@@ -13,6 +13,7 @@ import * as links from "./../../constants/links";
 import {paramsToObject} from "../../functions/functions";
 import ManagementBackground from "./ListBackgrounds";
 import i18n from "../../i18n";
+import {withTranslation} from "react-i18next";
 
 const styles = theme => ({
     backgroundWrapper: {
@@ -173,6 +174,6 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation(),
+    withTranslation(),
     withRouter,
 ) (Background);

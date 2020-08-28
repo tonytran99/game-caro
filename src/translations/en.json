@@ -96,9 +96,6 @@
             "searchSticker": "Search sticker"
         }
     },
-    "chessBoard": {
-
-    },
     "trainingWithYourself": {
         "header": "Training With Yourself",
         "setupBoard": {
@@ -119,6 +116,47 @@
             "content_continue": "Are you continue ?",
             "no": "No",
             "yes": "Yes"
+        }
+    },
+    "trainingWithAI": {
+        "header": "Training With AI",
+        "setupBoard": {
+            "selectChessmanA": {
+                "title": "Select Chessman For AI"
+            },
+            "selectChessmanB": {
+                "title": "Select Chessman For You"
+            },
+            "btnSubmit": "Setup Board",
+            "noticeWin": {
+                "chessmanA": "AI Win",
+                "chessmanB": "You Win",
+                "newChessBoard": "New Chess Board"
+            }
+        },
+        "dialog": {
+            "content_continue": "Are you continue ?",
+            "no": "No",
+            "yes": "Yes"
+        }
+    },
+    "chessBoard": {
+        "text": {
+            "waiting_other_join": "Waiting Other User Join",
+            "waiting_setup": "Waiting Setup",
+            "joinToChessBoard": "Join To ChessBoard",
+            "waiting_other_setup": "Waiting Other User Chessman"
+        },
+        "btn": {
+            "submitSetup": "Submit Setup",
+            "goToListChessBoard": "Go To List Chess Board"
+        },
+        "chessBoardProcess": {
+            "chessmanTitle": {
+                "chessmanA": "Chessman A",
+                "chessmanB": "Chessman B"
+            },
+            "you": "You"
         }
     }
 }

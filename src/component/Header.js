@@ -25,6 +25,7 @@ import Popover from "@material-ui/core/Popover";
 import {PERMISSION_ADMIN} from "../constants/constants";
 import ChangeLanguage from "../ChangeLanguage";
 import i18n from "../i18n";
+import {withTranslation} from "react-i18next";
 const styles = theme => ({
     headerWrapper: {
         display: 'flex',
@@ -245,5 +246,5 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation()
+    withTranslation(),
 ) (Header);

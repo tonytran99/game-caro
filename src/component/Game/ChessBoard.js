@@ -19,9 +19,20 @@ import * as gameActions from "../../_actions/game";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import i18n from "../../i18n";
+import Grid from "@material-ui/core/Grid";
+import {ReactComponent as PersonIcon} from "../../images/person_icon.svg";
+import Dialog from "@material-ui/core/Dialog";
+import Slide from '@material-ui/core/Slide';
+import NoiceWinIcon from "./../../images/notice_win.png";
+import {NavLink} from "react-router-dom";
+import * as links from "./../../constants/links";
+import {Redirect} from "react-router";
+import {withTranslation} from "react-i18next";
 
 const styles = theme => ({
-    trainingWithAIWrapper: {
+    chessBoardWrapper: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-start',
@@ -44,14 +55,166 @@ const styles = theme => ({
             background: '#ee6f57',
         },
     },
-    setupDataBoard: {
+    dialogNotice: {
+        backgroundColor: 'rgb(251, 236, 236, 0.3)',
+    },
+    winNoticeWrapper: {
+        backgroundColor: 'rgb(251, 236, 236, 0.3)',
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+    },
+    chessBoardProcess: {
 
+    },
+    infoChessmanA: {
+
+    },
+    itemChessman: {
+        padding: '0.5rem',
+        '& .title': {
+            padding: '0.5rem 0rem',
+            color: '#123152',
+            fontWeight: 600,
+        },
+        '& .infoChessman': {
+            backgroundColor: '#123152',
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            padding: '0.25rem 0.5rem',
+            borderRadius: 11,
+            '& .avatar': {
+                width: 48,
+                height: 48,
+                '& img': {
+                    width: '100%',
+                    height: '100%',
+                    border: '1px solid #fff',
+                    borderRadius: 9,
+                },
+                '& svg': {
+                    width: '100%',
+                    height: '100%',
+                    border: '1px solid #fff',
+                    borderRadius: 9,
+                },
+            },
+            '& .name': {
+                color: '#fff',
+                fontWeight: 600,
+                fontSize: '0.8rem',
+                paddingLeft: '0.5rem',
+            }
+        },
+    },
+    setupDataBoard: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        '& .title': {
+            color: '#123152',
+            width: '100%',
+            padding: '0.5rem 0rem',
+            fontSize: '0.9rem',
+            fontWeight: 600,
+
+        }
+    },
+    loadingWrapper: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    textStatus: {
+        color: '#123152',
+        fontSize: '1.1rem',
+        fontWeight: 600,
+        padding: '1rem 0rem',
+    },
+    joinChessBoardWrapper: {
+
+    },
+    btnJoinChessBoard: {
+        marginTop: '1rem',
+        backgroundColor: '#123152',
+        textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        marginBottom: '1rem',
+        color: '#dfe3f1',
+        '&:hover': {
+            backgroundColor: '#123152',
+        }
+    },
+    iconChessman: {
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        '& img': {
+            width: 48,
+            height: 48,
+            border: '1px solid #fff',
+            borderRadius: 9,
+        },
+        '& span': {
+            fontWeight: 600,
+            paddingLeft: '0.5rem',
+            color: '#ffdead',
+        }
+    },
+    submitSetup: {
+        backgroundColor: '#123152',
+        textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        marginTop: '1rem',
+        color: '#fff',
+        width: '100%',
+        '&:hover': {
+            backgroundColor: '#123152',
+        }
+    },
+    btnChessman: {
+        backgroundColor: '#123152',
+        textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        marginTop: '0.25rem',
+        width: '100%',
+        '&:hover': {
+            backgroundColor: '#123152',
+        }
+    },
+    btnGoToChessBoard: {
+        marginTop: '1rem',
+        backgroundColor: '#123152',
+        textTransform: 'initial',
+        padding: '0.5rem 1.5rem',
+        fontWeight: 600,
+        borderRadius: 9,
+        marginBottom: '1rem',
+        color: '#dfe3f1',
+        '&:hover': {
+            backgroundColor: '#123152',
+        }
     }
 });
 
 const CHESS_A = 'CHESS_A';
 const CHESS_B = 'CHESS_B';
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 class ChessBoard extends React.Component {
 
     constructor(props) {
@@ -63,7 +226,9 @@ class ChessBoard extends React.Component {
             },
             checkChess: null,
             checkShowChessmans: false,
-            checkShowChessBoard: false
+            checkShowChessBoard: false,
+            openDialogNoticeWin: false,
+            dataChessmanWin: null
         };
 
         this.joinChessBoard = this.joinChessBoard.bind(this);
@@ -218,6 +383,9 @@ class ChessBoard extends React.Component {
            ...dataChessBoard.dataBoard,
            ...dataBoard
        };
+        if (dataBoard.gameFinished) {
+            dataChessBoard.chessBoardOpen = false
+        }
         // let board = {};
         // let boardRow;
         // dataChessBoard.dataBoard.board.map((item, index) => {
@@ -232,7 +400,32 @@ class ChessBoard extends React.Component {
     }
 
     checkWinChessman(winChessman) {
-        console.log(winChessman + ' - win');
+        // dataChessmanWin
+        const {
+            dataChessBoard
+        } = this.props;
+        let dataChessmanWin = null;
+        if (dataChessBoard && dataChessBoard.dataMembersBoard) {
+            for (let [key, value] of Object.entries(dataChessBoard.dataMembersBoard)) {
+                if (winChessman === value.userId ) {
+                    dataChessmanWin = value;
+                }
+            }
+        }
+        dataChessBoard.dataChessmanWin = dataChessmanWin;
+        dataChessBoard.openDialogNoticeWin = true;
+        this.props.saveDataChessBoard(this.props.match.params.idChessBoard, dataChessBoard);
+
+        this.setState({
+           openDialogNoticeWin: true,
+           // dataChessmanWin: dataChessmanWin
+       })
+    }
+
+    closeDialogNoticeWin() {
+        this.setState({
+            openDialogNoticeWin: false
+        })
     }
 
     render() {
@@ -240,7 +433,9 @@ class ChessBoard extends React.Component {
             board,
             menuSelectChessmanIcon,
             dataSetupChessBoard,
-            checkChess
+            checkChess,
+            // openDialogNoticeWin,
+            // dataChessmanWin,
         } = this.state;
         const {
             classes,
@@ -250,6 +445,13 @@ class ChessBoard extends React.Component {
             dataChessmans,
             dataUser,
         } = this.props;
+
+        let openDialogNoticeWin = false;
+        let dataChessmanWin = null;
+        if (dataChessBoard) {
+            openDialogNoticeWin = dataChessBoard.openDialogNoticeWin;
+            dataChessmanWin = dataChessBoard.dataChessmanWin;
+        }
         // console.log(checkChess);
         let checkHasChessmanIcon = false;
         if (dataChessBoard && dataChessBoard.userIdChessmanA === dataUser.userId && dataChessBoard.iconChessmanA) {
@@ -263,11 +465,27 @@ class ChessBoard extends React.Component {
         if (checkUserIdChessmanAB) {
             checkIsChessman = [dataChessBoard.userIdChessmanA, dataChessBoard.userIdChessmanB].includes(dataUser.userId)
         }
+        let dataChessmanA = null;
+        let dataChessmanB = null;
+        if (dataChessBoard && dataChessBoard.dataMembersBoard) {
+            for (let [key, value] of Object.entries(dataChessBoard.dataMembersBoard)) {
+                if (dataChessBoard.userIdChessmanA === value.userId) {
+                    dataChessmanA = value;
+                } else if (dataChessBoard.userIdChessmanB === value.userId) {
+                    dataChessmanB = value;
+                }
+            }
+        }
+        if (dataChessBoard && dataChessBoard.dataBoard.gameFinished && !dataChessmanWin) {
+            return <Redirect
+                to={links.LINK_PAGE404}
+            />
+        }
         return (
             <React.Fragment>
                 <Header />
                 <Content>
-                    <div className={classes.trainingWithAIWrapper}>
+                    <div className={classes.chessBoardWrapper}>
                         {
                             dataChessBoard
                             ?
@@ -275,28 +493,72 @@ class ChessBoard extends React.Component {
                             ?
                                     checkIconChessmanAB
                                     ?
-                                <Board
-                                    size={dataChessBoard.dataBoard && dataChessBoard.dataBoard.sizeChessBoard ? dataChessBoard.dataBoard.sizeChessBoard : 10}
-                                    chessmanA={dataChessBoard.userIdChessmanA}
-                                    chessmanB={dataChessBoard.userIdChessmanB}
-                                    firstTurn={dataChessBoard.userIdChessmanA}
-                                    iconChessmanA={dataChessBoard.iconChessmanA}
-                                    iconChessmanB={dataChessBoard.iconChessmanB}
-                                    getDataBoardCurrent={this.getDataBoardCurrent}
-                                    dataBoardUpdateChessBoard={dataChessBoard.dataBoard}
-                                    checkWinChessman={this.checkWinChessman}
-                                    chessBoardType={CHESS_BOARD_TYPE_ONLINE}
-                                    chessmanUserId={dataUser.userId}
-                                    canPlayChess={checkIsChessman}
-                                />
+                                        <div className={classes.chessBoardProcess}>
+                                            <div className={classes.infoChessmanA}>
+                                                <Grid container>
+                                                    <Grid item xs={6} className={classes.itemChessman}>
+                                                        <div className="title">
+                                                            {i18n.t('chessBoard.chessBoardProcess.chessmanTitle.chessmanA')}
+                                                        </div>
+                                                        {dataChessmanA && <div className="infoChessman">
+                                                            <div className="avatar">
+                                                                {
+                                                                    dataChessmanA.avatarUrl ? <img src={dataChessmanA.avatarUrl} alt=""/> : <PersonIcon/>
+                                                                }
+                                                            </div>
+                                                            <div className="name">
+                                                                {
+                                                                    dataChessmanA.userId === dataUser.userId ? i18n.t('chessBoard.chessBoardProcess.you') : dataChessmanA.displayName ? dataChessmanA.displayName :
+                                                                        dataChessmanA.email ? dataChessmanA.email :
+                                                                            'user'
+                                                                }
+                                                            </div>
+                                                        </div>}
+                                                    </Grid>
+                                                    <Grid item xs={6} className={classes.itemChessman}>
+                                                        <div className="title">
+                                                            {i18n.t('chessBoard.chessBoardProcess.chessmanTitle.chessmanB')}
+                                                        </div>
+                                                        {dataChessmanA && <div className="infoChessman">
+                                                            <div className="avatar">
+                                                                {
+                                                                    dataChessmanB.avatarUrl ? <img src={dataChessmanB.avatarUrl} alt=""/> : <PersonIcon/>
+                                                                }
+                                                            </div>
+                                                            <div className="name">
+                                                                {
+                                                                    dataChessmanB.userId === dataUser.userId ? i18n.t('chessBoard.chessBoardProcess.you') : dataChessmanB.displayName ? dataChessmanB.displayName :
+                                                                        dataChessmanB.email ? dataChessmanB.email :
+                                                                            'user'
+                                                                }
+                                                            </div>
+                                                        </div>}
+                                                    </Grid>
+                                                </Grid>
+                                            </div>
+                                            <Board
+                                                size={dataChessBoard.dataBoard && dataChessBoard.dataBoard.sizeChessBoard ? dataChessBoard.dataBoard.sizeChessBoard : 10}
+                                                chessmanA={dataChessBoard.userIdChessmanA}
+                                                chessmanB={dataChessBoard.userIdChessmanB}
+                                                firstTurn={dataChessBoard.userIdChessmanA}
+                                                iconChessmanA={dataChessBoard.iconChessmanA}
+                                                iconChessmanB={dataChessBoard.iconChessmanB}
+                                                getDataBoardCurrent={this.getDataBoardCurrent}
+                                                dataBoardUpdateChessBoard={dataChessBoard.dataBoard}
+                                                checkWinChessman={this.checkWinChessman}
+                                                chessBoardType={CHESS_BOARD_TYPE_ONLINE}
+                                                chessmanUserId={dataUser.userId}
+                                                canPlayChess={checkIsChessman}
+                                            />
+                                        </div>
                                 : !checkHasChessmanIcon
                                     ?
                                         checkIsChessman
                                         ?
                                         <div className={classes.setupDataBoard}>
-                                            <Button aria-controls="simple-menu" aria-haspopup="true" onClick={this.openMenuSelectChessmanIcon}>
+                                            <Button aria-controls="simple-menu" aria-haspopup="true" className={classes.btnChessman} onClick={this.openMenuSelectChessmanIcon}>
                                                 {dataSetupChessBoard && dataSetupChessBoard.iconChessman &&
-                                                    <div>
+                                                    <div className={classes.iconChessman}>
                                                         <img src={dataSetupChessBoard.iconChessman.chessmanUrl} alt="" style={{width: 50, height: 50}}/>
                                                         <span>{dataSetupChessBoard.iconChessman.name}</span>
                                                     </div>
@@ -312,29 +574,32 @@ class ChessBoard extends React.Component {
                                                 {
                                                     dataChessmans.map((item, index) => {
                                                         return (<MenuItem onClick={() => this.handleChessmanChange(item)}>
-                                                            <img src={item.chessmanUrl} alt="" style={{width: 50, height: 50}}/>
+                                                            <img src={item.chessmanUrl} alt="" style={{width: 48, height: 48,}}/>
                                                             <span>{item.name}</span>
                                                         </MenuItem>);
                                                     })
                                                 }
                                             </Menu>}
                                             <Button
-                                                className="submitSetup"
+                                                className={classes.submitSetup}
                                                 onClick={this.submitSetupChessBoard}
                                             >
-                                                Submit Setup
+                                                {i18n.t('chessBoard.btn.submitSetup')}
                                             </Button>
                                         </div>
                                             :
-                                            <div>Van chua duoc setup</div>
+                                            <div className={classes.textStatus}>
+                                                {i18n.t('chessBoard.text.waiting_setup')}
+                                            </div>
                                         :
-                                        <div>Doi ty thang kia setup da</div>
-                                    :
+                                        <div className={classes.textStatus}>
+                                            {i18n.t('chessBoard.text.waiting_other_setup')}
+                                        </div>                                    :
                                     ![dataChessBoard.userIdChessmanA, dataChessBoard.userIdChessmanB].includes(dataUser.userId)
                                         ?
-                                        <div className='sds'>
+                                        <div className={classes.joinChessBoardWrapper}>
                                             <Button
-                                                className={classes.joinChessBoard}
+                                                className={classes.btnJoinChessBoard}
                                                 onClick={() => {
                                                     if (!dataChessBoard.userIdChessmanA) {
                                                         this.joinChessBoard('userIdChessmanA', dataUser.userId);
@@ -343,18 +608,56 @@ class ChessBoard extends React.Component {
                                                     }
                                                 }}
                                             >
-                                                join chess board
+                                                {i18n.t('chessBoard.text.joinToChessBoard')}
                                             </Button>
                                         </div>
                                         :
-                                        <div>Doi thang kia join vao da</div>
+                                        <div className={classes.textStatus}>
+                                            {i18n.t('chessBoard.text.waiting_other_join')}
+                                        </div>
                                 :
-                                <div>'loading'</div>
+                                <div className={classes.loadingWrapper}>
+                                    <CircularProgress color="#123152"/>
+                                </div>
                         }
 
                     </div>
                 </Content>
                 <Footer />
+                <Dialog className={classes.dialogNotice} PaperProps={{
+                    style: {
+                        backgroundColor: 'transparent',
+                        boxShadow: 'none',
+                    },
+                }} fullScreen open={openDialogNoticeWin} onClose={this.closeDialogNoticeWin} TransitionComponent={Transition}>
+                    <div className={classes.winNoticeWrapper}>
+                        <img src={NoiceWinIcon} alt=""/>
+                        {
+                            dataChessmanWin &&
+                                <div className={classes.itemChessman}>
+                                    {dataChessmanWin && <div className="infoChessman">
+                                        <div className="avatar">
+                                            {
+                                                dataChessmanWin.avatarUrl ? <img src={dataChessmanWin.avatarUrl} alt=""/> : <PersonIcon/>
+                                            }
+                                        </div>
+                                        <div className="name">
+                                            {
+                                                dataChessmanWin.userId === dataUser.userId ? i18n.t('chessBoard.chessBoardProcess.you') : dataChessmanWin.displayName ? dataChessmanWin.displayName :
+                                                    dataChessmanWin.email ? dataChessmanWin.email :
+                                                        'user'
+                                            }
+                                        </div>
+                                    </div>}
+                                </div>
+                        }
+                        <NavLink to={links.LINK_LIST_CHESS_BOARD} className={classes.goToListChessBoard}>
+                            <Button className={classes.btnGoToChessBoard}>
+                                {i18n.t('chessBoard.btn.goToListChessBoard')}
+                            </Button>
+                        </NavLink>
+                    </div>
+                </Dialog>
             </React.Fragment>
         );
     }
@@ -383,5 +686,5 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation()
+    withTranslation(),
 ) (ChessBoard);

@@ -8,7 +8,7 @@ import Header from "../Header";
 import AuthBlock from "../Auth/Auth";
 import Content from "../Content";
 import Board from "./Board";
-import {CHESSMAN_YOURSELF_A, CHESSMAN_YOURSELF_B} from "../../constants/constants";
+import {CHESSMAN_AI_ID, CHESSMAN_YOURSELF_A, CHESSMAN_YOURSELF_B} from "../../constants/constants";
 import * as gameActions from "../../_actions/game";
 import DialogForm from "../../theme/DialogForm";
 import i18n from "../../i18n";
@@ -16,7 +16,13 @@ import Button from "@material-ui/core/Button";
 import AppInput from "../../theme/AppInput";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-
+import Dialog from "@material-ui/core/Dialog";
+import NoiceWinIcon from "../../images/notice_win.png";
+import Slide from "@material-ui/core/Slide";
+import {withTranslation} from "react-i18next";
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 const styles = theme => ({
     trainingWithYourselfWrapper: {
         display: 'flex',
@@ -141,7 +147,19 @@ const styles = theme => ({
             paddingLeft: '0.5rem',
             color: '#ffdead',
         }
-    }
+    },
+    dialogNotice: {
+        backgroundColor: 'rgb(251, 236, 236, 0.3)',
+    },
+    winNoticeWrapper: {
+        backgroundColor: 'rgb(251, 236, 236, 0.3)',
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+    },
 });
 class TrainingWithYourself extends React.Component {
 
@@ -353,8 +371,6 @@ class TrainingWithYourself extends React.Component {
             dataUserAuth,
             dataChessmans
         } = this.props;
-        console.log(setupBoardCheck);
-        console.log(showBoard);
         return (
             <React.Fragment>
                 <Header />
@@ -363,28 +379,6 @@ class TrainingWithYourself extends React.Component {
                         <div className={classes.trainingHeader}>
                             {i18n.t('trainingWithYourself.header')}
                         </div>
-                        {chessmanWin && setupBoard && <React.Fragment><div className={classes.noticeWin}>
-                            {
-                                chessmanWin === CHESSMAN_YOURSELF_A
-                                ?
-                                    <React.Fragment>
-                                        <img src={setupBoard.iconChessmanA.chessmanUrl} alt=""/>
-                                        <span className="text">{i18n.t('trainingWithYourself.setupBoard.noticeWin.chessmanA')}</span>
-                                    </React.Fragment>
-                                    :
-                                    <React.Fragment>
-                                        <img src={setupBoard.iconChessmanB.chessmanUrl} alt=""/>
-                                        <span className="text">{i18n.t('trainingWithYourself.setupBoard.noticeWin.chessmanB')}</span>
-                                    </React.Fragment>
-                            }
-                        </div>
-                            <Button
-                                className={classes.btnNewChessBoard}
-                                onClick={this.createNewChessBoard}
-                            >
-                                {i18n.t('trainingWithYourself.setupBoard.noticeWin.newChessBoard')}
-                            </Button>
-                        </React.Fragment>}
                         {setupBoardCheck && !showBoard && <div className={classes.setupBoardWrapper}>
                             <AppInput
                                 className={classes.sizeInput}
@@ -420,7 +414,7 @@ class TrainingWithYourself extends React.Component {
                                     {
                                         dataChessmans.map((item, index) => {
                                             return (<MenuItem onClick={() => this.handleSetupBoardChange('iconChessmanA', item)}>
-                                                <img src={item.chessmanUrl} alt="" style={{width: 50, height: 50}}/>
+                                                <img src={item.chessmanUrl} alt="" style={{width: 48, height: 48,}}/>
                                                 <span>{item.name}</span>
                                             </MenuItem>);
                                         })
@@ -498,6 +492,37 @@ class TrainingWithYourself extends React.Component {
                         content: i18n.t('trainingWithYourself.dialog.yes'),
                     }}
                 />
+                <Dialog className={classes.dialogNotice} PaperProps={{
+                    style: {
+                        backgroundColor: 'transparent',
+                        boxShadow: 'none',
+                    },
+                }} fullScreen open={chessmanWin && setupBoard} TransitionComponent={Transition}>
+                    <div className={classes.winNoticeWrapper}>
+                        <img src={NoiceWinIcon} alt=""/>
+                        {setupBoard && setupBoard.iconChessmanA && setupBoard.iconChessmanB && <div className={classes.noticeWin}>
+                            {
+                                chessmanWin === CHESSMAN_YOURSELF_A
+                                    ?
+                                    <React.Fragment>
+                                        <img src={setupBoard.iconChessmanA.chessmanUrl} alt=""/>
+                                        <span className="text">{i18n.t('trainingWithYourself.setupBoard.noticeWin.chessmanA')}</span>
+                                    </React.Fragment>
+                                    :
+                                    <React.Fragment>
+                                        <img src={setupBoard.iconChessmanB.chessmanUrl} alt=""/>
+                                        <span className="text">{i18n.t('trainingWithYourself.setupBoard.noticeWin.chessmanB')}</span>
+                                    </React.Fragment>
+                            }
+                        </div>}
+                        <Button
+                            className={classes.btnNewChessBoard}
+                            onClick={this.createNewChessBoard}
+                        >
+                            {i18n.t('trainingWithYourself.setupBoard.noticeWin.newChessBoard')}
+                        </Button>
+                    </div>
+                </Dialog>
             </React.Fragment>
         );
     }
@@ -524,5 +549,5 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation()
+    withTranslation(),
 ) (TrainingWithYourself);

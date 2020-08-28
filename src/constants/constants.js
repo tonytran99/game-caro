@@ -12,7 +12,7 @@ export const CHESSMAN_NONE = 0;
 export const CHESSMAN_YOURSELF_A = 2;
 export const CHESSMAN_YOURSELF_B = 3;
 
-
+export const CHESSMAN_PLAYER = 10;
 
 export const GROUP_BOARD = 'GROUP_BOARD';
 export const PRIVATE_BOARD = 'PRIVATE_BOARD';

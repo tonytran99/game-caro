@@ -10,6 +10,8 @@ import {Redirect, Route, Switch, withRouter} from "react-router-dom";
 import {withTranslation} from "react-i18next";
 import LoadingAction from "./theme/LoadingAction";
 import Page404 from "./theme/PageError/Page404";
+import * as links from "./constants/links";
+import PublicRoute from "./PublicRoute";
 
 const styles = {
     mainContent: {
@@ -50,7 +52,8 @@ class RoutesMap extends React.Component {
                 <Suspense fallback={<LoadingAction/>}>
                     <Switch>
                         {routesMap}
-                        <Route component={Page404} match={false} />
+                        <Route component={Page404} match={false}/>
+                        <Route component={Page404} match={false}  path={links.LINK_PAGE404}/>
                     </Switch>
                 </Suspense>
             </div>

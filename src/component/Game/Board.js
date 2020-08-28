@@ -7,7 +7,14 @@ import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import {initBoard} from "../../functions/functions";
 import {checkGameFinished} from "./GameChecker";
-import {CHESS_BOARD_TYPE_ONLINE, CHESSMAN_NONE} from "../../constants/constants";
+import {
+    CHESS_BOARD_TYPE_ONLINE,
+    CHESS_BOARD_TYPE_TRAINING_WITH_AI,
+    CHESSMAN_AI_ID,
+    CHESSMAN_NONE
+} from "../../constants/constants";
+import {nextMoveAI} from "./GameAI";
+import {withTranslation} from "react-i18next";
 
 const styles = theme => ({
     welcomeWrapper: {
@@ -66,6 +73,8 @@ class Board extends React.Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         const {
             dataBoardUpdateChessBoard,
+            chessBoardType,
+            size
         } = this.props;
         if (this.state.update){
             this.setState({
@@ -76,6 +85,17 @@ class Board extends React.Component {
                     dataBoardUpdateChessBoard: dataBoardUpdateChessBoard
                 });
             });
+        }
+
+        if (chessBoardType === CHESS_BOARD_TYPE_TRAINING_WITH_AI) {
+            const {
+                turnCurrent,
+                board,
+            } = this.state;
+            if (turnCurrent === CHESSMAN_AI_ID) {
+                const nextMoveAIOK = nextMoveAI(board, size);
+                this.playChessman(nextMoveAIOK.x, nextMoveAIOK.y);
+            }
         }
     }
 
@@ -153,18 +173,17 @@ class Board extends React.Component {
             iconChessmanA,
             iconChessmanB,
             dataBoardTrainingDefault,
-            canPlayChess
+            canPlayChess,
+            chessBoardType
         } = this.props;
-        console.log(size);
-        console.log(board);
         return (
             <GridList
-                cellHeight={size < 15 ? 40 : 30}
+                cellHeight={size <= 12 ? 40 : size > 12 && size <= 15 ? 36 : (size > 15 && size <= 17 ) ? 33 : 30}
                 cols={size}
                 spacing={0}
                 style={{
-                    width: size < 15 ? 40*size : 30*size,
-                    height: size < 15 ? 40*size : 30*size,
+                    width: size <= 12 ? 40*size : size > 12 && size <= 15 ? 36*size : (size > 15 && size <= 17 ) ? 33*size : 30*size,
+                    height: size <= 12 ? 40*size : size > 12 && size <= 15 ? 36*size : (size > 15 && size <= 17 ) ? 33*size : 30*size,
                 }}
             >
                 {
@@ -184,12 +203,19 @@ class Board extends React.Component {
                                             height: '100%',
                                             display: 'flex',
                                             alignItem: 'center',
-                                            justifyContent: 'center'
+                                            justifyContent: 'center',
+                                            cursor: 'pointer',
                                         }}
                                         onClick={() => {
                                             if (cell === CHESSMAN_NONE) {
                                                 if (canPlayChess || canPlayChess === undefined) {
-                                                    this.playChessman(x, y);
+                                                    if (chessBoardType === CHESS_BOARD_TYPE_TRAINING_WITH_AI) {
+                                                        if (turnCurrent !== CHESSMAN_AI_ID) {
+                                                            this.playChessman(x, y);
+                                                        }
+                                                    } else {
+                                                        this.playChessman(x, y);
+                                                    }
                                                 }
                                             }
                                         }}
@@ -198,16 +224,16 @@ class Board extends React.Component {
                                             (cell === chessmanA)
                                                 ?
                                                 <img style={{
-                                                    width: size < 15 ? 36 : 27,
-                                                    height: size < 15 ? 36 : 27,
+                                                    width:  size <= 12 ? 36 : size > 12 && size <= 15 ? 33 : (size > 15 && size <= 17 ) ? 30 : 27,
+                                                    height: size <= 12 ? 36 : size > 12 && size <= 15 ? 33 : (size > 15 && size <= 17 ) ? 30 : 27,
                                                     cursor: 'pointer'
                                                 }} src={iconChessmanA.chessmanUrl} alt={iconChessmanA.name ? iconChessmanA.name : ''}/>
                                                 :
                                                 (cell === chessmanB)
                                                     ?
                                                     <img style={{
-                                                        width: size < 15 ? 36 : 27,
-                                                        height: size < 15 ? 36 : 27,
+                                                        width: size <= 12 ? 36 : size > 12 && size <= 15 ? 33 : (size > 15 && size <= 17 ) ? 30 : 27,
+                                                        height: size <= 12 ? 36 : size > 12 && size <= 15 ? 33 : (size > 15 && size <= 17 ) ? 30 : 27,
                                                         cursor: 'pointer'
                                                     }} src={iconChessmanB.chessmanUrl} alt={iconChessmanB.name ? iconChessmanB.name : ''}/>
                                                     :
@@ -242,5 +268,5 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
-    // withTranslation()
+    withTranslation(),
 ) (Board);

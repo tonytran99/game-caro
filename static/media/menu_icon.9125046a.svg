@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="37" height="26" viewBox="0 0 37 26">
+    <defs>
+        <style>
+            .prefix__cls-1{fill: transparent;stroke:#ffdead}.prefix__cls-2{stroke:none}.prefix__cls-3{fill:none}
+        </style>
+    </defs>
+    <g id="prefix__Groupe_7005" data-name="Groupe 7005" transform="translate(-398 -462)">
+        <g id="prefix__Rectangle_5097" class="prefix__cls-1" data-name="Rectangle 5097">
+            <path d="M0 0H37V5H0z" class="prefix__cls-2" transform="translate(398 462)"/>
+            <path d="M0.5 0.5H36.5V4.5H0.5z" class="prefix__cls-3" transform="translate(398 462)"/>
+        </g>
+        <g id="prefix__Rectangle_5098" class="prefix__cls-1" data-name="Rectangle 5098">
+            <path d="M0 0H37V5H0z" class="prefix__cls-2" transform="translate(398 469)"/>
+            <path d="M0.5 0.5H36.5V4.5H0.5z" class="prefix__cls-3" transform="translate(398 469)"/>
+        </g>
+        <g id="prefix__Rectangle_5099" class="prefix__cls-1" data-name="Rectangle 5099">
+            <path d="M0 0H37V5H0z" class="prefix__cls-2" transform="translate(398 476)"/>
+            <path d="M0.5 0.5H36.5V4.5H0.5z" class="prefix__cls-3" transform="translate(398 476)"/>
+        </g>
+        <g id="prefix__Rectangle_5100" class="prefix__cls-1" data-name="Rectangle 5100">
+            <path d="M0 0H37V5H0z" class="prefix__cls-2" transform="translate(398 483)"/>
+            <path d="M0.5 0.5H36.5V4.5H0.5z" class="prefix__cls-3" transform="translate(398 483)"/>
+        </g>
+    </g>
+</svg>

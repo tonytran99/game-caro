@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/game-caro/precache-manifest.eb67f4ddb415d9058882e672fd9c1218.js"
+  "/game-caro/precache-manifest.b732e72692a7fc303c8fd675cb4925fb.js"
 );
 
 self.addEventListener('message', (event) => {

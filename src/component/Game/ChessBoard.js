@@ -8,12 +8,7 @@ import Header from "../Header";
 import Content from "../Content";
 import Board from "./Board";
 import {
-    BOARD_GROUP,
-    BOARD_TW0,
     CHESS_BOARD_TYPE_ONLINE,
-    CHESSMAN_YOURSELF_A,
-    CHESSMAN_YOURSELF_B,
-    GROUP_BOARD
 } from "../../constants/constants";
 import * as gameActions from "../../_actions/game";
 import Button from "@material-ui/core/Button";
@@ -241,27 +236,12 @@ class ChessBoard extends React.Component {
     }
 
     componentDidMount() {
-        const {
-            dataChessBoard,
-            dataUser,
-            dataChessmans
-        } = this.props;
-        const {
-            dataSetupChessBoard
-        } = this.state;
         this.props.showDataChessBoard(this.props.match.params.idChessBoard);
-        // if (!(dataChessBoard && dataChessBoard.dataBoard && dataChessBoard.dataBoard.iconChessmanA)) {
-        //     this.props.showDataChessmans();
-        // }
-        // console.log(dataChessBoard);
-        //
-
     }
 
     joinChessBoard(userIdChessman, userId) {
         const {
             dataChessBoard,
-            chessBoardType,
             dataUser
         } = this.props;
         dataChessBoard[userIdChessman] = userId;
@@ -287,7 +267,6 @@ class ChessBoard extends React.Component {
     handleChessmanChange(chessman) {
         const {
             dataSetupChessBoard,
-            checkChess
         } = this.state;
         dataSetupChessBoard.iconChessman = chessman;
         this.closeMenuSelectChessmanIcon();

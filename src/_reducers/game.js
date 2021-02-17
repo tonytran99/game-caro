@@ -2,7 +2,6 @@ import * as types from './../_constants/game';
 let dataUser = localStorage.getItem("dataUser") ? JSON.parse(localStorage.getItem("dataUser")) : null;
 let dataBoardTrainingWithYourself = localStorage.getItem("dataBoardTrainingWithYourself") ? JSON.parse(localStorage.getItem("dataBoardTrainingWithYourself")) : null;
 let dataBoardTrainingWithAI = localStorage.getItem("dataBoardTrainingWithAI") ? JSON.parse(localStorage.getItem("dataBoardTrainingWithAI")) : null;
-// let dataAllUsers = localStorage.getItem("dataAllUsers") ? JSON.parse(localStorage.getItem("dataAllUsers")) : null;
 
 const initState = {
     dataUser: dataUser,

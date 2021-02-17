@@ -1,9 +1,6 @@
 import React from 'react';
 import './App.css';
-// import firebase from "firebase";
-// import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import {withStyles} from "@material-ui/core/styles";
-// import {withTranslation} from "react-i18next";
 import PropTypes from "prop-types";
 import {compose} from "redux";
 import { Provider} from "react-redux";

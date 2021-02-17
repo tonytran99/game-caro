@@ -146,10 +146,6 @@ class Profile extends React.Component {
                         }, (error) => {
                             if (error) {
                                 this.setState({
-                                    // displayName: '',
-                                    // avatar: null,
-                                    // avatarPreview: '',
-                                    // avatarName: '',
                                     isLoading: false,
                                     progressUploadBackground: 0,
                                     errorOpen: true
@@ -214,7 +210,6 @@ class Profile extends React.Component {
         } = this.state;
         const {
             classes,
-            dataUserAuth
         } = this.props;
 
         return (

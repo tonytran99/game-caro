@@ -23,8 +23,9 @@ const styles = theme => ({
         top: 0,
         left: 0,
         zIndex: 99,
+        textAlign: 'center',
         '& img': {
-            width: '100%',
+            // width: '100%',
             height: '100%',
             objectFit: 'cover'
         },

@@ -19,6 +19,18 @@ import {withTranslation} from "react-i18next";
 const styles = theme => ({
     listBackgroundWrapper: {
         height: '100%',
+        overflowY: 'auto',
+        '&::-webkit-scrollbar': {
+            width: 9,
+        },
+        '&::-webkit-scrollbar-track': {
+            // background: '#ee6f57',
+            borderRadius: 9,
+        },
+        '&::-webkit-scrollbar-thumb': {
+            borderRadius: 9,
+            background: '#ee6f57',
+        },
     },
     backgroundList: {
 

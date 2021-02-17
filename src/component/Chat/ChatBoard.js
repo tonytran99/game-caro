@@ -19,7 +19,6 @@ import UserIcon from "../../images/user_icon.svg";
 import PhotoIcon from "../../images/ic_photo.png";
 import StickerIcon from "../../images/ic_sticker.png";
 import CaroIcon from "../../images/caro_icon.png";
-
 import SendIcon from "../../images/ic_send.png";
 import {paramsToObject} from "../../functions/functions";
 import firebase, {storage} from "../../firebase";
@@ -32,7 +31,6 @@ import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import {NavLink} from "react-router-dom";
 import * as links from "../../constants/links";
-import * as gameActions from "../../_actions/game";
 import Button from "@material-ui/core/Button";
 import Input from "@material-ui/core/Input";
 import {ReactComponent as PersonIcon} from "../../images/person_icon.svg";
@@ -355,9 +353,6 @@ class ChatBoard extends React.Component {
         const urlParams = new URLSearchParams(window.location.search.substr(1));
         const entries = urlParams.entries();
         const params = paramsToObject(entries);
-        const {
-            idChatBoxCurrent
-        } = this.state;
         if (params.hasOwnProperty('idChatBox')) {
             const idChatBox = params.idChatBox;
             firebase.database().ref('messages/' + idChatBox + '/' + createdAt).set(dataMessage, error => {
@@ -443,12 +438,6 @@ class ChatBoard extends React.Component {
             this.onSendMessage(this.state.textInputValue, MESSAGE_TYPE_TEXT);
         }
     }
-    //
-    // scrollToBottom = () => {
-    //     if (this.messagesEnd) {
-    //         this.messagesEnd.scrollIntoView({})
-    //     }
-    // }
 
     handleChange(name, value) {
         this.setState({
@@ -458,9 +447,6 @@ class ChatBoard extends React.Component {
 
     viewMessages() {
         const {
-            classes,
-            dataUserAuth,
-            match,
             dataMessagesChatBoard,
         } = this.props;
         let dataMessages = [];
@@ -605,7 +591,6 @@ class ChatBoard extends React.Component {
             dataInitPrivateBoard
         } = this.state;
         const idChessBoard = dataUser.userId + '_' + dataInfoChatBoard.idChatBox + '_' + new Date().getTime();
-        const userCanViewBoard = {};
         const dataMembersBoard = {};
         for (let [key, value] of Object.entries(dataInfoChatBoard.dataMembers)) {
             dataMembersBoard[key] = value;
@@ -758,16 +743,12 @@ class ChatBoard extends React.Component {
 
     render() {
         const {
-            board,
-            idChatBoxCurrent,
             textInputValue,
             popoverListSticker,
-            dataChessmans,
             popoverCreateGroupBoard,
             dataAllUsersGroupChat,
             popoverCreatePrivateBoard,
             dataInitPrivateBoard,
-            dataInitGroupBoard,
             successOpen,
             errorOpen,
             isLoading,
@@ -775,8 +756,6 @@ class ChatBoard extends React.Component {
         } = this.state;
         const {
             classes,
-            dataUserAuth,
-            match,
             dataMessagesChatBoard,
             dataInfoChatBoard,
             dataUser,

@@ -11,7 +11,6 @@ import {withTranslation} from "react-i18next";
 import LoadingAction from "./theme/LoadingAction";
 import Page404 from "./theme/PageError/Page404";
 import * as links from "./constants/links";
-import PublicRoute from "./PublicRoute";
 
 const styles = {
     mainContent: {

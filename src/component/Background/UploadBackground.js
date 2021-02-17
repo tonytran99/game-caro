@@ -2,11 +2,9 @@ import React from 'react';
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
 import {compose} from "redux";
-import { ReactComponent as CameraIcon } from "../../images/camera_icon.svg";
 import {withTranslation} from "react-i18next";
 import Button from "@material-ui/core/Button";
-import { lighten, withStyles } from '@material-ui/core/styles';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import { withStyles } from '@material-ui/core/styles';
 import {storage} from "../../firebase";
 import LoadingAction from "../../theme/LoadingAction";
 import firebase from "./../../firebase";
@@ -56,13 +54,13 @@ class UploadBackground extends React.Component {
         this.handleBackground = this.handleBackground.bind(this);
         this.removeBackground = this.removeBackground.bind(this);
         this.uploadBackground = this.uploadBackground.bind(this);
-        this.inputAvatarRef = React.createRef();
     }
 
     componentDidMount() {
 
     }
     handleBackground(event) {
+        console.log(event.target.files[0])
         this.setState({
             background: event.target.files[0],
             backgroundPreview: URL.createObjectURL(event.target.files[0]),
@@ -77,12 +75,12 @@ class UploadBackground extends React.Component {
         });
     }
     uploadBackground() {
-        const {avatar} = this.state;
+        const {background} = this.state;
         const {
             dataUserAuth
         } = this.props;
         const nameImage = (dataUserAuth && dataUserAuth.uid ? dataUserAuth.uid : '') + '_' + new Date().getTime();
-        const uploadTask = storage.ref(`images/backgrounds/${nameImage}`).put(avatar);
+        const uploadTask = storage.ref(`images/backgrounds/${nameImage}`).put(background);
         this.setState({
             isLoading: true
         })
@@ -141,9 +139,9 @@ class UploadBackground extends React.Component {
 
     render() {
         const {
-            avatar,
-            avatarPreview,
-            avatarName,
+            background,
+            backgroundPreview,
+            backgroundName,
             progressUploadBackground,
             isLoading,
             successOpen,
@@ -153,15 +151,16 @@ class UploadBackground extends React.Component {
             classes,
             dataUserAuth
         } = this.props;
+        console.log(backgroundPreview)
         return (
             <div className={classes.uploadBackgroundWrapper}>
                 {isLoading && <LoadingAction />}
                <UploadPhoto
                    onChange={this.handleBackground}
                    removePhoto={this.removeBackground}
-                   photo={avatar}
-                   photoPreview={avatarPreview}
-                   photoName={avatarName}
+                   photo={background}
+                   photoPreview={backgroundPreview}
+                   photoName={backgroundName}
                    progressUploadBackground={progressUploadBackground}
                />
                 <Button

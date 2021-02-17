@@ -42,22 +42,11 @@ const styles = theme => ({
     },
     contentBackground: {
         flexGrow: 1,
-        overflowY: 'scroll',
         backgroundColor: '#e0ece4',
         padding: '1rem 0.5rem',
         borderRadius: 9,
         boxShadow: '0 5px 5px 0 #e0ece4',
-        '&::-webkit-scrollbar': {
-            width: 9,
-        },
-        '&::-webkit-scrollbar-track': {
-            background: '#ee6f57',
-            borderRadius: 9,
-        },
-        '&::-webkit-scrollbar-thumb': {
-            borderRadius: 9,
-            background: '#ee6f57',
-        },
+        overflow: 'hidden'
     }
 });
 

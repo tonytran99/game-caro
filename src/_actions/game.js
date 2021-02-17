@@ -36,13 +36,6 @@ export const saveDataBoardTrainingWithAI = (dataTraining) => {
     }
 }
 
-// export const showDataAllUsers = (dataAllUsers) => {
-//     return {
-//         type: types.GAME_SHOW_DATA_ALL_USERS,
-//         dataAllUsers: dataAllUsers
-//     }
-// }
-
 export const setDataMessagesChatBoard = (idChatBox) => {
     return (dispatch) => {
         firebase.database().ref('messages/' + idChatBox).on('value', (snap) => {

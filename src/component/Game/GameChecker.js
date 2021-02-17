@@ -1,5 +1,3 @@
-import {CHESSMAN_NONE} from "../../constants/constants";
-
 const getCell = (board, x, y) => {
     if (board[x]) return board[x][y];
     return undefined;

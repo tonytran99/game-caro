@@ -4,17 +4,13 @@ import {withStyles} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import {compose} from "redux";
 import {connect} from "react-redux";
-import {BrowserRouter as Router} from "react-router-dom"
 import {I18nextProvider} from "react-i18next";
-import rootReducer from "./_reducers";
-import { createStore, applyMiddleware } from "redux";
 import './css/app.scss';
-import reduxThunk from "redux-thunk";
 import * as links from "./constants/links";
 import * as authActions from "./_actions/auth";
 import * as gameActions from "./_actions/game";
 import LoadingAction from "./theme/LoadingAction";
-import { Route, Switch} from "react-router-dom";
+import { HashRouter, Route, Switch} from "react-router-dom";
 import RoutesMap from "./routesMap";
 import firebase from "./firebase";
 import PublicRoute from "./PublicRoute";
@@ -22,7 +18,6 @@ import Auth from "./component/Auth/Auth";
 import {PERMISSION_USER} from "./constants/constants";
 import backgroundDefault from "./images/background_default.jpg";
 import i18n from "./i18n";
-import {withRouter} from "react-router";
 
 const styles = theme => ({
     layoutWrapper: {
@@ -92,7 +87,7 @@ class Layout extends React.Component {
                     backgroundImage: `url('${backgroundDefault}')`,
                 }
             }>
-            <Router>
+            <HashRouter>
                 <I18nextProvider
                     i18n={i18n}
                 >
@@ -125,7 +120,7 @@ class Layout extends React.Component {
                         </Switch>
                     </Suspense>
                 </I18nextProvider>
-            </Router>
+            </HashRouter>
             </div>
         );
     }

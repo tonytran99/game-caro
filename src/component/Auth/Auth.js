@@ -64,12 +64,11 @@ class Auth extends React.Component {
     }
 
     render() {
-        // const {
-        //
-        // } = this.state;
+        const {
+
+        } = this.state;
         const {
             classes,
-            dataUserAuth,
             match
         } = this.props;
         return (

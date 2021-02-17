@@ -1,11 +1,10 @@
-import React from 'react';
+ import React from 'react';
 import {withStyles} from "@material-ui/core";
 import {withTranslation} from "react-i18next";
 import PropTypes from 'prop-types';
 import Input from "@material-ui/core/Input";
 import FormControl from "@material-ui/core/FormControl";
 import {compose} from "redux";
-import {connect} from "react-redux";
 const styles = {
     appInput:{
         '& input': {

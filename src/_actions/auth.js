@@ -2,11 +2,6 @@ import * as types from './../_constants/auth';
 import firebase from "firebase";
 
 export const signOut = () => async (dispatch) => {
-    // firebase.auth().signOut();
-    // return {
-    //     type: types.AUTH_SIGN_OUT,
-    //     isSignedIn: false
-    // }
     try {
         firebase
             .auth()
